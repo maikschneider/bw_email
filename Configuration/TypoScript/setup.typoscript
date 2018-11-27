@@ -1,0 +1,6 @@
+#[globalVar TSFE:page|doktype = 117]
+page.10 = TEXT
+page.10.templateRootPaths.117 = EXT:bw_email:Resources/Private/Templates/Page/
+page.10.partialRootPaths.117 = EXT:bw_email:Resources/Private/Partials/Page/
+page.10.layoutRootPaths.117 = EXT:bw_email:Resources/Private/Layouts/Page/
+#[GLOBAL]

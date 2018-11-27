@@ -1,0 +1,15 @@
+{
+    "name": "blueways/email",
+    "description": "TYPO3 extension for creating email templates",
+    "type": "typo3-cms-extension",
+    "require": {
+        "tijsverkoyen/css-to-inline-styles": "^2.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maik Schneider",
+            "email": "m.schenider@blueways.de"
+        }
+    ]
+}
