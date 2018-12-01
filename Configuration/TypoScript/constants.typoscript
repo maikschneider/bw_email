@@ -1,0 +1,13 @@
+styles {
+	templates {
+		templateRootPaths {
+			117 = EXT:bw_email/Resources/Private/Templates/fluid_styled_content/
+		}
+		partialRootPaths {
+			117 = EXT:bw_email/Resources/Private/Partials/fluid_styled_content/
+		}
+		layoutRootPaths {
+			117 = EXT:bw_email/Resources/Private/Layouts/fluid_styled_content/
+		}
+	}
+}

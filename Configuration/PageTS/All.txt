@@ -1,4 +1,5 @@
 [page|doktype = 117]
+
 mod.web_layout.BackendLayouts >
 
 mod {
@@ -19,14 +20,6 @@ mod {
                                     }
                                 }
                             }
-                            2 {
-								columns {
-									1 {
-										name = LLL:EXT:bw_rundfunkgruppe_base/Resources/Private/Language/locallang.xlf:backend_layout.column.normal
-										colPos = 1
-									}
-								}
-							}
                         }
                     }
                 }
@@ -36,10 +29,5 @@ mod {
     }
 }
 
-TCEFORM {
-  	pages {
-    	backend_layout.removeItems = -1,0
-	}
-}
 
 [GLOBAL]

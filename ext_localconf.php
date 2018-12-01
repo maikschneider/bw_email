@@ -1,5 +1,13 @@
 <?php
 defined('TYPO3_MODE') || die('Access denied');
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = 'Blueways\\BwEmail\\Hooks\\ContentPostProcessor->render';
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-cached'][] = 'Blueways\\BwEmail\\Hooks\\ContentPostProcessor->render';
+call_user_func(
+    function ($extKey) {
+
+        // register post content renderer hook
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-output'][] = \Blueways\BwEmail\Hooks\ContentPostProcessorHook::class . '->noCache';
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['contentPostProc-all'][] = \Blueways\BwEmail\Hooks\ContentPostProcessorHook::class . '->cache';
+
+        },
+    'bw_email'
+);

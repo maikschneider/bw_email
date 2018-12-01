@@ -3,7 +3,8 @@
     "description": "TYPO3 extension for creating email templates",
     "type": "typo3-cms-extension",
     "require": {
-        "tijsverkoyen/css-to-inline-styles": "^2.2"
+        "tijsverkoyen/css-to-inline-styles": "^2.2",
+        "maikschneider/inky": "*"
     },
     "license": "MIT",
     "authors": [

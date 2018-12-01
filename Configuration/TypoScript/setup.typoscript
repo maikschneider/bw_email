@@ -1,6 +1,40 @@
-#[globalVar TSFE:page|doktype = 117]
-page.10 = TEXT
-page.10.templateRootPaths.117 = EXT:bw_email:Resources/Private/Templates/Page/
-page.10.partialRootPaths.117 = EXT:bw_email:Resources/Private/Partials/Page/
-page.10.layoutRootPaths.117 = EXT:bw_email:Resources/Private/Layouts/Page/
-#[GLOBAL]
+[page|doktype = 117]
+
+	page.includeCSS >
+	page.includeCSS.bw_email = EXT:bw_email/Resources/Public/Css/app.css
+	page.includeJS >
+	page.includeJSFooterlibs >
+	page.includeJSFooter >
+
+	page.10 {
+		templateName = TEXT
+		templateName.stdWrap.cObject = CASE
+		templateName.stdWrap.cObject {
+			key.data = pagelayout
+
+			pagets__bw_email_default = TEXT
+			pagets__bw_email_default.value = Default
+
+			default = TEXT
+			default.value = Default
+		}
+	}
+[GLOBAL]
+
+page.10 {
+	templateRootPaths {
+		117 = EXT:bw_email/Resources/Private/Templates/Email/
+		118 = {$tx_bwemail_pi1.templateRootPath}
+	}
+	partialRootPaths {
+		117 = EXT:bw_email/Resources/Private/Partials/Email/
+		118 = {$tx_bwemail_pi1.partialRootPath}
+	}
+	layoutRootPaths {
+		117 = EXT:bw_email/Resources/Private/Layouts/Email/
+		118 = {$tx_bwemail_pi1.layoutRootPath}
+	}
+}
+
+
+
