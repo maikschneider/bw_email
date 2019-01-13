@@ -5,6 +5,9 @@
 	page.includeJS >
 	page.includeJSFooterlibs >
 	page.includeJSFooter >
+	page.meta.viewport = width=device-width
+
+	config.doctype = xhtml_strict
 
 	page.10 {
 		templateName = TEXT
@@ -15,26 +18,56 @@
 			pagets__bw_email_default = TEXT
 			pagets__bw_email_default.value = Default
 
+			pagets__bw_email_drip = TEXT
+			pagets__bw_email_drip.value = Drip
+
+			pagets__bw_email_hero = TEXT
+			pagets__bw_email_hero.value = Hero
+
+			pagets__bw_email_marketing = TEXT
+			pagets__bw_email_marketing.value = Marketing
+
+			pagets__bw_email_newsletter = TEXT
+			pagets__bw_email_newsletter.value = Newsletter
+
+			pagets__bw_email_newsletter2 = TEXT
+			pagets__bw_email_newsletter2.value = Newsletter-2
+
+			pagets__bw_email_order = TEXT
+			pagets__bw_email_order.value = Order
+
+			pagets__bw_email_password = TEXT
+			pagets__bw_email_password.value = Password
+
+			pagets__bw_email_sidebar = TEXT
+			pagets__bw_email_sidebar.value = Sidebar
+
+			pagets__bw_email_sidebarHero = TEXT
+			pagets__bw_email_sidebarHero.value = SidebarHero
+
+			pagets__bw_email_welcome = TEXT
+			pagets__bw_email_welcome.value = Welcome
+
 			default = TEXT
 			default.value = Default
 		}
+		templateRootPaths {
+			117 = EXT:bw_email/Resources/Private/Templates/Email/
+			118 = {$tx_bwemail_pi1.templateRootPath}
+		}
+		partialRootPaths {
+			117 = EXT:bw_email/Resources/Private/Partials/Email/
+			118 = {$tx_bwemail_pi1.partialRootPath}
+		}
+		layoutRootPaths {
+			117 = EXT:bw_email/Resources/Private/Layouts/Email/
+			118 = {$tx_bwemail_pi1.layoutRootPath}
+		}
 	}
+
 [GLOBAL]
 
-page.10 {
-	templateRootPaths {
-		117 = EXT:bw_email/Resources/Private/Templates/Email/
-		118 = {$tx_bwemail_pi1.templateRootPath}
-	}
-	partialRootPaths {
-		117 = EXT:bw_email/Resources/Private/Partials/Email/
-		118 = {$tx_bwemail_pi1.partialRootPath}
-	}
-	layoutRootPaths {
-		117 = EXT:bw_email/Resources/Private/Layouts/Email/
-		118 = {$tx_bwemail_pi1.layoutRootPath}
-	}
-}
+
 
 
 

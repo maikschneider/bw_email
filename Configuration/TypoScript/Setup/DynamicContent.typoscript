@@ -75,7 +75,7 @@ lib.dynamicContent {
 		}
 	}
 	30 < .20
-	3 0{
+	30 {
 		renderObj = FLUIDTEMPLATE
 		renderObj.file.dataWrap = {$styles.templates.partialRootPath}{register:templateFile}
 		renderObj.file.dataWrap.stdWrap.if.value = Textmedia.html
