@@ -15,6 +15,9 @@
 			<trans-unit id="backend_layout.column.normal">
 				<source>Content</source>
 			</trans-unit>
+			<trans-unit id="sendMail">
+				<source>Send Mail</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

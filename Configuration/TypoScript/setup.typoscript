@@ -68,6 +68,15 @@
 [GLOBAL]
 
 
+config.tx_extbase {
+	objects {
+		# Extending a controller
+		TYPO3\CMS\Viewpage\Controller\ViewModuleController {
+			className = Blueways\BwEmail\Controller\ViewModuleController
+		}
 
+	}
+
+}
 
 

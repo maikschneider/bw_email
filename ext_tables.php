@@ -20,6 +20,14 @@ call_user_func(
                     'source' => 'EXT:' . $extKey . '/Resources/Public/Icons/apps-pagetree-page-email.svg',
                 ]
             );
+        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class)
+            ->registerIcon(
+                'actions-email',
+                TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+                [
+                    'source' => 'EXT:' . $extKey . '/Resources/Public/Icons/actions-email.svg',
+                ]
+            );
 
         // Allow backend users to drag and drop the new page type:
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addUserTSConfig(
