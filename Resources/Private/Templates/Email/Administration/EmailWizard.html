@@ -1,1 +1,264 @@
-Hello!
+<div class="row">
+    <div class="col-md-4">
+        <form action="{sendMailActionUri}" method="POST">
+            <input type="hidden" name="entryUid" value="{entry.uid}"/>
+            <h2 class="form-section-headline">Settings</h2>
+            <f:if condition="{emailTemplates}">
+                <fieldset class="form-section">
+                    <div class="form-group">
+                        <label for="emailTemplate"> Email-Template </label>
+                        <div class="form-control-wrap">
+                            <select class="form-control" id="emailTemplate" name="emailTemplate">
+                                <f:for each="{emailTemplates}" as="template">
+                                    <option value="{template.file}"
+                                            data-preview-uri="{template.previewUri}"
+                                            {f:if(condition:
+                                    '{defaults.emailTemplate}=={template.file}',
+                                    then:'selected')}>{template.name}</option>
+                                </f:for>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="showUid-form-group" style="display:none;">
+                        <label for="showUid"> E-Mail show PID </label>
+                        <div class="form-control-wrap">
+                            <input name="showUid" id="showUid" class="form-control" placeholder="{defaults.showUid}"/>
+                        </div>
+                    </div>
+                </fieldset>
+            </f:if>
+            <fieldset class="form-section">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">
+                                <a role="button"
+                                   data-toggle="collapse"
+                                   data-parent="#accordion"
+                                   href="#collapseOne"
+                                   aria-expanded="true"
+                                   aria-controls="collapseOne">
+                                    Receiver settings
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne"
+                             class="panel-collapse collapse in"
+                             role="tabpanel"
+                             aria-labelledby="headingOne">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="senderAddress"> Recipient address</label>
+                                    <div class="form-control-wrap">
+                                        <input name="recipientAddress"
+                                               id="recipientAddress"
+                                               class="form-control"
+                                               value="{entry.email}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="senderAddress"> Recipient name</label>
+                                    <div class="form-control-wrap">
+                                        <input name="recipientName"
+                                               id="recipientName"
+                                               class="form-control"
+                                               value="{entry.prename} {entry.name}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="senderAddress"> Email subject </label>
+                                    <div class="form-control-wrap">
+                                        <input name="subject"
+                                               id="subject"
+                                               class="form-control"
+                                               placeholder="{defaults.subject}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title">
+                                <a class="collapsed"
+                                   role="button"
+                                   data-toggle="collapse"
+                                   data-parent="#accordion"
+                                   href="#collapseTwo"
+                                   aria-expanded="false"
+                                   aria-controls="collapseTwo">
+                                    Sender settings
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo"
+                             class="panel-collapse collapse"
+                             role="tabpanel"
+                             aria-labelledby="headingTwo">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="senderAddress"> Sender name </label>
+                                    <div class="form-control-wrap">
+                                        <input name="senderName"
+                                               id="senderName"
+                                               class="form-control"
+                                               placeholder="{defaults.senderName}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="senderAddress"> Sender address </label>
+                                    <div class="form-control-wrap">
+                                        <input name="senderAddress"
+                                               id="senderAddress"
+                                               class="form-control"
+                                               placeholder="{defaults.senderAddress}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="senderAddress"> Reply-To address </label>
+                                    <div class="form-control-wrap">
+                                        <input name="replytoAddress"
+                                               id="replytoAddress"
+                                               class="form-control"
+                                               placeholder="{defaults.replytoAddress}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </fieldset>
+            <fieldset class="form-section" id="markerOverrideFieldset" style="display:none;"></fieldset>
+        </form>
+    </div>
+
+    <div class="col-md-6 col-md-push-1">
+
+        <div class="phone">
+            <div class="phone-outer">
+                <div class="phone-top">
+                    <div class="phone-camera"></div>
+                </div>
+                <div class="phone-display" id="emailPreview">
+
+                </div>
+                <div class="phone-bottom">
+                    <div class="phone-button" id="phoneCloseButton">
+                        <div class="phone-button-inside"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <style type="text/css">
+        .phone-outer {
+            border: 2px solid #d0d2d3;
+            border-top: 0;
+            border-bottom: 0;
+            top: 80px;
+            bottom: 80px;
+            position: relative;
+        }
+
+        .phone-top, .phone-bottom {
+            border: 2px solid #d0d2d3;
+            border-radius: 40px 40px 0 0;
+            border-bottom-width: 0;
+            height: 80px;
+            text-align: center;
+            top: -80px;
+            left: -2px;
+            position: absolute;
+            width: calc(100% + 4px);
+        }
+
+        .phone-bottom {
+            border-radius: 0 0 40px 40px;
+            border-top-width: 0;
+            border-bottom-width: 2px;
+            top: auto;
+            bottom: -80px;
+        }
+
+        .phone-camera, .phone-button, .phone-button-inside {
+            display: inline-block;
+            border: 1px solid #d0d2d3;
+            border-radius: 100%;
+            height: 10px;
+            width: 10px;
+            background: #e8e8e8;
+            margin-top: 34px;
+        }
+
+        .phone-button {
+            height: 50px;
+            width: 50px;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .phone-button:hover {
+            background-color: #e2e2e2;
+        }
+
+        .phone-button:focus, .phone-button:active {
+            background-color: #d7d7d7;
+        }
+
+        .phone-button-inside {
+            background: none;
+            border-width: 3px;
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            margin: 0;
+        }
+
+        .phone-display {
+            border: 2px solid #d0d2d3;
+            margin: 0 20px;
+            text-align: center;
+            transition: all 0.01s ease;
+            transition-delay: 0.5s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-display iframe {
+            transition: transform 0.5s ease;
+        }
+
+        .phone-display.closeing {
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMzAxcHgiIGhlaWdodD0iNzVweCIgdmlld0JveD0iMCAwIDMwMSA3NSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDwhLS0gR2VuZXJhdG9yOiBTa2V0Y2ggNTIuNSAoNjc0NjkpIC0gaHR0cDovL3d3dy5ib2hlbWlhbmNvZGluZy5jb20vc2tldGNoIC0tPgogICAgPHRpdGxlPlNoYXBlPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9ImJsdWV3YXlzX2xvZ29fMjAxOCIgZmlsbD0iI0ZGRkZGRiIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgPHBhdGggZD0iTTE4Ljg1MDI3ODEsMC4xMDUgTDEzLjk4Mjc0NDEsMjMuNjQ0MjU1MSBMMTQuMTQyMzM1NCwyMy42NDQyNTUxIEMxNy4yNTQzNjUzLDE5LjQxNTA4NjIgMjEuODgyNTEyNCwxNy4wMjE2NzU2IDI2LjkwOTE3OTEsMTcuMDIxNjc1NiBDMzUuMjA3OTI1NiwxNy4wMjE2NzU2IDM4LjYzOTEzODEsMjMuODA0MzA1IDM4LjYzOTEzODEsMzAuNzQ2MDY3IEMzOC42MzkxMzgxLDQzLjAzNDEzNjkgMzAuMTgwODAwMyw1Ny42MzY3MzkgMTMuNTgzNzY1OSw1Ny42MzY3MzkgQzUuNDQ0NjEwNjQsNTcuNjM2NzM5IDAuNTc3NTM1MjE3LDU0LjIwNTUyNjUgMC42NTY4NzIyNjEsNDcuMTgzOTY4OCBDMC42NTY4NzIyNjEsNDQuOTQ5NjkwOSAwLjk3NjA1NDgyLDQyLjYzNTYxNzMgMS4zNzUwMzMwMiw0MC40ODExMzUxIEw5LjUxNDE4ODI2LDAuMTA1NDU4NTk2IEwxOC44NTAyNzgxLDAuMTA1NDU4NTk2IEwxOC44NTAyNzgxLDAuMTA1IFogTTEwLjYzMTMyNzIsNDAuOTU5NDUwMyBDMTAuMzkxOTQwMyw0Mi4zMTU5NzYyIDEwLjE1MjU1MzQsNDMuNzUyMjk3NyAxMC4yMzIzNDksNDUuNTg3NTk3NCBDMTAuMjMyMzQ5LDQ4Ljc3OTQyMyAxMi4wNjc2NDg3LDUwLjUzNDkyNzEgMTUuNDE5MDY1Niw1MC41MzQ5MjcxIEMyMy41NTgyMjA4LDUwLjUzNDkyNzEgMjguOTA0MDcwMSw0MC4wODIxNTY5IDI4LjkwNDA3MDEsMzIuNTAxNTcxMSBDMjguOTA0MDcwMSwyOC4xOTI2MDY2IDI3LjA2ODc3MDQsMjQuNjAxODAyOCAyMi43NTk4MDU4LDI0LjYwMTgwMjggQzE3Ljk3MjUyNjEsMjQuNjAxODAyOCAxMy4wMjQ3Mzc4LDI5LjU0OTEzMjQgMTEuNDI5MjgzNiwzNy4zNjg2NDY1IEwxMC42MzEzMjcyLDQwLjk1OTQ1MDMgWiBNNDAuNjc0ODQ0MSw1Ni43NTg1Mjg0IEw1MS41MjcwNTExLDAuMTA1IEw2MC43ODMzNDUzLDAuMTA1IEw1MC4wMTA5MzQsNTYuNzU4NTI4NCBMNDAuNjc0ODQ0MSw1Ni43NTg1Mjg0IFogTTk4LjA0NzQ1MDQsMTcuODk4OTY5IEw5Mi45NDA1Mjk1LDQ0LjcwOTM4NjggQzkyLjA2Mjc3NzUsNDkuMzM3NTMzOSA5MS41MDQyMDgsNTMuNDA3MTExNSA5MS4wMjU0MzQyLDU2Ljc1ODA2OTggTDgyLjgwNjQ4MzMsNTYuNzU4MDY5OCBMODMuNjA0NDM5Nyw0OS45NzU0NDA0IEw4My40NDQ4NDg0LDQ5Ljk3NTQ0MDQgQzc5LjY5NDQ1MzMsNTUuMDAyMTA3MSA3NC44MjY5MTkzLDU3LjYzNTgyMTggNjkuOTU5ODQzOSw1Ny42MzU4MjE4IEM2NC4yOTQzNTM1LDU3LjYzNTgyMTggNTkuODI1Nzk3Niw1NC42MDM1ODc1IDU5LjgyNTc5NzYsNDYuNjI0MDIzNSBDNTkuODI1Nzk3Niw0NC41NDkzMzY5IDYwLjA2NTE4NDYsNDIuMzE1MDU5IDYwLjYyMzc1NCwzOS42ODE4MDI5IEw2NC43NzMxMjczLDE3Ljg5ODUxMDQgTDc0LjAyOTQyMTUsMTcuODk4NTEwNCBMNzAuMDM5NjM5NSwzOS4xMjM2OTIgQzY5LjY0MDY2MTMsNDEuMDM4Nzg3MyA2OS40MDEyNzQ0LDQyLjk1Mzg4MjcgNjkuNDAxMjc0NCw0NC40Njk5OTk5IEM2OS40MDEyNzQ0LDQ3LjY2MTgyNTQgNzAuNjc4MDA0Niw0OS45NzU4OTkgNzQuMzQ4NjA0MSw0OS45NzU4OTkgQzc4LjY1NzU2ODYsNDkuOTc1ODk5IDgzLjY4NDIzNTMsNDQuODY4OTc4MSA4NS4yMDA4MTExLDM2LjgxMDA3NyBMODguNzkxNjE0OCwxNy44OTg5NjkgTDk4LjA0NzQ1MDQsMTcuODk4OTY5IFogTTEzMC40NjQ2NTgsNTQuNTI0MjUwNCBDMTI2LjYzNDQ2OCw1Ni41MTkxNDE0IDEyMS40NDc3NTEsNTcuNTU2NDg0OCAxMTYuNzQwMjY3LDU3LjU1NjQ4NDggQzEwNS45NjgzMTQsNTcuNTU2NDg0OCAxMDAuNzgxNTk4LDUxLjAxMzI0MjMgMTAwLjc4MTU5OCw0MS41MTgwMTk4IEMxMDAuNzgxNTk4LDI5Ljc4ODUxOTMgMTA5LjM5OTUyNywxNy4wMjEyMTcgMTIyLjgwNDczNiwxNy4wMjEyMTcgQzEzMC40NjUxMTcsMTcuMDIxMjE3IDEzNS4zMzIxOTIsMjEuNDg5NzcyOCAxMzUuMzMyMTkyLDI3Ljk1Mjc2MSBDMTM1LjMzMjE5MiwzNy45MjcyMTYgMTI0Ljg3OTQyMiw0MS4xMTg1ODMgMTA5Ljg3ODMwMSw0MC43OTk0MDA0IEMxMDkuNzE4NzA5LDQyLjE1NTkyNjMgMTEwLjAzNzg5Miw0NC43ODkxODI0IDExMC45MTU2NDQsNDYuMzA1Mjk5NiBDMTEyLjQzMTc2MSw0OC45Mzg1NTU3IDExNS4yMjQ2MDgsNTAuMjk1MDgxNSAxMTguODk0NzQ5LDUwLjI5NTA4MTUgQzEyMy4yODM1MDksNTAuMjk1MDgxNSAxMjYuNzk0NTE4LDQ5LjE3Nzk0MjYgMTI5LjU4NjkwNiw0Ny43NDE2MjExIEwxMzAuNDY0NjU4LDU0LjUyNDI1MDQgWiBNMTIxLjYwNzM0MiwyMy45NjM0Mzc3IEMxMTUuNzgyMjYxLDIzLjk2MzQzNzcgMTExLjk1MjA3LDI5LjE1MDE1NDIgMTEwLjgzNTM5LDMzLjg1NzYzODQgQzEyMC40MTA0MDgsMzQuMDE3MjI5NyAxMjYuNTU0NjcyLDMyLjY2MDcwMzggMTI2LjU1NDY3MiwyOC4wMzI1NTY3IEMxMjYuNTU0NjcyLDI1LjQ3OTU1NDggMTI0LjU1OTc4MSwyMy45NjM0Mzc3IDEyMS42MDczNDIsMjMuOTYzNDM3NyBaIE0xNDkuNDU2MDIxLDE3Ljg5ODk2OSBMMTUwLjE3NDE4MSwzNi44MTAwNzcgQzE1MC4zMzM3NzMsNDEuMzU4NDI4NSAxNTAuMjUzOTc3LDQ0LjQ3MDQ1ODQgMTUwLjAxNDU5LDQ4LjMwMDY0OTIgTDE1MC4xNzQxODEsNDguMzAwNjQ5MiBDMTUxLjM3MTExNiw0NC44Njk0MzY2IDE1Mi45NjcwMjksNDEuMjc4NjMyOSAxNTQuNzIyNTMzLDM3LjM2ODY0NjUgTDE2NC4xMzc5NiwxNy44OTg5NjkgTDE3MS44NzgxMzcsMTcuODk4OTY5IEwxNzMuNDc0MDUsMzYuODg5ODcyNyBDMTczLjc5MzIzMiw0MS4yNzg2MzI5IDE3My45NTI4MjMsNDQuODY5NDM2NiAxNzMuODczMDI4LDQ4LjMwMDY0OTIgTDE3NC4wMzI2MTksNDguMzAwNjQ5MiBDMTc1LjIyOTU1NCw0NC41NTAyNTQxIDE3Ni40MjY0ODgsNDEuMDM5MjQ1OSAxNzguMDIyNDAxLDM2Ljg4OTg3MjcgTDE4Ni40MDA5NDMsMTcuODk4OTY5IEwxOTUuODE2ODI5LDE3Ljg5ODk2OSBMMTc2Ljc0NjEyOSw1Ni43NTg1Mjg0IEwxNjguMDQ4NDA1LDU2Ljc1ODUyODQgTDE2Ni4yOTI5MDEsMzkuODQyMzExMyBDMTY1Ljk3MzcxOCwzNi4wMTIxMjA2IDE2NS44OTM5MjIsMzIuNTAxMTEyNSAxNjUuODkzOTIyLDI4LjM1MjE5NzggTDE2NS43MzQzMzEsMjguMzUyMTk3OCBDMTYzLjgxOTIzNiwzMy4wNjAxNDA2IDE2Mi44NjE2ODgsMzYuMDEyNTc5MiAxNjEuMTA2MTg0LDM5LjQ0MzMzMzIgTDE1Mi40ODgyNTUsNTYuNzU4NTI4NCBMMTQzLjc5MDk4OSw1Ni43NTg1Mjg0IEwxNDAuMjAwMTg1LDE3Ljg5ODk2OSBMMTQ5LjQ1NjAyMSwxNy44OTg5NjkgWiBNMjE4LjQ1ODE1Myw1Ni43NTg1Mjg0IEMyMTguNTM3OTQ5LDU0LjQ0NDQ1NDggMjE4Ljg1NzEzMiw1MS4zMzI0MjQ5IDIxOS4xNzU4NTYsNDcuOTgxMDA4IEwyMTguOTM2OTI3LDQ3Ljk4MTAwOCBDMjE1LjEwNjczNyw1NS4xNjI2MTU2IDIxMC4wMDAyNzQsNTcuNjM2MjgwNCAyMDUuMDUyOTQ1LDU3LjYzNjI4MDQgQzE5OC4xMTA3MjQsNTcuNjM2MjgwNCAxOTMuNTYyODMxLDUyLjIxMDE3NjkgMTkzLjU2MjgzMSw0NC4zOTA2NjI4IEMxOTMuNTYyODMxLDMxLjE0NTA0NTIgMjAyLjgxODY2NywxNy4wMjEyMTcgMjIwLjkzMTgxOCwxNy4wMjEyMTcgQzIyNS4xNjA5ODcsMTcuMDIxMjE3IDIyOS43MDkzMzksMTcuODE5MTczNCAyMzIuNjYxNzc3LDE4Ljc3NjcyMTEgTDIyOC42NzE5OTUsMzkuMDQ0MzU1IEMyMjcuNTU0ODU2LDQ0Ljg2OTQzNjYgMjI2LjkxNjQ5MSw1Mi4xMzAzODEzIDIyNy4wNzY1NDEsNTYuNzU4NTI4NCBMMjE4LjQ1ODE1Myw1Ni43NTg1Mjg0IFogTTIyMi4yODc4ODYsMjQuNjAxODAyOCBDMjIxLjMzMDMzOCwyNC4zNjI0MTU5IDIyMC4xMzM4NjIsMjQuMjAyODI0NiAyMTguNDU3Njk1LDI0LjIwMjgyNDYgQzIwOS44Mzk3NjYsMjQuMjAyODI0NiAyMDMuMjE3MTg2LDMzLjg1NzYzODQgMjAzLjIxNzE4Niw0Mi43MTQ5NTQ0IEMyMDMuMjE3MTg2LDQ2Ljc4NDUzMiAyMDQuNzMzMzAzLDUwLjEzNTk0ODkgMjA4LjgwMjg4MSw1MC4xMzU5NDg5IEMyMTMuMTExODQ2LDUwLjEzNTk0ODkgMjE4LjM3ODM1OCw0NC43MDk4NDU0IDIyMC4yMTM2NTgsMzQuODE1NjQ0NiBMMjIyLjI4Nzg4NiwyNC42MDE4MDI4IFogTTI0Ny43ODIxMzQsMTcuODk4OTY5IEwyNTAuODEzOTEsMzYuNjUwNDg1OCBDMjUxLjUzMjA3LDQwLjc5OTg1OSAyNTIuMDEwODQ0LDQzLjY3MjUwMjEgMjUyLjMzMDAyNyw0Ni4zMDU3NTgyIEwyNTIuNDkwMDc3LDQ2LjMwNTc1ODIgQzI1My40NDc2MjQsNDMuOTExODg5IDI1NC40MDUxNzIsNDEuMjc4NjMyOSAyNTYuMjQwNDcyLDM3LjA0OTQ2NCBMMjY0LjYxOTAxNCwxNy44OTg5NjkgTDI3NC40MzM0MTksMTcuODk4OTY5IEwyNjAuMjMwMjU0LDQ2LjU0NDY4NjUgQzI1NS41MjE4NTIsNTYuMDQwMzY3NiAyNTEuMjEzMzQ2LDYyLjkwMjMzNCAyNDYuMDI2NjMsNjcuOTI5NDU5MyBDMjQxLjU1ODA3NCw3Mi4zMTgyMTk1IDIzNi40NTExNTMsNzQuMTUzNTE5MiAyMzQuMDU3Mjg0LDc0LjYzMjI5MyBMMjMxLjkwMjgwMiw2Ni42NTMxODc3IEMyMzMuNjU4MzA2LDY2LjA5NDYxODIgMjM2LjM3MTM1Nyw2NS4wNTcyNzQ5IDIzOC43NjUyMjcsNjMuMzAxNzcwOCBDMjQxLjM5ODQ4Myw2MS4zODY2NzU1IDI0My44NzIxNDcsNTguNjczNjIzNyAyNDUuNjI3NjUyLDU1LjU2MjA1MjQgQzI0NS45NDY4MzQsNTQuOTIzNjg3MiAyNDUuOTQ2ODM0LDU0LjQ0NDkxMzQgMjQ1Ljc4NzI0Myw1My43MjY3NTI2IEwyMzguMDQ3NTI0LDE3Ljg5OTQyNzYgTDI0Ny43ODIxMzQsMTcuODk5NDI3NiBMMjQ3Ljc4MjEzNCwxNy44OTg5NjkgWiBNMjczLjIwNjY3Niw0OC4wNjEyNjIyIEMyNzUuMjAyMDI1LDQ5LjE3ODQwMTIgMjc5LjAzMTc1Nyw1MC42OTQ1MTgzIDI4Mi41NDI3NjUsNTAuNjk0NTE4MyBDMjg2LjI5MzE2LDUwLjYxNDcyMjcgMjg4LjUyNzQzOCw0OC40NjAyNDA0IDI4OC41Mjc0MzgsNDUuOTA2NzggQzI4OC41Mjc0MzgsNDMuNDMzMTE1MSAyODcuMjUwNzA4LDQxLjkxNjk5OCAyODMuNDIwMDU5LDM5LjkyMjEwNyBDMjc4Ljk1MTk2MiwzNy42MDgwMzM0IDI3NS43NjAxMzYsMzQuMjU2NjE2NiAyNzUuNzYwMTM2LDI5Ljc4ODUxOTMgQzI3NS43NjAxMzYsMjIuMjg3NzI5MiAyODIuMzAzMzc4LDE3LjAyMTY3NTYgMjkxLjQ3OTQxOCwxNy4wMjE2NzU2IEMyOTUuNTQ4OTk2LDE3LjAyMTY3NTYgMjk4LjkwMDQxMywxNy45NzkyMjMzIDMwMC42NTU5MTcsMTkuMDE2NTY2NiBMMjk4LjI2MTU4OSwyNS43MTk0MDAzIEMyOTYuODI1MjY4LDI0LjkyMTQ0MzkgMjk0LjE5MjQ3LDIzLjk2Mzg5NjMgMjkxLjAwMDY0NSwyMy45NjM4OTYzIEMyODcuNDg5NjM2LDIzLjk2Mzg5NjMgMjg1LjA5NTc2NywyNS44Nzg5OTE2IDI4NS4wOTU3NjcsMjguNTExNzg5MSBDMjg1LjA5NTc2NywzMC42NjYyNzE0IDI4Ni44NTEyNzEsMzIuMTgyMzg4NSAyOTAuMTIyODkzLDMzLjg1ODA5NyBDMjk0LjM1MjA2MSwzNi4xNzIxNzA1IDI5OC4xODE3OTQsMzkuMzYzOTk2MSAyOTguMTgxNzk0LDQ0LjMxMDg2NzIgQzI5OC4xODE3OTQsNTIuODQ5MDAwNiAyOTEuMDAwNjQ1LDU3LjU1NjQ4NDggMjgxLjY2NDU1NSw1Ny41NTY0ODQ4IEMyNzcuMTE2MjAzLDU3LjU1NjQ4NDggMjcyLjg4NzAzNCw1Ni4yNzk3NTQ1IDI3MC44MTIzNDgsNTQuNzYzNjM3NCBMMjczLjIwNjY3Niw0OC4wNjEyNjIyIFoiIGlkPSJTaGFwZSI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+');
+            background-color: #1a3553;
+            background-position: center center;
+            background-repeat: no-repeat;
+            transition-delay: 0s;
+        }
+
+        .phone-display.closeing iframe {
+            transform: scale3d(0.5, 0.5, 1) translate3d(0, 60vh, 0);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.3s ease;
+            transition-delay: 0s, 0.2s;
+        }
+
+        .phone-display .t3js-icon {
+            top: 50%;
+        }
+
+        .modal-backdrop {
+            z-index: 5000;
+        }
+
+
+    </style>
+
+</div>

@@ -12,7 +12,7 @@ styles {
 	}
 }
 
-plugin.tx_bwemail_p1 {
+plugin.tx_bwemail_pi1 {
 	view {
 		templateRootPath =
 		partialRootPath =
