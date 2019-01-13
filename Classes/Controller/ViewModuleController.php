@@ -28,7 +28,7 @@ class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleCont
                 ->setIcon($this->view->getModuleTemplate()->getIconFactory()->getIcon('actions-email',
                     Icon::SIZE_SMALL))
                 ->setDataAttributes([
-                    'wizard_uri' => $this->getPageWizardUri(),
+                    'wizard-uri' => $this->getPageWizardUri(),
                     'modal-title' => $this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'),
                     'modal-cancel-button-text' => $this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton'),
                     'modal-send-button-text' => $this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton'),
