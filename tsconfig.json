@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "amd",
+    "sourceMap": false,
+    "removeComments": false,
+    "pretty": true,
+    "baseUrl": ".",
+    "paths": {
+      "TYPO3/CMS/BwBookingmanager/*": [
+        "Resources/Private/TypeScript/*",
+        "Resources/Public/JavaScript/*"
+      ],
+      "TYPO3/CMS/Backend/*": [
+        "public/typo3/sysext/backend/Resources/Private/TypeScript/*",
+        "public/typo3/sysext/backend/Resources/Public/JavaScript/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "Configuration",
+    "public"
+  ]
+}

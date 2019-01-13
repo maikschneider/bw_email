@@ -18,6 +18,15 @@
 			<trans-unit id="sendMail">
 				<source>Send Mail</source>
 			</trans-unit>
+			<trans-unit id="sendPage">
+				<source>Send Page</source>
+			</trans-unit>
+			<trans-unit id="modalCancelButton">
+				<source>Cancel</source>
+			</trans-unit>
+			<trans-unit id="modalSendButton">
+				<source>Send</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

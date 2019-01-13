@@ -4,7 +4,8 @@
     "type": "typo3-cms-extension",
     "require": {
         "tijsverkoyen/css-to-inline-styles": "^2.2",
-        "maikschneider/inky": "*"
+        "maikschneider/inky": "*",
+        "ext-json": "*"
     },
     "license": "MIT",
     "authors": [

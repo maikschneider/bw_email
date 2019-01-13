@@ -11,3 +11,20 @@ styles {
 		}
 	}
 }
+
+plugin.tx_bwemail_p1 {
+	view {
+		templateRootPath =
+		partialRootPath =
+		layoutRootPath =
+	}
+	settings {
+		senderAddress = noreply@example.com
+		senderName = Example sender name
+		replytoAddress =
+		subject = Example subject
+		template = Default
+		showUid = 1
+		recipientAddress =
+	}
+}

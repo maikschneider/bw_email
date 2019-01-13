@@ -51,21 +51,24 @@
 			default = TEXT
 			default.value = Default
 		}
-		templateRootPaths {
-			117 = EXT:bw_email/Resources/Private/Templates/Email/
-			118 = {$tx_bwemail_pi1.templateRootPath}
-		}
-		partialRootPaths {
-			117 = EXT:bw_email/Resources/Private/Partials/Email/
-			118 = {$tx_bwemail_pi1.partialRootPath}
-		}
-		layoutRootPaths {
-			117 = EXT:bw_email/Resources/Private/Layouts/Email/
-			118 = {$tx_bwemail_pi1.layoutRootPath}
-		}
 	}
 
 [GLOBAL]
+
+page.10 {
+	templateRootPaths {
+		117 = EXT:bw_email/Resources/Private/Templates/Email/
+		118 = {$tx_bwemail_pi1.templateRootPath}
+	}
+	partialRootPaths {
+		117 = EXT:bw_email/Resources/Private/Partials/Email/
+		118 = {$tx_bwemail_pi1.partialRootPath}
+	}
+	layoutRootPaths {
+		117 = EXT:bw_email/Resources/Private/Layouts/Email/
+		118 = {$tx_bwemail_pi1.layoutRootPath}
+	}
+}
 
 
 config.tx_extbase {
