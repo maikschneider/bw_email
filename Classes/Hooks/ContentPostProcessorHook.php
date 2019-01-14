@@ -63,11 +63,16 @@ class ContentPostProcessorHook
     private function inlineCss($pobj)
     {
         $typoscript = $this->loadAllTypoScriptSetup();
-        $cssFiles = $typoscript['includeCSS.'];
+        preg_match_all('/(?<=href=")[^."]+\.css/', $pobj->content, $cssFiles);
+        if($cssFiles && sizeof($cssFiles)){
+            $cssFiles = $cssFiles[0];
+        }
         $css = '';
         foreach ($cssFiles as $cssFile) {
             $cssFilePath = GeneralUtility::getFileAbsFileName($cssFile);
-            $css .= file_get_contents($cssFilePath);
+            if(file_exists($cssFilePath)) {
+                $css .= file_get_contents($cssFilePath);
+            }
         }
 
         $cssToInlineStyles = new CssToInlineStyles();
@@ -84,7 +89,7 @@ class ContentPostProcessorHook
     {
         // remove stylesheet tags
         $pobj->content = preg_replace(
-            '/<link (?="[^">]*rel=\s*[\'"]stylesheet[\'"])(?![^>]*href=\s*[\'"]http)[^>]*>/i',
+            '/<link\b[^>]*?>/',
             '',
             $pobj->content
         );

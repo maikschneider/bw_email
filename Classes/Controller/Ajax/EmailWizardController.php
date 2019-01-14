@@ -150,7 +150,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         // build the default template
         $this->templateView->setTemplate($queryParams['template']);
         $html = $this->templateView->render();
-
+        
         // extract marker and replace html with overrides from params
         $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
         $templateParser->parseMarker();

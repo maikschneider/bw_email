@@ -19,6 +19,7 @@ plugin.tx_bwemail_pi1 {
 		layoutRootPath =
 	}
 	settings {
+		css = EXT:bw_email/Resources/Public/Css/app.css
 		senderAddress = noreply@example.com
 		senderName = Example sender name
 		replytoAddress =

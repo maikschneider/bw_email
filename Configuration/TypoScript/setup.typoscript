@@ -1,13 +1,13 @@
 [page|doktype = 117]
 
 	page.includeCSS >
-	page.includeCSS.bw_email = EXT:bw_email/Resources/Public/Css/app.css
 	page.includeJS >
 	page.includeJSFooterlibs >
 	page.includeJSFooter >
 	page.meta.viewport = width=device-width
 
 	config.doctype = xhtml_strict
+	config.disableAllHeaderCode = 1
 
 	page.10 {
 		templateName = TEXT
