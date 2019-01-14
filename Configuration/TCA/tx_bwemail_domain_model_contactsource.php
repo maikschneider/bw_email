@@ -98,6 +98,7 @@ return [
         ],
         'fe_recipient_type' => [
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type',
+            'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
                 'items' => [
@@ -119,6 +120,7 @@ return [
         'fe_users' => [
             'exclude' => true,
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_users',
+            'displayCond' => 'FIELD:fe_recipient_type:=:1',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -133,6 +135,7 @@ return [
         'fe_user_groups' => [
             'exclude' => true,
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_user_groups',
+            'displayCond' => 'FIELD:fe_recipient_type:=:2',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -147,6 +150,7 @@ return [
         'fe_pid' => [
             'exclude' => true,
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_pid',
+            'displayCond' => 'FIELD:fe_recipient_type:=:0',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectTree',

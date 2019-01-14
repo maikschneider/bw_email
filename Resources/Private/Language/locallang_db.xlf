@@ -25,13 +25,13 @@
 				<source>User selection</source>
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_contactsource.fe_recipient_type.0">
-				<source>By storage PID</source>
+				<source>Select storage folder</source>
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_contactsource.fe_recipient_type.1">
-				<source>By user selection</source>
+				<source>Pick user</source>
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_contactsource.fe_recipient_type.2">
-				<source>By group selection</source>
+				<source>Pick user groups</source>
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_contactsource.fe_users">
 				<source>Frontend users</source>
