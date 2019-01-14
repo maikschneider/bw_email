@@ -150,7 +150,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         // build the default template
         $this->templateView->setTemplate($queryParams['template']);
         $html = $this->templateView->render();
-        
+
         // extract marker and replace html with overrides from params
         $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
         $templateParser->parseMarker();
@@ -169,6 +169,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         // check for internal links
         $hasInternalLinks = sizeof($templateParser->getInternalLinks()) ? true : false;
 
+        // convert html
+        $templateParser->inkyHtml();
+        $templateParser->inlineCss();
+        $templateParser->cleanHeadTag();
+        $html = $templateParser->getHtml();
+
         // encode for display inside <iframe src="...">
         function encodeURIComponent($str)
         {
@@ -176,7 +182,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             return strtr(rawurlencode($str), $revert);
         }
 
-        $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($templateParser->getHtml());
+        $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($html);
 
         // build and encode response
         $content = json_encode(array(

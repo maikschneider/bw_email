@@ -2,6 +2,10 @@
 
 namespace Blueways\BwEmail\Utility;
 
+use Hampe\Inky\Inky;
+use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class TemplateParserUtility
 {
 
@@ -68,6 +72,9 @@ class TemplateParserUtility
         }
     }
 
+    /**
+     * @return string
+     */
     public function getHtml()
     {
         return $this->html;
@@ -120,4 +127,57 @@ class TemplateParserUtility
 
         return $links;
     }
+
+    /**
+     * Run the Zurb Foundation Parser for the html
+     */
+    public function inkyHtml()
+    {
+        $gridColumns = 12; //optional, default is 12
+        $additionalComponentFactories = []; //optional
+        $inky = new Inky($gridColumns, $additionalComponentFactories);
+
+        try {
+            $this->html = $inky->releaseTheKraken($this->html);
+        } catch (\PHPHtmlParser\Exceptions\CircularException $e) {
+        }
+    }
+
+    /**
+     * Find all inline stylesheets and inline them
+     */
+    public function inlineCss()
+    {
+        preg_match_all('/(?<=href=")[^."]+\.css/', $this->html, $cssFiles);
+        if ($cssFiles && sizeof($cssFiles)) {
+            $cssFiles = $cssFiles[0];
+        }
+        $css = '';
+        foreach ($cssFiles as $cssFile) {
+            $cssFilePath = GeneralUtility::getFileAbsFileName($cssFile);
+            if (file_exists($cssFilePath)) {
+                $css .= file_get_contents($cssFilePath);
+            }
+        }
+
+        $cssToInlineStyles = new CssToInlineStyles();
+        $this->html = $cssToInlineStyles->convert(
+            $this->html,
+            $css
+        );
+    }
+
+    /**
+     * Cleans the output of the header tag
+     */
+    public function cleanHeadTag()
+    {
+        // remove stylesheet tags
+        $this->html = preg_replace(
+            '/<link\b[^>]*?>/',
+            '',
+            $this->html
+        );
+    }
+
 }

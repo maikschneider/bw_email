@@ -62,15 +62,14 @@ class ContentPostProcessorHook
      */
     private function inlineCss($pobj)
     {
-        $typoscript = $this->loadAllTypoScriptSetup();
         preg_match_all('/(?<=href=")[^."]+\.css/', $pobj->content, $cssFiles);
-        if($cssFiles && sizeof($cssFiles)){
+        if ($cssFiles && sizeof($cssFiles)) {
             $cssFiles = $cssFiles[0];
         }
         $css = '';
         foreach ($cssFiles as $cssFile) {
             $cssFilePath = GeneralUtility::getFileAbsFileName($cssFile);
-            if(file_exists($cssFilePath)) {
+            if (file_exists($cssFilePath)) {
                 $css .= file_get_contents($cssFilePath);
             }
         }
