@@ -46,8 +46,6 @@ class EmailWizard {
 		const modalCancelButtonText = this.$viewModuleButton.data('modal-cancel-button-text');
 		const modalSendButtonText = this.$viewModuleButton.data('modal-send-button-text');
 
-		console.log(wizardUri);
-
 		this.currentModal = Modal.advanced({
 			type: 'ajax',
 			content: wizardUri,
@@ -148,15 +146,15 @@ class EmailWizard {
 		const $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
 
 		// template contains no markers
-		if (!data.hasOwnProperty('markerContent') || !data.markerContent.length) {
+		if (!data.hasOwnProperty('marker') || !data.marker.length) {
 			$markerFieldset.html('');
 			$markerFieldset.hide();
 			return;
 		}
 
 		// create input fields und bind event to update preview
-		for (let i = 0; i < data.markerContent.length; i++) {
-			const m = data.markerContent[i];
+		for (let i = 0; i < data.marker.length; i++) {
+			const m = data.marker[i];
 			let $input = (m.content && m.content.length) > 25 ? $('<textarea />') : $('<input />');
 			$input
 				.attr('name', 'markerOverrides[' + m.name + ']')
@@ -176,7 +174,7 @@ class EmailWizard {
 	}
 
 	private onOverrideMarkerBlur() {
-		const templateSelector = this.currentModal.find('select#emailTemplate');
+		const templateSelector = this.currentModal.find('select#template');
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
 
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {

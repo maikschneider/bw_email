@@ -84,7 +84,7 @@ class TemplateParserUtility
         }
 
         // checks that there are no overrides for marker that dont exist
-        $validOverrides = array_intersect($this->marker, array_keys($overrides));
+        $validOverrides = array_intersect(array_column($this->marker, 'name'), array_keys($overrides));
 
         foreach ($validOverrides as $overrideName) {
             // abort if no override content

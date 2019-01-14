@@ -27,7 +27,6 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             var modalTitle = this.$viewModuleButton.data('modal-title');
             var modalCancelButtonText = this.$viewModuleButton.data('modal-cancel-button-text');
             var modalSendButtonText = this.$viewModuleButton.data('modal-send-button-text');
-            console.log(wizardUri);
             this.currentModal = Modal.advanced({
                 type: 'ajax',
                 content: wizardUri,
@@ -109,14 +108,14 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
         EmailWizard.prototype.createMarkerFieldset = function (data) {
             var $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
             // template contains no markers
-            if (!data.hasOwnProperty('markerContent') || !data.markerContent.length) {
+            if (!data.hasOwnProperty('marker') || !data.marker.length) {
                 $markerFieldset.html('');
                 $markerFieldset.hide();
                 return;
             }
             // create input fields und bind event to update preview
-            for (var i = 0; i < data.markerContent.length; i++) {
-                var m = data.markerContent[i];
+            for (var i = 0; i < data.marker.length; i++) {
+                var m = data.marker[i];
                 var $input = (m.content && m.content.length) > 25 ? $('<textarea />') : $('<input />');
                 $input
                     .attr('name', 'markerOverrides[' + m.name + ']')
@@ -133,7 +132,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
         };
         EmailWizard.prototype.onOverrideMarkerBlur = function () {
             var _this = this;
-            var templateSelector = this.currentModal.find('select#emailTemplate');
+            var templateSelector = this.currentModal.find('select#template');
             var previewUri = templateSelector.find('option:selected').data('preview-uri');
             Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done(function (icon) {
                 _this.$loaderTarget.html(icon);

@@ -155,6 +155,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
         $templateParser->parseMarker();
 
+        // save marker before they get overriden
+        $marker = $templateParser->getMarker();
+
         // check for incoming marker overrides
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
@@ -174,13 +177,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         }
 
         $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($templateParser->getHtml());
-        $marker = $templateParser->getMarker();
 
         // build and encode response
         $content = json_encode(array(
             'src' => $src,
-            'marker' => $marker['name'],
-            'markerContent' => $marker['content'],
+            'marker' => $marker,
             'hasInternalLinks' => $hasInternalLinks
         ));
 
