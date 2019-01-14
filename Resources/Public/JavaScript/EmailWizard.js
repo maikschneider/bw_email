@@ -63,31 +63,24 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             });
         };
         EmailWizard.prototype.onModalOpened = function () {
-            /*
             this.$loaderTarget = this.currentModal.find('#emailPreview');
             this.$loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
-    
-            const templateSelector = this.currentModal.find('select#emailTemplate');
-            const previewUri = templateSelector.find('option:selected').data('preview-uri');
-            const $closeButton = this.currentModal.find('#phoneCloseButton');
-    
+            var templateSelector = this.currentModal.find('select#template');
+            var previewUri = templateSelector.find('option:selected').data('preview-uri');
+            var $closeButton = this.currentModal.find('#phoneCloseButton');
             // onload first template
             this.loadEmailPreview(previewUri);
-    
             // bind template change event
             templateSelector.on('change', function (el) {
-                const previewUri = $(el.currentTarget).find('option:selected').data('preview-uri');
-                const $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
-    
+                var previewUri = $(el.currentTarget).find('option:selected').data('preview-uri');
+                var $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
                 // reset override fields
                 $markerFieldset.html('');
                 // load first preview
                 this.loadEmailPreview(previewUri, true);
             }.bind(this));
-    
             // bind home button event
             $closeButton.on('click', this.phoneClosingAnimation.bind(this));
-            */
         };
         EmailWizard.prototype.phoneClosingAnimation = function (e) {
             e.preventDefault();

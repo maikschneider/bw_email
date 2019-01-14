@@ -18,11 +18,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 {
 
     /**
-     * @var StandaloneView
-     */
-    private $templateView;
-
-    /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     protected $objectManager;
@@ -43,6 +38,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected $typoscript;
 
     /**
+     * @var StandaloneView
+     */
+    private $templateView;
+
+    /**
      * SendmailWizard constructor.
      *
      * @param \TYPO3\CMS\Fluid\View\StandaloneView|null $templateView
@@ -52,17 +52,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         parent::__construct();
 
         $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        //$this->entryRepository = $this->objectManager->get('Blueways\\BwBookingmanager\\Domain\\Repository\\EntryRepository');
-
         $configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $this->typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
         if (!$templateView) {
             $templateView = GeneralUtility::makeInstance(StandaloneView::class);
-            $templateView->setLayoutRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
-            $templateView->setPartialRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
+            $templateView->setLayoutRootPaths($this->typoscript['page.']['10.']['layoutRootPaths.']);
+            $templateView->setPartialRootPaths($this->typoscript['page.']['10.']['partialRootPaths.']);
             $templateView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
-            $templateView->getRenderingContext()->setControllerName('Administration');
         }
         $this->templateView = $templateView;
     }
@@ -76,18 +73,18 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
+
         $formActionUri = $this->getSendUri();
         $defaults = $this->getDefaultEmailSettings();
-        $viewData = $this->getViewData();
+        $templates = $this->getTemplates();
 
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,
             'defaults' => $defaults,
+            'templates' => $templates
         ]);
-        foreach ($viewData as $key => $data) {
-            $this->view->assign($key, $data);
-        }
-        $this->templateView->setTemplate('EmailWizard');
+
+        $this->templateView->setTemplate('Administration/EmailWizard');
         $content = $this->templateView->render();
         $response->getBody()->write($content);
 
@@ -95,11 +92,21 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @return array
+     * @return string
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    protected function getViewData()
+    protected function getSendUri()
     {
-        return [];
+        $routeName = 'ajax_wizard_modal_send';
+        $uriArguments['arguments'] = json_encode([
+
+        ]);
+        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
+            $uriArguments['arguments'],
+            $routeName
+        );
+        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        return (string)$uriBuilder->buildUriFromRoute($routeName);
     }
 
     /**
@@ -124,33 +131,40 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * @return array
+     */
+    protected function getTemplates()
+    {
+        return [];
+    }
+
+    /**
      * @param \TYPO3\CMS\Core\Http\ServerRequest $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function emailpreviewAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
+    public function previewAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        $entry = $this->entryRepository->findByUid($queryParams['entry']);
-        $this->templateView->getRenderingContext()->setControllerName('Email');
-        $this->templateView->setTemplate($queryParams['emailTemplate']);
-        $this->templateView->assign('entry', $entry);
+        // build the default template
+        $this->templateView->setTemplate($queryParams['template']);
         $html = $this->templateView->render();
 
         // extract marker and replace html with overrides from params
-        $marker = $this->getMarkerInHtml($html);
-        $markerContent = $this->getMarkerContentInHtml($html, $marker);
+        $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
+        $templateParser->parseMarker();
 
+        // check for incoming marker overrides
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-                $html = $this->overrideMarkerContentInHtml($html, $marker, $params['markerOverrides']);
+                $templateParser->overrideMarker($params['markerOverrides']);
             }
         }
 
         // check for internal links
-        $hasInternalLinks = sizeof($this->getInternalLinks($html)) ? true : false;
+        $hasInternalLinks = sizeof($templateParser->getInternalLinks()) ? true : false;
 
         // encode for display inside <iframe src="...">
         function encodeURIComponent($str)
@@ -159,149 +173,20 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             return strtr(rawurlencode($str), $revert);
         }
 
-        $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($html);
+        $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($templateParser->getHtml());
+        $marker = $templateParser->getMarker();
 
         // build and encode response
         $content = json_encode(array(
             'src' => $src,
-            'marker' => $marker,
-            'markerContent' => $markerContent,
+            'marker' => $marker['name'],
+            'markerContent' => $marker['content'],
             'hasInternalLinks' => $hasInternalLinks
         ));
 
         $response->getBody()->write($content);
 
         return $response;
-    }
-
-    /**
-     * @param $html
-     * @param $marker
-     * @param $overrides
-     * @return mixed
-     */
-    protected function overrideMarkerContentInHtml($html, $marker, $overrides)
-    {
-        // abbort if no overrides
-        if (!$overrides || !sizeof($overrides)) {
-            return $html;
-        }
-
-        // checks that there are no overrides for marker that dont exist
-        $validOverrides = array_intersect($marker, array_keys($overrides));
-
-        foreach ($validOverrides as $overrideName) {
-            // abbort if no override content
-            if (!$overrides[$overrideName]) {
-                continue;
-            }
-
-            // replace everything from marker start to marker end with override content
-            $regex = '/<!--\s+###' . $overrideName . '###\s+-->[\s\S]*<!--\s+###' . $overrideName . '###\s+-->/';
-            $html = preg_replace($regex, $overrides[$overrideName], $html);
-        }
-
-        return $html;
-    }
-
-    /**
-     * @param $html
-     * @param $marker
-     * @return array
-     */
-    protected function getMarkerContentInHtml($html, $marker)
-    {
-        $content = [];
-        foreach ($marker as $m) {
-            preg_match('/(<!--\s+###' . $m . '###\s+-->)([\s\S]*)(<!--\s+###' . $m . '###\s+-->)/', $html, $result);
-            $content[] = array(
-                'name' => $m,
-                'content' => $result[2]
-            );
-        }
-        return $content;
-    }
-
-    /**
-     * @param $html
-     * @return array
-     */
-    protected function getMarkerInHtml($html)
-    {
-        preg_match_all('/(<!--\s+###)([\w\d]\w+)(###\s+-->)/', $html, $foundMarker);
-
-        // abort if no marker were found
-        if (!sizeof($foundMarker[2])) {
-            return [];
-        }
-
-        // ensure that two markers were found
-        $markerOccurrences = array_count_values($foundMarker[2]);
-        $markerOccurrences = array_filter($markerOccurrences, function ($occurrences) {
-            return $occurrences === 2 ? true : false;
-        });
-
-        return array_keys($markerOccurrences);
-    }
-
-    /**
-     * @param string $emailTemplate
-     * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getEmailPreviewUri($emailTemplate)
-    {
-        $routeName = 'ajax_emailpreview';
-
-        $newQueryParams = $this->queryParams;
-        $newQueryParams['emailTemplate'] = $emailTemplate;
-
-        $uriArguments['arguments'] = json_encode($newQueryParams);
-        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
-            $uriArguments['arguments'],
-            $routeName
-        );
-
-        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-
-        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
-    }
-
-    /**
-     * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getSendUri()
-    {
-        $routeName = 'ajax_wizard_modal_send';
-        $uriArguments['arguments'] = json_encode([
-
-        ]);
-        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
-            $uriArguments['arguments'],
-            $routeName
-        );
-        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-        return (string)$uriBuilder->buildUriFromRoute($routeName);
-    }
-
-    /**
-     * @return array
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getEmailTemplateSelection()
-    {
-        $pageTsConfig = BackendUtility::getPagesTSconfig(0);
-        $emailTemplates = $pageTsConfig['TCEFORM.']['tt_content.']['pi_flexform.']['bwbookingmanager_pi1.']['email.']['settings.mail.template.']['addItems.'];
-        $selection = [];
-        foreach ($emailTemplates as $key => $emailTemplate) {
-            $selection[] = array(
-                'file' => $key,
-                'name' => $this->getLanguageService()->sL($emailTemplate),
-                'previewUri' => $this->getEmailPreviewUri($key)
-            );
-        }
-        return $selection;
     }
 
     /**
@@ -316,7 +201,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         }
 
         $params = $request->getParsedBody();
-
         $entryUid = $params['entryUid'] ?? false;
 
         if (!$entryUid) {
@@ -382,36 +266,55 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * Returns the LanguageService
-     *
-     * @return \TYPO3\CMS\Lang\LanguageService
+     * @param $html
+     * @return array
      */
-    protected function getLanguageService()
+    protected function getMarkerInHtml($html)
     {
-        return $GLOBALS['LANG'];
+        preg_match_all('/(<!--\s+###)([\w\d]\w+)(###\s+-->)/', $html, $foundMarker);
+
+        // abort if no marker were found
+        if (!sizeof($foundMarker[2])) {
+            return [];
+        }
+
+        // ensure that two markers were found
+        $markerOccurrences = array_count_values($foundMarker[2]);
+        $markerOccurrences = array_filter($markerOccurrences, function ($occurrences) {
+            return $occurrences === 2 ? true : false;
+        });
+
+        return array_keys($markerOccurrences);
     }
 
     /**
      * @param $html
-     * @return array
+     * @param $marker
+     * @param $overrides
+     * @return mixed
      */
-    protected function getInternalLinks($html)
+    protected function overrideMarkerContentInHtml($html, $marker, $overrides)
     {
-        // find all links
-        $regex = '/(<a[^>]href=")(.[^"]*)/';
-        preg_match_all($regex, $html, $links);
-
-        // abbort if no links were found
-        if (!sizeof($links)) {
-            return [];
+        // abbort if no overrides
+        if (!$overrides || !sizeof($overrides)) {
+            return $html;
         }
 
-        // remove links that are not internal
-        $links = array_filter($links[2], function ($uri) {
-            return strpos($uri, '/typo3/index.php?M=');
-        });
+        // checks that there are no overrides for marker that dont exist
+        $validOverrides = array_intersect($marker, array_keys($overrides));
 
-        return $links;
+        foreach ($validOverrides as $overrideName) {
+            // abbort if no override content
+            if (!$overrides[$overrideName]) {
+                continue;
+            }
+
+            // replace everything from marker start to marker end with override content
+            $regex = '/<!--\s+###' . $overrideName . '###\s+-->[\s\S]*<!--\s+###' . $overrideName . '###\s+-->/';
+            $html = preg_replace($regex, $overrides[$overrideName], $html);
+        }
+
+        return $html;
     }
 
     /**
@@ -480,5 +383,129 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         }
 
         return $html;
+    }
+
+    /**
+     * @param $html
+     * @return array
+     */
+    protected function getInternalLinks($html)
+    {
+        // find all links
+        $regex = '/(<a[^>]href=")(.[^"]*)/';
+        preg_match_all($regex, $html, $links);
+
+        // abbort if no links were found
+        if (!sizeof($links)) {
+            return [];
+        }
+
+        // remove links that are not internal
+        $links = array_filter($links[2], function ($uri) {
+            return strpos($uri, '/typo3/index.php?M=');
+        });
+
+        return $links;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getViewData()
+    {
+        return [];
+    }
+
+    /**
+     * @param $html
+     * @param $marker
+     * @return array
+     */
+    protected function getMarkerContentInHtml($html, $marker)
+    {
+        $content = [];
+        foreach ($marker as $m) {
+            preg_match('/(<!--\s+###' . $m . '###\s+-->)([\s\S]*)(<!--\s+###' . $m . '###\s+-->)/', $html, $result);
+            $content[] = array(
+                'name' => $m,
+                'content' => $result[2]
+            );
+        }
+        return $content;
+    }
+
+    /**
+     * @param string $emailTemplate
+     * @return string
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     */
+    protected function getPreviewUri($template)
+    {
+        $routeName = 'ajax_wizard_modal_preview';
+
+        $newQueryParams = $this->queryParams;
+        $newQueryParams['template'] = $template;
+
+        $uriArguments['arguments'] = json_encode($newQueryParams);
+        $uriArguments['signature'] = GeneralUtility::hmac(
+            $uriArguments['arguments'],
+            $routeName
+        );
+
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+
+        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
+    }
+
+    /**
+     * @return array
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     */
+    protected function getEmailTemplateSelection()
+    {
+        $pageTsConfig = BackendUtility::getPagesTSconfig(0);
+        $emailTemplates = $pageTsConfig['TCEFORM.']['tt_content.']['pi_flexform.']['bwbookingmanager_pi1.']['email.']['settings.mail.template.']['addItems.'];
+        $selection = [];
+        foreach ($emailTemplates as $key => $emailTemplate) {
+            $selection[] = array(
+                'file' => $key,
+                'name' => $this->getLanguageService()->sL($emailTemplate),
+                'previewUri' => $this->getEmailPreviewUri($key)
+            );
+        }
+        return $selection;
+    }
+
+    /**
+     * Returns the LanguageService
+     *
+     * @return \TYPO3\CMS\Lang\LanguageService
+     */
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
+    }
+
+    /**
+     * @param string $emailTemplate
+     * @return string
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     */
+    protected function getEmailPreviewUri($emailTemplate)
+    {
+        $routeName = 'ajax_emailpreview';
+
+        $newQueryParams = $this->queryParams;
+        $newQueryParams['emailTemplate'] = $emailTemplate;
+
+        $uriArguments['arguments'] = json_encode($newQueryParams);
+        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
+            $uriArguments['arguments'],
+            $routeName
+        );
+
+        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+
+        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 }

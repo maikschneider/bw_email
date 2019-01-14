@@ -63,6 +63,6 @@ class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleCont
             $routeName
         );
         $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-        return (string)$uriBuilder->buildUriFromRoute($routeName);
+        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 }

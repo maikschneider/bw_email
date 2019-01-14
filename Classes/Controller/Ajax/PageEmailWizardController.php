@@ -8,26 +8,29 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 class PageEmailWizardController extends EmailWizardController
 {
 
-    /**
-     * @var array|null;
-     */
-    protected $pageRecord;
-
     public function __construct(?\TYPO3\CMS\Fluid\View\StandaloneView $templateView = null)
     {
         parent::__construct($templateView);
-
-        $pageIdToShow = (int)GeneralUtility::_GP('id');
-        $this->pageRecord = BackendUtility::getRecord('pages', $pageIdToShow);
     }
 
     /**
+     * @TODO: works only for pages, not tt_content
      * @return array
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    protected function getViewData()
+    protected function getTemplates()
     {
-        return [
-            'page' => $this->pageRecord
-        ];
+        $pageUid = $this->queryParams['page'] ?? 0;
+        $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
+        $templates = $pageTsConfig['mod.']['web_layout.']['BackendLayouts.'];
+        $selection = [];
+        foreach ($templates as $template) {
+            $selection[] = array(
+                'file' => $template['title'],
+                'name' => $template['title'],
+                'previewUri' => $this->getPreviewUri($template['title'])
+            );
+        }
+        return $selection;
     }
 }

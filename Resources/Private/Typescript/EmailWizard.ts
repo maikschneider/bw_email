@@ -85,11 +85,11 @@ class EmailWizard {
 	}
 
 	private onModalOpened() {
-		/*
+
 		this.$loaderTarget = this.currentModal.find('#emailPreview');
 		this.$loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
 
-		const templateSelector = this.currentModal.find('select#emailTemplate');
+		const templateSelector = this.currentModal.find('select#template');
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
 		const $closeButton = this.currentModal.find('#phoneCloseButton');
 
@@ -109,7 +109,7 @@ class EmailWizard {
 
 		// bind home button event
 		$closeButton.on('click', this.phoneClosingAnimation.bind(this));
-		*/
+
 	}
 
 	private phoneClosingAnimation(e: JQueryEventObject) {

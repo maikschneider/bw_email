@@ -3,17 +3,17 @@
         <form action="{sendMailActionUri}" method="POST">
             <input type="hidden" name="entryUid" value="{entry.uid}"/>
             <h2 class="form-section-headline">Settings</h2>
-            <f:if condition="{emailTemplates}">
+            <f:if condition="{templates}">
                 <fieldset class="form-section">
                     <div class="form-group">
-                        <label for="emailTemplate"> Email-Template </label>
+                        <label for="template"> Email-Template </label>
                         <div class="form-control-wrap">
-                            <select class="form-control" id="emailTemplate" name="emailTemplate">
-                                <f:for each="{emailTemplates}" as="template">
+                            <select class="form-control" id="template" name="template">
+                                <f:for each="{templates}" as="template">
                                     <option value="{template.file}"
                                             data-preview-uri="{template.previewUri}"
                                             {f:if(condition:
-                                    '{defaults.emailTemplate}=={template.file}',
+                                    '{defaults.template}=={template.file}',
                                     then:'selected')}>{template.name}</option>
                                 </f:for>
                             </select>
