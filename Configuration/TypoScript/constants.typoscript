@@ -28,4 +28,7 @@ plugin.tx_bwemail_pi1 {
 		showUid = 1
 		recipientAddress =
 	}
+	persistence{
+		storagePid = 17
+	}
 }

@@ -27,6 +27,12 @@
 			<trans-unit id="modalSendButton">
 				<source>Send</source>
 			</trans-unit>
+			<trans-unit id="contactSourceProvider.name">
+				<source>Contact sources</source>
+			</trans-unit>
+			<trans-unit id="contactSourceProvider.description">
+				<source>Get contacts from created contact sources</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

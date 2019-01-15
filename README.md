@@ -36,4 +36,29 @@ Right from the start you can send single Emails to an email address from inside 
 
 ## Extend
 
-If you like to create your own data connector, you just just need to create your own ````Blueways\BwEmail\Domain\Model\Datasource```` type by extending the class. 
+You can use the DataSource-Provider or create your own ContactProvider.
+
+### DataSource model
+
+If you like to configure your source via Backend, you can use the existing DataSource model. Create your own Model by extending the ```ContactSource``` Model and implement the ```getContacts()``` method.
+
+Don't forget to register the inheritance via typoscript:
+
+```
+config.tx_extbase.persistence.classes {
+    Blueways\BwEmail\Domain\Model\ContactSource {
+        subclasses {
+            Vendor\Extension\YourModel = Vendor\Extension\YourModel
+        }
+    }
+    Vendor\Extension\YourModel.mapping {
+        recordType = Vendor\Extension\YourModel
+        tableName = tx_bwemail_domain_model_contactsource
+    }
+}
+```
+
+### ContactProvider service
+
+If you like to use external data, you can write your own ContactProvider. Just extend from ```Blueways\BwEmail\Service``` and register the class via Hook:
+

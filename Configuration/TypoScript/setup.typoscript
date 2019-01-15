@@ -78,6 +78,19 @@ config.tx_extbase {
 			className = Blueways\BwEmail\Controller\ViewModuleController
 		}
 	}
+
+		# declare inheritance of contact sources
+	persistence.classes {
+		Blueways\BwEmail\Domain\Model\ContactSource {
+			subclasses {
+				Blueways\BwEmail\Domain\Model\FeUserContactSource = Blueways\BwEmail\Domain\Model\FeUserContactSource
+			}
+		}
+		Blueways\BwEmail\Domain\Model\FeUserContactSource {
+			mapping.recordType = Blueways\BwEmail\Domain\Model\FeUserContactSource
+			mapping.tableName = tx_bwemail_domain_model_contactsource
+		}
+	}
 }
 
 plugin.tx_bwemail_pi1 {
@@ -89,6 +102,28 @@ plugin.tx_bwemail_pi1 {
 		template = {$plugin.tx_bwemail_pi1.settings.template}
 		showUid = {$plugin.tx_bwemail_pi1.settings.showUid}
 		recipientAddress = {$plugin.tx_bwemail_pi1.settings.recipientAddress}
+	}
+	persistence {
+		storagePid = 17
+	}
+}
+
+mod.tx_bwemail {
+	persistence {
+		storagePid = 17
+	}
+}
+
+mod.tx_viewpage {
+	persistence {
+		storagePid = 17
+	}
+}
+
+
+mod.tx_cms_viewpage {
+	persistence {
+		storagePid = 17
 	}
 }
 

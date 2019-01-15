@@ -78,6 +78,19 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $defaults = $this->getDefaultEmailSettings();
         $templates = $this->getTemplates();
 
+        // @TODO: use hook to call all contact provider
+
+        /**
+         * @var \Blueways\BwEmail\Domain\Repository\ContactSourceRepository
+         */
+        $contactSourceRepo = $this->objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
+        $contactSources = $contactSourceRepo->findAllDataSources();
+
+        foreach ($contactSources as $source){
+            $users = $source->getContacts();
+        }
+
+
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,
             'defaults' => $defaults,
