@@ -72,10 +72,20 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
             $query->getQuerySettings()->setRespectStoragePage(false);
 
             foreach ($this->feUserGroups as $group) {
-                $constraint[] = $query->contains('usergroup', $group);
+                $constraint[] = $query->equals('usergroup', $group);
             }
 
             $users = $query->matching($query->logicalOr($constraint))->execute()->toArray();
+
+            return $users;
+        }
+
+        if ($this->feRecipientType === self::RECIPIENT_TYPE_FOLDER) {
+            $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+            $feRepo = $objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserRepository');
+            $query = $feRepo->createQuery();
+            $query->getQuerySettings()->setRespectStoragePage(false);
+            $users = $query->matching($query->equals('pid', $this->fePid))->execute()->toArray();
 
             return $users;
         }
