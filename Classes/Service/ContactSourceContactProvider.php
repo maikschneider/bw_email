@@ -43,11 +43,15 @@ class ContactSourceContactProvider extends ContactProvider
      */
     private function getSourceOptions()
     {
+        /** @var @TODO: objectManager from constructor is empty, why? */
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
+
         $sourceLabels = [];
-        foreach ($this->contactSourceRepository->findAllDataSources() as $source) {
-            $sourceLabels[] = $source->getName().' ()';
+        foreach ($contactSourceRepository->findAllDataSources() as $source) {
+            $sourceLabels[] = $source->getName() . ' (' . sizeof($source->getContacts()) . ' contacts)';
         }
-        return [];
+        return $sourceLabels;
     }
 
     /**

@@ -117,4 +117,15 @@ abstract class ContactProvider
             $this->settings[$option->inputName] = $option->options[0] ?? '';
         }
     }
+
+    public function getModalConfiguration()
+    {
+        return [
+            'fqcn' => get_class($this),
+            'name' => $this->getProviderName(),
+            'description' => $this->getProviderDescription(),
+            'options' => $this->getOptions(),
+            'settings' => $this->getSettings()
+        ];
+    }
 }

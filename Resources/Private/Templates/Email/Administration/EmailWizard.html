@@ -1,3 +1,4 @@
+<f:debug>{_all}</f:debug>
 <div class="row">
     <div class="col-md-4">
         <form action="{sendMailActionUri}" method="POST">
@@ -13,8 +14,7 @@
                                     <option value="{template.file}"
                                             data-preview-uri="{template.previewUri}"
                                             {f:if(condition:
-                                    '{defaults.template}=={template.file}',
-                                    then:'selected')}>{template.name}</option>
+                                    '{defaults.template}=={template.file}', then:'selected')}>{template.name}</option>
                                 </f:for>
                             </select>
                         </div>
@@ -48,6 +48,61 @@
                              aria-labelledby="headingOne">
                             <div class="panel-body">
                                 <div class="form-group">
+                                    <label for="senderAddress"> Email subject </label>
+                                    <div class="form-control-wrap">
+                                        <input name="subject"
+                                               id="subject"
+                                               class="form-control"
+                                               placeholder="{defaults.subject}"/>
+                                    </div>
+                                </div>
+                                <f:if condition="{providers}">
+                                    <div class="form-group">
+                                        <label>Recipient count</label>
+                                        <div class="form-control-wrap">
+                                            <input type="radio" name="provider" id="no-provider" checked/> Single &nbsp;&nbsp;
+                                            <input type="radio" name="provider" id="use-provider"/> Multiple
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group provider">
+                                        <label>Data provider</label>
+                                        <div class="form-control-wrap">
+                                            <select class="form-control" id="provider" name="provider">
+                                                <f:for each="{providers}" as="provider" iteration="i">
+                                                    <option data-provider-index="{i.index}"
+                                                            value="{provider.name}"
+                                                            {f:if(condition:i.isFirst,
+                                                            then:
+                                                    'selected')}>{provider.name}</option>
+                                                </f:for>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <f:for each="{providers}" as="provider" iteration="i">
+                                        <f:for each="{provider.options}" as="poption" iteration="j">
+                                            <div class="form-group provider provider-index-{i.index}">
+                                                <label>{poption.label}</label>
+                                                <div class="form-control-wrap">
+                                                    <f:if condition="{poption.inputType}=='select'">
+                                                        <select class="form-control"
+                                                                id="provider-{i.index}-poption-{j.index}"
+                                                                name="provider">
+                                                            <f:for each="{poption.options}" as="ppoption" iteration="k">
+                                                                <option data-ppoption-index="{k.index}"
+                                                                        value="{k.index}">{ppoption}
+                                                                </option>
+                                                            </f:for>
+                                                        </select>
+                                                    </f:if>
+                                                </div>
+                                            </div>
+                                        </f:for>
+                                    </f:for>
+
+
+                                </f:if>
+                                <div class="form-group no-provider">
                                     <label for="senderAddress"> Recipient address</label>
                                     <div class="form-control-wrap">
                                         <input name="recipientAddress"
@@ -63,15 +118,6 @@
                                                id="recipientName"
                                                class="form-control"
                                                value="{entry.prename} {entry.name}"/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="senderAddress"> Email subject </label>
-                                    <div class="form-control-wrap">
-                                        <input name="subject"
-                                               id="subject"
-                                               class="form-control"
-                                               placeholder="{defaults.subject}"/>
                                     </div>
                                 </div>
                             </div>
