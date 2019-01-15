@@ -60,12 +60,12 @@
                                     <div class="form-group">
                                         <label>Recipient count</label>
                                         <div class="form-control-wrap">
-                                            <input type="radio" name="provider" id="no-provider" checked/> Single &nbsp;&nbsp;
-                                            <input type="radio" name="provider" id="use-provider"/> Multiple
+                                            <input type="radio" name="showprovider" value="no" checked/> Single &nbsp;&nbsp;
+                                            <input type="radio" name="showprovider" value="yes"/> Multiple
                                         </div>
                                     </div>
 
-                                    <div class="form-group provider">
+                                    <div class="form-group provider hidden-by-count-toggle">
                                         <label>Data provider</label>
                                         <div class="form-control-wrap">
                                             <select class="form-control" id="provider" name="provider">
@@ -81,7 +81,7 @@
                                     </div>
                                     <f:for each="{providers}" as="provider" iteration="i">
                                         <f:for each="{provider.options}" as="poption" iteration="j">
-                                            <div class="form-group provider provider-index-{i.index}">
+                                            <div class="form-group provider hidden-by-count-toggle provider-index-{i.index}">
                                                 <label>{poption.label}</label>
                                                 <div class="form-control-wrap">
                                                     <f:if condition="{poption.inputType}=='select'">
@@ -102,7 +102,7 @@
 
 
                                 </f:if>
-                                <div class="form-group no-provider">
+                                <div class="form-group provider">
                                     <label for="senderAddress"> Recipient address</label>
                                     <div class="form-control-wrap">
                                         <input name="recipientAddress"
@@ -111,7 +111,7 @@
                                                value="{entry.email}"/>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group provider">
                                     <label for="senderAddress"> Recipient name</label>
                                     <div class="form-control-wrap">
                                         <input name="recipientName"
@@ -302,6 +302,10 @@
 
         .modal-backdrop {
             z-index: 5000;
+        }
+
+        .hidden-by-count-toggle{
+            display: none;
         }
 
 
