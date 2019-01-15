@@ -39,27 +39,48 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     public function getContacts()
     {
         $contacts = [];
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $query = $objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserRepository');
-        $query->createQuery()->getQuerySettings()->setRespectStoragePage(false);
-        $users = $query->findAll();
-        return $users;
+
+        foreach ($this->getSelectedFeUsers() as $feUser) {
+            // abort if user has no email
+            if (!$feUser->getEmail()) {
+                continue;
+            }
+
+            $contact = new Contact($feUser->getEmail());
+            $contact->setName($feUser->getName());
+            $contact->setPrename($feUser->getFirstName());
+            $contact->setLastname($feUser->getLastName());
+
+            $contacts[] = $contact;
+        }
+
+        return $contacts;
     }
 
-    /*
-    public function getAllFeUsers()
+    public function getSelectedFeUsers()
     {
-        switch ($this->feRecipientType):
-            case self::RECIPIENT_TYPE_USERS:
-                return $this->feUsers;
-                break;
 
-            case self::RECIPIENT_TYPE_GROUPS:
-                return $this->feUserGroups
+        if ($this->feRecipientType === self::RECIPIENT_TYPE_USERS) {
+            return $this->feUsers;
+        }
 
-        endswitch;
+        if ($this->feRecipientType === self::RECIPIENT_TYPE_GROUPS) {
+            // query fe_user repo for users that are in any of these groups
+            $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+            $feRepo = $objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Repository\\FrontendUserRepository');
+            $query = $feRepo->createQuery();
+            $query->getQuerySettings()->setRespectStoragePage(false);
 
-        if($this->feRecipientType)
+            foreach ($this->feUserGroups as $group) {
+                $constraint[] = $query->contains('usergroup', $group);
+            }
+
+            $users = $query->matching($query->logicalOr($constraint))->execute()->toArray();
+
+            return $users;
+        }
+
+        return [];
     }
-    */
+
 }
