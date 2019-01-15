@@ -34,13 +34,19 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     protected $feRecipientType = self::RECIPIENT_TYPE_FOLDER;
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return array|\Blueways\BwEmail\Domain\Model\Contact[]
      */
     public function getContacts()
     {
         $contacts = [];
 
-        foreach ($this->getSelectedFeUsers() as $feUser) {
+        $feUsers = $this->getSelectedFeUsers();
+
+        if (!$feUsers || !sizeof($feUsers)) {
+            return $contacts;
+        }
+
+        foreach ($feUsers as $feUser) {
             // abort if user has no email
             if (!$feUser->getEmail()) {
                 continue;
@@ -57,11 +63,14 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
         return $contacts;
     }
 
+    /**
+     * @return \TYPO3\CMS\Extbase\Domain\Model\FrontendUser[]
+     */
     public function getSelectedFeUsers()
     {
 
         if ($this->feRecipientType === self::RECIPIENT_TYPE_USERS) {
-            return $this->feUsers;
+            return $this->feUsers->toArray();
         }
 
         if ($this->feRecipientType === self::RECIPIENT_TYPE_GROUPS) {
@@ -89,8 +98,6 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
 
             return $users;
         }
-
-        return [];
     }
 
 }
