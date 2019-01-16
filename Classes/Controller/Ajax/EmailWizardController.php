@@ -179,10 +179,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
                 $contacts = $provider->getContacts();
 
+                $selectedContactIndex = 0;
                 if (isset($providerSettings[$providerSettings['id']]['selectedContact'])) {
-                    $contact = $contacts[$providerSettings[$providerSettings['id']]['selectedContact']];
-                    $templateParser->insertContact($contact);
+                    $selectedContactIndex = $providerSettings[$providerSettings['id']]['selectedContact'];
                 }
+                $contact = $contacts[$selectedContactIndex];
+                $templateParser->insertContact($contact);
             }
         }
 
@@ -208,7 +210,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $content = json_encode(array(
             'src' => $src,
             'marker' => $marker,
-            'hasInternalLinks' => $hasInternalLinks
+            'hasInternalLinks' => $hasInternalLinks,
+            'contacts' => $contacts ?? [],
+            'selectedContact' => $selectedContactIndex ?? 0
         ));
 
         $response->getBody()->write($content);

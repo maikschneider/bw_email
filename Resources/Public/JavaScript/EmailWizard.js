@@ -84,6 +84,11 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
             // bind provider selection
             this.currentModal.find('select[name="provider[id]"]').on('change', this.onProviderSwitch.bind(this));
+            // bind provider option change
+            this.currentModal.find('.provider--input select').on('change', this.onProviderSelectChange.bind(this));
+        };
+        EmailWizard.prototype.onProviderSelectChange = function () {
+            this.refreshEmailPreview();
         };
         EmailWizard.prototype.onProviderSwitch = function (e) {
             this.currentModal.find('.provider--input').addClass('hidden-by-provider-selection');
@@ -113,6 +118,16 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             }
             else {
                 $showUidInput.hide();
+            }
+            // update contact list
+            var contactSelection = this.currentModal.find('.provider--contacts:visible select');
+            $('option', contactSelection).remove();
+            for (var i = 0; i < data.contacts.length; i++) {
+                var contact = $('<option value="' + i + '">' + data.contacts[i].email + '</option>');
+                if (parseInt(data.selectedContact) === i) {
+                    contact.attr('selected', 'selected');
+                }
+                contactSelection.append(contact);
             }
             if (createMarkerFieldset) {
                 this.createMarkerFieldset(data);

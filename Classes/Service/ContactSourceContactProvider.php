@@ -43,7 +43,7 @@ class ContactSourceContactProvider extends ContactProvider
      */
     private function getSourceOptions()
     {
-        /** @var @TODO: objectManager from constructor is empty, why? */
+        // TODO: objectManager from constructor is empty, why?
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
 
@@ -63,8 +63,12 @@ class ContactSourceContactProvider extends ContactProvider
         $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
 
         $sources = $contactSourceRepository->findAllDataSources();
-        $selectedSource = $this->options[0]->value;
 
+        if (!sizeof($sources)) {
+            return [];
+        }
+
+        $selectedSource = $this->options[0]->value;
         return $sources[$selectedSource]->getContacts();
     }
 }

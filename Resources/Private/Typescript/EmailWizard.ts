@@ -114,6 +114,13 @@ class EmailWizard {
 		// bind provider selection
 		this.currentModal.find('select[name="provider[id]"]').on('change', this.onProviderSwitch.bind(this));
 
+		// bind provider option change
+		this.currentModal.find('.provider--input select').on('change', this.onProviderSelectChange.bind(this));
+
+	}
+
+	private onProviderSelectChange() {
+		this.refreshEmailPreview();
 	}
 
 	private onProviderSwitch(e: JQueryEventObject) {
@@ -153,6 +160,17 @@ class EmailWizard {
 			$showUidInput.show();
 		} else {
 			$showUidInput.hide();
+		}
+
+		// update contact list
+		const contactSelection = this.currentModal.find('.provider--contacts:visible select');
+		$('option', contactSelection).remove();
+		for (let i = 0; i < data.contacts.length; i++) {
+			let contact = $('<option value="' + i + '">' + data.contacts[i].email + '</option>');
+			if (parseInt(data.selectedContact) === i) {
+				contact.attr('selected', 'selected');
+			}
+			contactSelection.append(contact);
 		}
 
 		if (createMarkerFieldset) {
