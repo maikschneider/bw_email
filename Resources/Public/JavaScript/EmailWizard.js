@@ -82,6 +82,14 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             $closeButton.on('click', this.phoneClosingAnimation.bind(this));
             // bind provider radio toggle
             this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
+            // bind provider selection
+            this.currentModal.find('select[name="provider[id]"]').on('change', this.onProviderSwitch.bind(this));
+        };
+        EmailWizard.prototype.onProviderSwitch = function (e) {
+            this.currentModal.find('.provider--input').addClass('hidden-by-provider-selection');
+            var providerId = $('option:selected', e.currentTarget).attr('data-provider-index');
+            this.currentModal.find('.provider--' + providerId).removeClass('hidden-by-provider-selection');
+            this.refreshEmailPreview();
         };
         EmailWizard.prototype.toggleProviderView = function (e) {
             this.currentModal.find('.provider').toggleClass('hidden-by-count-toggle');
@@ -136,6 +144,9 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             $markerFieldset.show();
         };
         EmailWizard.prototype.onOverrideMarkerBlur = function () {
+            this.refreshEmailPreview();
+        };
+        EmailWizard.prototype.refreshEmailPreview = function () {
             var _this = this;
             var templateSelector = this.currentModal.find('select#template');
             var previewUri = templateSelector.find('option:selected').data('preview-uri');

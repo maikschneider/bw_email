@@ -81,7 +81,7 @@
                                     </div>
                                     <f:for each="{providers}" as="provider" iteration="i">
                                         <f:for each="{provider.options}" as="poption" iteration="j">
-                                            <div class="form-group provider hidden-by-count-toggle provider-index-{i.index}">
+                                            <div class="form-group provider hidden-by-count-toggle provider--input provider--{i.index} {f:if(condition:i.isFirst, else:'hidden-by-provider-selection')}">
                                                 <label>{poption.label}</label>
                                                 <div class="form-control-wrap">
                                                     <f:if condition="{poption.inputType}=='select'">
@@ -95,10 +95,16 @@
                                                             </f:for>
                                                         </select>
                                                     </f:if>
+                                                    <f:if condition="{poption.inputType}=='input'">
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               placeholder="{poption.options.0}"
+                                                               name="provider[{provider.fqcn}][optionsConfiguration][{i.index}]"/>
+                                                    </f:if>
                                                 </div>
                                             </div>
                                         </f:for>
-                                        <div class="form-group provider hidden-by-count-toggle provider-index-{i.index}">
+                                        <div class="form-group provider hidden-by-count-toggle provider--input provider--{i.index} {f:if(condition:i.isFirst, else:'hidden-by-provider-selection')}">
                                             <label>Contacts</label>
                                             <div class="form-control-wrap">
                                                 <select class="form-control"
@@ -318,7 +324,7 @@
             z-index: 5000;
         }
 
-        .hidden-by-count-toggle {
+        .hidden-by-count-toggle, .hidden-by-provider-selection {
             display: none;
         }
 

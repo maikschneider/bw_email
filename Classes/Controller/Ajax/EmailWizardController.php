@@ -82,6 +82,8 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         // @TODO: use hook to call all contact provider
         $contactProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ContactSourceContactProvider');
         $providers[] = $contactProvider->getModalConfiguration();
+        $exampleProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ExampleContactProvider');
+        $providers[] = $exampleProvider->getModalConfiguration();
 
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,

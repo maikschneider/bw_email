@@ -111,6 +111,17 @@ class EmailWizard {
 		// bind provider radio toggle
 		this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
 
+		// bind provider selection
+		this.currentModal.find('select[name="provider[id]"]').on('change', this.onProviderSwitch.bind(this));
+
+	}
+
+	private onProviderSwitch(e: JQueryEventObject) {
+		this.currentModal.find('.provider--input').addClass('hidden-by-provider-selection');
+		const providerId = $('option:selected', e.currentTarget).attr('data-provider-index');
+		this.currentModal.find('.provider--' + providerId).removeClass('hidden-by-provider-selection');
+
+		this.refreshEmailPreview();
 	}
 
 	private toggleProviderView(e: JQueryEventObject) {
@@ -181,6 +192,10 @@ class EmailWizard {
 	}
 
 	private onOverrideMarkerBlur() {
+		this.refreshEmailPreview();
+	}
+
+	private refreshEmailPreview() {
 		const templateSelector = this.currentModal.find('select#template');
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
 
