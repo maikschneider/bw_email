@@ -92,6 +92,7 @@ abstract class ContactProvider
             'name' => $this->getProviderName(),
             'description' => $this->getProviderDescription(),
             'options' => $this->getOptions(),
+            'contacts' => $this->getContacts()
         ];
     }
 

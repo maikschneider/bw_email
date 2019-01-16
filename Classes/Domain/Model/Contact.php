@@ -86,4 +86,12 @@ class Contact
     public $lastname;
 
     public $email;
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return get_object_vars($this);
+    }
 }

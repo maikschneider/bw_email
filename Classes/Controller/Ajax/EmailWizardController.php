@@ -87,7 +87,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             'formActionUri' => $formActionUri,
             'defaults' => $defaults,
             'templates' => $templates,
-            'providers' => $providers
+            'providers' => $providers,
         ]);
 
         $this->templateView->setTemplate('Administration/EmailWizard');
@@ -170,11 +170,17 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
                 $templateParser->overrideMarker($params['markerOverrides']);
             }
+            // check for provider settings in post data
             if (isset($params['provider']) && sizeof($params['provider'])) {
                 $providerSettings = $params['provider'];
                 $provider = GeneralUtility::makeInstance($providerSettings['id']);
                 $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
                 $contacts = $provider->getContacts();
+
+                if (isset($providerSettings[$providerSettings['id']]['selectedContact'])) {
+                    $contact = $contacts[$providerSettings[$providerSettings['id']]['selectedContact']];
+                    $templateParser->insertContact($contact);
+                }
             }
         }
 

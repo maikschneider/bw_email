@@ -106,7 +106,20 @@ class TemplateParserUtility
     }
 
     /**
+     * @param \Blueways\BwEmail\Domain\Model\Contact
+     */
+    public function insertContact($contact)
+    {
+        $attributes = array_keys((array)$contact);
+        foreach ($attributes as $attr) {
+            $regex = '/\$' . $attr . '/';
+            $this->html = preg_replace($regex, $contact->{$attr}, $this->html);
+        }
+    }
+
+    /**
      * Return all backend internal links from the html
+     *
      * @return array
      */
     public function getInternalLinks()

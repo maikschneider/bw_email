@@ -98,6 +98,20 @@
                                                 </div>
                                             </div>
                                         </f:for>
+                                        <div class="form-group provider hidden-by-count-toggle provider-index-{i.index}">
+                                            <label>Contacts</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-control"
+                                                        name="provider[{provider.fqcn}][selectedContact]"
+                                                        size="4"
+                                                        style="min-height:auto">
+                                                    <f:for each="{provider.contacts}" as="contact" iteration="j">
+                                                        <option value="{j.index}" {f:if(condition:j.isFirst, then:
+                                                        'selected')}> {contact.email}</option>
+                                                    </f:for>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </f:for>
 
 
@@ -304,7 +318,7 @@
             z-index: 5000;
         }
 
-        .hidden-by-count-toggle{
+        .hidden-by-count-toggle {
             display: none;
         }
 
