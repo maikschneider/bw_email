@@ -68,10 +68,10 @@
                                     <div class="form-group provider hidden-by-count-toggle">
                                         <label>Data provider</label>
                                         <div class="form-control-wrap">
-                                            <select class="form-control" id="provider" name="provider">
+                                            <select class="form-control" id="provider" name="provider[id]">
                                                 <f:for each="{providers}" as="provider" iteration="i">
                                                     <option data-provider-index="{i.index}"
-                                                            value="{provider.name}"
+                                                            value="{provider.fqcn}"
                                                             {f:if(condition:i.isFirst,
                                                             then:
                                                     'selected')}>{provider.name}</option>
@@ -87,7 +87,7 @@
                                                     <f:if condition="{poption.inputType}=='select'">
                                                         <select class="form-control"
                                                                 id="provider-{i.index}-poption-{j.index}"
-                                                                name="provider">
+                                                                name="provider[{provider.fqcn}][optionsConfiguration][{i.index}]">
                                                             <f:for each="{poption.options}" as="ppoption" iteration="k">
                                                                 <option data-ppoption-index="{k.index}"
                                                                         value="{k.index}">{ppoption}

@@ -188,7 +188,7 @@ class EmailWizard {
 			this.$loaderTarget.html(icon);
 			$.post(
 				previewUri,
-				this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea').serializeArray(),
+				this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea, [name^="provider"]').serializeArray(),
 				this.showEmailPreview.bind(this, false),
 				'json'
 			);

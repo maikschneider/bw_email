@@ -55,12 +55,16 @@ class ContactSourceContactProvider extends ContactProvider
     }
 
     /**
-     * @param array $optionSelections
      * @return \Blueways\BwEmail\Domain\Model\Contact[]
      */
-    public function getContacts(array $optionSelections)
+    public function getContacts()
     {
-        // TODO: Implement getContracts() method.
-        return [];
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
+
+        $sources = $contactSourceRepository->findAllDataSources();
+        $selectedSource = $this->options[0]->value;
+
+        return $sources[$selectedSource]->getContacts();
     }
 }

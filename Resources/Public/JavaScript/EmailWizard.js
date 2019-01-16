@@ -141,7 +141,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             var previewUri = templateSelector.find('option:selected').data('preview-uri');
             Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done(function (icon) {
                 _this.$loaderTarget.html(icon);
-                $.post(previewUri, _this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea').serializeArray(), _this.showEmailPreview.bind(_this, false), 'json');
+                $.post(previewUri, _this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea, [name^="provider"]').serializeArray(), _this.showEmailPreview.bind(_this, false), 'json');
             });
         };
         EmailWizard.prototype.trySend = function (e) {

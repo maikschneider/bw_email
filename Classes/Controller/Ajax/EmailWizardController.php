@@ -170,6 +170,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
                 $templateParser->overrideMarker($params['markerOverrides']);
             }
+            if (isset($params['provider']) && sizeof($params['provider'])) {
+                $providerSettings = $params['provider'];
+                $provider = GeneralUtility::makeInstance($providerSettings['id']);
+                $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
+                $contacts = $provider->getContacts();
+            }
         }
 
         // check for internal links

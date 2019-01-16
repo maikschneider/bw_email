@@ -26,6 +26,29 @@ class ContactProviderOption
     public $options;
 
     /**
+     * @return int
+     */
+    public function getValue(): int
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param int $value
+     */
+    public function setValue(int $value): void
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Index of the selected option
+     *
+     * @var integer
+     */
+    public $value = 0;
+
+    /**
      * ContactProviderOption constructor.
      *
      * @param string $label

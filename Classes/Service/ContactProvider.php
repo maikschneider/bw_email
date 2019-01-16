@@ -18,11 +18,6 @@ abstract class ContactProvider
     protected $description;
 
     /**
-     * @var array
-     */
-    protected $settings;
-
-    /**
      * @var \Blueways\BwEmail\Domain\Model\ContactProviderOption[]
      */
     protected $options;
@@ -35,7 +30,6 @@ abstract class ContactProvider
     public function __construct()
     {
         $this->createOptions();
-        $this->createSettings();
     }
 
     /**
@@ -50,10 +44,9 @@ abstract class ContactProvider
     }
 
     /**
-     * @param array $optionSelections
      * @return \Blueways\BwEmail\Domain\Model\Contact[]
      */
-    abstract public function getContacts(array $optionSelections);
+    abstract public function getContacts();
 
     /**
      * @return string
@@ -92,32 +85,6 @@ abstract class ContactProvider
         return $GLOBALS['LANG'];
     }
 
-    /**
-     * @return array
-     */
-    public function getSettings(): array
-    {
-        return $this->settings;
-    }
-
-    /**
-     * @param array $settings
-     */
-    public function setSettings(array $settings): void
-    {
-        $this->settings = $settings;
-    }
-
-    /**
-     * @return void
-     */
-    protected function createSettings()
-    {
-        foreach ($this->options as $option) {
-            $this->settings[$option->inputName] = $option->options[0] ?? '';
-        }
-    }
-
     public function getModalConfiguration()
     {
         return [
@@ -125,7 +92,20 @@ abstract class ContactProvider
             'name' => $this->getProviderName(),
             'description' => $this->getProviderDescription(),
             'options' => $this->getOptions(),
-            'settings' => $this->getSettings()
         ];
     }
+
+    public function applyConfiguration($optionsConfiguration)
+    {
+        if (!$optionsConfiguration || !sizeof($optionsConfiguration)) {
+            return;
+        }
+
+        foreach ($this->options as $key => $option) {
+            if (isset($optionsConfiguration[$key])) {
+                $option->value = (int)$optionsConfiguration[$key];
+            }
+        }
+    }
+
 }
