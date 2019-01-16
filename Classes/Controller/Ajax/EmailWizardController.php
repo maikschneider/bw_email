@@ -171,7 +171,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 $templateParser->overrideMarker($params['markerOverrides']);
             }
             // check for provider settings in post data
-            if (isset($params['provider']) && sizeof($params['provider'])) {
+            if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
                 $providerSettings = $params['provider'];
                 $provider = GeneralUtility::makeInstance($providerSettings['id']);
                 $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);

@@ -109,7 +109,7 @@ class EmailWizard {
 		$closeButton.on('click', this.phoneClosingAnimation.bind(this));
 
 		// bind provider radio toggle
-		this.currentModal.find('input[name="showprovider"]').on('change', this.toggleProviderView.bind(this));
+		this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
 
 	}
 

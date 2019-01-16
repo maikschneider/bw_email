@@ -81,7 +81,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             // bind home button event
             $closeButton.on('click', this.phoneClosingAnimation.bind(this));
             // bind provider radio toggle
-            this.currentModal.find('input[name="showprovider"]').on('change', this.toggleProviderView.bind(this));
+            this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
         };
         EmailWizard.prototype.toggleProviderView = function (e) {
             this.currentModal.find('.provider').toggleClass('hidden-by-count-toggle');
