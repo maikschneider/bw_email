@@ -51,6 +51,18 @@
 			default = TEXT
 			default.value = Default
 		}
+
+		variables {
+			leftColumn =< styles.content.get
+			leftColumn.select.where = {#colPos}=1
+
+			defaultColumn =< styles.content.get
+			defaultColumn.select.where = {#colPos}=0
+
+			rightColumn =< styles.content.get
+			rightColumn.select.where = {#colPos}=2
+		}
+
 	}
 
 [GLOBAL]
@@ -108,22 +120,5 @@ plugin.tx_bwemail_pi1 {
 	}
 }
 
-mod.tx_bwemail {
-	persistence {
-		storagePid = 17
-	}
-}
 
-mod.tx_viewpage {
-	persistence {
-		storagePid = 17
-	}
-}
-
-
-mod.tx_cms_viewpage {
-	persistence {
-		storagePid = 17
-	}
-}
 

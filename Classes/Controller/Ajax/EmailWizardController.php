@@ -5,7 +5,9 @@ namespace Blueways\BwEmail\Controller\Ajax;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\TimeTracker\TimeTracker;
+use TYPO3\CMS\Core\TypoScript\TemplateService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -13,6 +15,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
@@ -155,6 +158,16 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
+        // inject content elements in templateView
+        $this->initTSFE();
+        $typoscriptSelect = [
+            'tables' => 'tt_content',
+            'source' => 32,
+        ];
+        $cObjRenderer = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
+        $contentElements = $cObjRenderer->getContentObject('RECORDS')->render($typoscriptSelect);
+        $this->templateView->assign('defaultColumn', $contentElements);
+
         // build the default template
         $this->templateView->setTemplate($queryParams['template']);
         $html = $this->templateView->render();
@@ -212,12 +225,43 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             'marker' => $marker,
             'hasInternalLinks' => $hasInternalLinks,
             'contacts' => $contacts ?? [],
-            'selectedContact' => $selectedContactIndex ?? 0
+            'selectedContact' => $selectedContactIndex ?? 0,
         ));
 
         $response->getBody()->write($content);
 
         return $response;
+    }
+
+    /**
+     * @param int $id
+     * @param int $typeNum
+     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     */
+    protected function initTSFE($id = 1, $typeNum = 0)
+    {
+        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
+        if (!is_object($GLOBALS['TT'])) {
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
+            $GLOBALS['TT']->start();
+        }
+
+        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
+            $GLOBALS['TYPO3_CONF_VARS'], $id, $typeNum);
+        $GLOBALS['TSFE']->sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $GLOBALS['TSFE']->sys_page->init(true);
+        $GLOBALS['TSFE']->connectToDB();
+        $GLOBALS['TSFE']->initFEuser();
+        $GLOBALS['TSFE']->determineId();
+        $GLOBALS['TSFE']->initTemplate();
+        $GLOBALS['TSFE']->rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($id, '');
+        $GLOBALS['TSFE']->getConfigArray();
+
+        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
+            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
+            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+            $_SERVER['HTTP_HOST'] = $host;
+        }
     }
 
     /**
