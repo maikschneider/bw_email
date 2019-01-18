@@ -160,13 +160,20 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // inject content elements in templateView
         $this->initTSFE();
-        $typoscriptSelect = [
-            'tables' => 'tt_content',
-            'source' => 32,
-        ];
         $cObjRenderer = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
-        $contentElements = $cObjRenderer->getContentObject('RECORDS')->render($typoscriptSelect);
-        $this->templateView->assign('defaultColumn', $contentElements);
+        $colPositions = [0 => 'defaultColumn', 1 => 'leftColumn', 2 => 'rightColumn'];
+        foreach ($colPositions as $colPos => $colName) {
+            $typoscriptSelect = [
+                'table' => 'tt_content',
+                'select.' => [
+                    'pidInList' => $queryParams['page'],
+                    'where' => 'colPos=' . $colPos,
+                    'orderBy' => 'sorting'
+                ]
+            ];
+            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscriptSelect);
+            $this->templateView->assign($colName, $contentElements);
+        }
 
         // build the default template
         $this->templateView->setTemplate($queryParams['template']);
