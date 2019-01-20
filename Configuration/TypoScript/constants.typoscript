@@ -1,17 +1,3 @@
-styles {
-	templates {
-		templateRootPaths {
-			117 = EXT:bw_email/Resources/Private/Templates/fluid_styled_content/
-		}
-		partialRootPaths {
-			117 = EXT:bw_email/Resources/Private/Partials/fluid_styled_content/
-		}
-		layoutRootPaths {
-			117 = EXT:bw_email/Resources/Private/Layouts/fluid_styled_content/
-		}
-	}
-}
-
 plugin.tx_bwemail_pi1 {
 	view {
 		templateRootPath =
@@ -27,8 +13,20 @@ plugin.tx_bwemail_pi1 {
 		template = Default
 		showUid = 1
 		recipientAddress =
+		fluid_styled_content {
+			templateRootPath = EXT:fluid_styled_content/Resources/Private/Templates/
+			partialRootPath = EXT:fluid_styled_content/Resources/Private/Partials/
+			layoutRootPaths = EXT:fluid_styled_content/Resources/Private/Layouts/
+		}
 	}
 	persistence{
 		storagePid = 17
 	}
+}
+
+# override the fluid_styled_content template paths
+styles.templates {
+	templateRootPath < plugin.tx_bwemail_pi1.settings.fluid_styled_content.templateRootPath
+	partialRootPath < plugin.tx_bwemail_pi1.settings.fluid_styled_content.partialRootPath
+	layoutRootPaths < plugin.tx_bwemail_pi1.settings.fluid_styled_content.layoutRootPaths
 }
