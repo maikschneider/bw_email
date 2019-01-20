@@ -62,3 +62,6 @@ config.tx_extbase.persistence.classes {
 
 If you like to use external data, you can write your own ContactProvider. Just extend from ```Blueways\BwEmail\Service``` and register the class via Hook:
 
+# Known issues
+
+* RTE links are getting removed

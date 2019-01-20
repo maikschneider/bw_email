@@ -67,6 +67,8 @@
 
 [GLOBAL]
 
+page.config.absRefPrefix = http://rundfunk.local/
+
 page.10 {
 	templateRootPaths {
 		117 = EXT:bw_email/Resources/Private/Templates/Email/
@@ -119,6 +121,3 @@ plugin.tx_bwemail_pi1 {
 		storagePid = 17
 	}
 }
-
-
-

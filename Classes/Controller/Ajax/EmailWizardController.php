@@ -173,6 +173,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $this->templateView->assign($colName, $contentElements);
         }
 
+        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($queryParams['page']);
+        $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+        if (!$host) {
+            $host = $GLOBALS['_SERVER']['REQUEST_SCHEME'] . '://' . $GLOBALS['_SERVER']['SERVER_NAME'];
+        }
+
         // build the default template
         $this->templateView->setTemplate($queryParams['template']);
         $html = $this->templateView->render();
@@ -181,7 +187,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
         $templateParser->parseMarker();
 
-        // save marker before they get overriden
+        // save marker before they get overwritten
         $marker = $templateParser->getMarker();
 
         // check for incoming marker overrides
@@ -212,6 +218,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // convert html
         $templateParser->inkyHtml();
+        $templateParser->makeAbsoluteUrls($host);
         $templateParser->inlineCss();
         $templateParser->cleanHeadTag();
         $html = $templateParser->getHtml();
@@ -353,6 +360,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     /**
      * @param $html
      * @return array
+     * @deprecated
      */
     protected function getMarkerInHtml($html)
     {
@@ -377,6 +385,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param $marker
      * @param $overrides
      * @return mixed
+     * @deprecated
      */
     protected function overrideMarkerContentInHtml($html, $marker, $overrides)
     {
@@ -407,10 +416,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param $pageUid
      * @return string
      * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @deprecated
      */
     protected function replaceInternalLinks($html, $pageUid)
     {
-        $links = $this->getInternalLinks($html);
+        //$links = $this->getInternalLinks($html);
+        $links = $this->getLinks($html);
 
         foreach ($links as $rawLink) {
 
@@ -473,6 +484,26 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     /**
      * @param $html
      * @return array
+     * @deprecated
+     */
+    protected function getLinks($html)
+    {
+        // find all links
+        $regex = '/(<a[^>]href=")(.[^"]*)/';
+        preg_match_all($regex, $html, $links);
+
+        // abort if no links were found
+        if (!sizeof($links)) {
+            return [];
+        }
+
+        return $links;
+    }
+
+    /**
+     * @param $html
+     * @return array
+     * @deprecated
      */
     protected function getInternalLinks($html)
     {
@@ -480,7 +511,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $regex = '/(<a[^>]href=")(.[^"]*)/';
         preg_match_all($regex, $html, $links);
 
-        // abbort if no links were found
+        // abort if no links were found
         if (!sizeof($links)) {
             return [];
         }
@@ -505,6 +536,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param $html
      * @param $marker
      * @return array
+     * @deprecated
      */
     protected function getMarkerContentInHtml($html, $marker)
     {

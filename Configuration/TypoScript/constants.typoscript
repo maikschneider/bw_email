@@ -4,6 +4,7 @@ plugin.tx_bwemail_pi1 {
 		partialRootPath =
 		layoutRootPath =
 	}
+
 	settings {
 		css = EXT:bw_email/Resources/Public/Css/app.css
 		senderAddress = noreply@example.com
@@ -19,14 +20,17 @@ plugin.tx_bwemail_pi1 {
 			layoutRootPaths = EXT:fluid_styled_content/Resources/Private/Layouts/
 		}
 	}
-	persistence{
+
+	persistence {
 		storagePid = 17
 	}
 }
 
-# override the fluid_styled_content template paths
-styles.templates {
-	templateRootPath < plugin.tx_bwemail_pi1.settings.fluid_styled_content.templateRootPath
-	partialRootPath < plugin.tx_bwemail_pi1.settings.fluid_styled_content.partialRootPath
-	layoutRootPaths < plugin.tx_bwemail_pi1.settings.fluid_styled_content.layoutRootPaths
-}
+[page | doktype = 117]
+	# reset the fluid_styled_content template paths
+	styles.templates {
+		templateRootPath = EXT:bw_email/Resources/Private/Templates/fluid_styled_content
+		partialRootPath = EXT:bw_email/Resources/Private/Partials/fluid_styled_content
+		layoutRootPaths = EXT:bw_email/Resources/Private/Layouts/fluid_styled_content
+	}
+[GLOBAL]

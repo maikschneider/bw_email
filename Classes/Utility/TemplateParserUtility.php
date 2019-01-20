@@ -120,6 +120,7 @@ class TemplateParserUtility
     /**
      * Return all backend internal links from the html
      *
+     * @deprecated
      * @return array
      */
     public function getInternalLinks()
@@ -178,6 +179,57 @@ class TemplateParserUtility
             $this->html,
             $css
         );
+
+        // extract media queries and put them in the head
+        $mediaBlocks = self::extractMediaQueries($css);
+        $mediaBlock = '<style type="text/css">' . implode(' ', $mediaBlocks) . '</style>';
+        $this->html = preg_replace('/<\/head>/', $mediaBlock . '</head>', $this->html);
+    }
+
+    /**
+     * @param string $css
+     * @return array
+     */
+    public static function extractMediaQueries($css)
+    {
+        $mediaBlocks = array();
+
+        $start = 0;
+        while (($start = strpos($css, "@media", $start)) !== false) {
+            // stack to manage brackets
+            $stack = array();
+
+            // get the first opening bracket
+            $firstOpen = strpos($css, "{", $start);
+
+            // if $i is false, then there is probably a css syntax error
+            if ($firstOpen !== false) {
+                // push bracket onto stack
+                array_push($stack, $css[$firstOpen]);
+
+                // move past first bracket
+                $firstOpen++;
+
+                while (!empty($stack)) {
+                    // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
+                    if ($css[$firstOpen] == "{") {
+                        array_push($stack, "{");
+                    } elseif ($css[$firstOpen] == "}") {
+                        array_pop($stack);
+                    }
+
+                    $firstOpen++;
+                }
+
+                // cut the media block out of the css and store
+                $mediaBlocks[] = substr($css, $start, ($firstOpen + 1) - $start);
+
+                // set the new $start to the end of the block
+                $start = $firstOpen;
+            }
+        }
+
+        return $mediaBlocks;
     }
 
     /**
@@ -191,6 +243,16 @@ class TemplateParserUtility
             '',
             $this->html
         );
+    }
+
+    /**
+     * @param $host
+     */
+    public function makeAbsoluteUrls($host)
+    {
+        // image src paths
+        $regex = '/(src=\")()(?=\/fileadmin|\/typo3conf|\/typo3temp|\/uploads)/';
+        $this->html = preg_replace($regex, '$1' . $host, $this->html);
     }
 
 }
