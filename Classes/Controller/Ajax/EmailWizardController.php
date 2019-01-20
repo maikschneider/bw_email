@@ -4,18 +4,15 @@ namespace Blueways\BwEmail\Controller\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\TimeTracker\TimeTracker;
-use TYPO3\CMS\Core\TypoScript\TemplateService;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\TimeTracker\TimeTracker;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
@@ -153,13 +150,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param \TYPO3\CMS\Core\Http\ServerRequest $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
      */
     public function previewAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         // inject content elements in templateView
-        $this->initTSFE();
+        $this->initTSFE($queryParams['page']);
         $cObjRenderer = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
         $colPositions = [0 => 'defaultColumn', 1 => 'leftColumn', 2 => 'rightColumn'];
         foreach ($colPositions as $colPos => $colName) {
@@ -253,9 +251,13 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $GLOBALS['TT']->start();
         }
 
-        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
-            $GLOBALS['TYPO3_CONF_VARS'], $id, $typeNum);
-        $GLOBALS['TSFE']->sys_page = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
+            $GLOBALS['TYPO3_CONF_VARS'],
+            $id,
+            $typeNum
+        );
+        $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
         $GLOBALS['TSFE']->sys_page->init(true);
         $GLOBALS['TSFE']->connectToDB();
         $GLOBALS['TSFE']->initFEuser();
