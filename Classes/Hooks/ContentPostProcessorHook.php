@@ -2,10 +2,14 @@
 
 namespace Blueways\BwEmail\Hooks;
 
-use Hampe\Inky\Inky;
-use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
+use Blueways\BwEmail\Utility\TemplateParserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class ContentPostProcessorHook
+ *
+ * @package Blueways\BwEmail\Hooks
+ */
 class ContentPostProcessorHook
 {
 
@@ -22,76 +26,12 @@ class ContentPostProcessorHook
             return;
         }
 
-        $this->inkyMarkup($pobj);
-        $this->inlineCss($pobj);
-        $this->cleanHeadTag($pobj);
-        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($parameters, __LINE__ . ' in ' . __CLASS__);
-    }
+        $templateParser = GeneralUtility::makeInstance(TemplateParserUtility::class, $pobj->content);
+        $templateParser->inkyHtml();
+        $templateParser->inlineCss();
+        $templateParser->cleanHeadTag();
 
-    /**
-     * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pobj
-     */
-    private function inkyMarkup($pobj)
-    {
-        $gridColumns = 12; //optional, default is 12
-        $additionalComponentFactories = []; //optional
-        $inky = new Inky($gridColumns, $additionalComponentFactories);
-
-        try {
-            $pobj->content = $inky->releaseTheKraken($pobj->content);
-        } catch (\PHPHtmlParser\Exceptions\CircularException $e) {
-        }
-    }
-
-    /**
-     * @return array
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
-     */
-    private function loadAllTypoScriptSetup()
-    {
-        /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
-        $configurationManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
-        $typoscript = $configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-
-        return $typoscript['page.'];
-    }
-
-    /**
-     * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pobj
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
-     */
-    private function inlineCss($pobj)
-    {
-        preg_match_all('/(?<=href=")[^."]+\.css/', $pobj->content, $cssFiles);
-        if ($cssFiles && sizeof($cssFiles)) {
-            $cssFiles = $cssFiles[0];
-        }
-        $css = '';
-        foreach ($cssFiles as $cssFile) {
-            $cssFilePath = GeneralUtility::getFileAbsFileName($cssFile);
-            if (file_exists($cssFilePath)) {
-                $css .= file_get_contents($cssFilePath);
-            }
-        }
-
-        $cssToInlineStyles = new CssToInlineStyles();
-        $pobj->content = $cssToInlineStyles->convert(
-            $pobj->content,
-            $css
-        );
-    }
-
-    /**
-     * @param \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pobj
-     */
-    protected function cleanHeadTag($pobj)
-    {
-        // remove stylesheet tags
-        $pobj->content = preg_replace(
-            '/<link\b[^>]*?>/',
-            '',
-            $pobj->content
-        );
+        $parameters['pObj']->content = $templateParser->getHtml();
     }
 
     /**
