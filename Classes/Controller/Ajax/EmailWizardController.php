@@ -14,6 +14,11 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
+/**
+ * Class EmailWizardController
+ *
+ * @package Blueways\BwEmail\Controller\Ajax
+ */
 class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 

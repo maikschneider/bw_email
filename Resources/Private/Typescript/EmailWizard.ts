@@ -230,11 +230,18 @@ class EmailWizard {
 
 	private trySend(e: JQueryEventObject) {
 
+		let recipientText = this.currentModal.find('#recipientAddress').val();
+
+		const multipleRecipients = this.currentModal.find('input[name="provider[use]"]:checked').val() === '1';
+		if (multipleRecipients) {
+			recipientText = this.currentModal.find('.provider--contacts:visible select option').length + ' recipients';
+		}
+
 		this.confirmModal = Modal.advanced({
 			title: 'Are you sure?',
 			size: Modal.sizes.small,
 			style: Modal.styles.dark,
-			content: '<p>You are going to send the displayed HTML mail to <strong>' + this.currentModal.find('#recipientAddress').val() + '</strong></p>',
+			content: '<p>You are going to send the displayed HTML mail to <strong>' + recipientText + '</strong>.</p>',
 			buttons: [
 				{
 					text: 'Yes, send',
