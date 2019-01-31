@@ -74,11 +74,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         }
         $this->templateView = $templateView;
 
-        $emailView = GeneralUtility::makeInstance(EmailView::class);
-        $emailView->setLayoutRootPaths($this->typoscript['page.']['10.']['layoutRootPaths.']);
-        $emailView->setPartialRootPaths($this->typoscript['page.']['10.']['partialRootPaths.']);
-        $emailView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
-        $this->emailView = $emailView;
+        $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
     }
 
     /**
@@ -173,14 +169,15 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        // build the default template
+        // init email tempalte
         $this->emailView->setTemplate($queryParams['template']);
         $this->emailView->setPid($queryParams['page']);
 
-        // check for incoming marker overrides
+
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
-            
+
+            // check for incoming marker overrides
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
                 $this->emailView->overrideMarker($params['markerOverrides']);
             }

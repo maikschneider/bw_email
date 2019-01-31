@@ -3,7 +3,7 @@
 namespace Blueways\BwEmail\View;
 
 use Blueways\BwEmail\Utility\TemplateParserUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class EmailView
@@ -26,6 +26,13 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     public function __construct(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject = null)
     {
         parent::__construct($contentObject);
+
+        $configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+
+        $this->setLayoutRootPaths($typoscript['page.']['10.']['layoutRootPaths.']);
+        $this->setPartialRootPaths($typoscript['page.']['10.']['partialRootPaths.']);
+        $this->setTemplateRootPaths($typoscript['page.']['10.']['templateRootPaths.']);
 
         $this->templateParser = $this->objectManager->get('Blueways\\BwEmail\\Utility\\TemplateParserUtility');
     }
@@ -118,8 +125,12 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
      */
     protected function injectPageContentElements()
     {
+        if (!$this->pid) {
+            return;
+        }
+
         $this->initTSFE($this->pid);
-        $cObjRenderer = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
+        $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
         $colPositions = [0 => 'defaultColumn', 1 => 'leftColumn', 2 => 'rightColumn'];
         foreach ($colPositions as $colPos => $colName) {
             $typoscriptSelect = [
@@ -154,7 +165,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
             $id,
             $typeNum
         );
-        $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $GLOBALS['TSFE']->sys_page = $this->objectManager->get('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
         $GLOBALS['TSFE']->sys_page->init(true);
         $GLOBALS['TSFE']->connectToDB();
         $GLOBALS['TSFE']->initFEuser();
