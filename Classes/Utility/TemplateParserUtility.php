@@ -10,7 +10,7 @@ class TemplateParserUtility
 {
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $html;
 
@@ -24,10 +24,10 @@ class TemplateParserUtility
      *
      * @param $html
      */
-    public function __construct($html)
+    public function __construct()
     {
-        $this->html = $html;
-        $this->marker = [];
+        $this->html = null;
+        $this->marker = null;
     }
 
     /**
@@ -85,8 +85,8 @@ class TemplateParserUtility
      */
     public function overrideMarker($overrides)
     {
-        // abort if no overrides
-        if (!$overrides || !sizeof($overrides)) {
+        // abort if no marker or overrides
+        if (!$this->marker || !sizeof($this->marker) || !$overrides || !sizeof($overrides)) {
             return;
         }
 
@@ -253,6 +253,14 @@ class TemplateParserUtility
         // image src paths
         $regex = '/(src=\")()(?=\/fileadmin|\/typo3conf|\/typo3temp|\/uploads)/';
         $this->html = preg_replace($regex, '$1' . $host, $this->html);
+    }
+
+    /**
+     * @param $html
+     */
+    public function setHtml($html)
+    {
+        $this->html = $html;
     }
 
 }

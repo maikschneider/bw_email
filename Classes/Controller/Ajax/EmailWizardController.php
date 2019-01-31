@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use Blueways\BwEmail\View\EmailView;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -43,6 +44,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected $typoscript;
 
     /**
+     * @var \Blueways\BwEmail\View\EmailView
+     */
+    protected $emailView;
+
+    /**
      * @var StandaloneView
      */
     private $templateView;
@@ -67,6 +73,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $templateView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
         }
         $this->templateView = $templateView;
+
+        $emailView = GeneralUtility::makeInstance(EmailView::class);
+        $emailView->setLayoutRootPaths($this->typoscript['page.']['10.']['layoutRootPaths.']);
+        $emailView->setPartialRootPaths($this->typoscript['page.']['10.']['partialRootPaths.']);
+        $emailView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
+        $this->emailView = $emailView;
     }
 
     /**
@@ -161,46 +173,18 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        // inject content elements in templateView
-        $this->initTSFE($queryParams['page']);
-        $cObjRenderer = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
-        $colPositions = [0 => 'defaultColumn', 1 => 'leftColumn', 2 => 'rightColumn'];
-        foreach ($colPositions as $colPos => $colName) {
-            $typoscriptSelect = [
-                'table' => 'tt_content',
-                'select.' => [
-                    'pidInList' => $queryParams['page'],
-                    'where' => 'colPos=' . $colPos,
-                    'orderBy' => 'sorting'
-                ]
-            ];
-            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscriptSelect);
-            $this->templateView->assign($colName, $contentElements);
-        }
-
-        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($queryParams['page']);
-        $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-        if (!$host) {
-            $host = $GLOBALS['_SERVER']['REQUEST_SCHEME'] . '://' . $GLOBALS['_SERVER']['SERVER_NAME'];
-        }
-
         // build the default template
-        $this->templateView->setTemplate($queryParams['template']);
-        $html = $this->templateView->render();
-
-        // extract marker and replace html with overrides from params
-        $templateParser = GeneralUtility::makeInstance(\Blueways\BwEmail\Utility\TemplateParserUtility::class, $html);
-        $templateParser->parseMarker();
-
-        // save marker before they get overwritten
-        $marker = $templateParser->getMarker();
+        $this->emailView->setTemplate($queryParams['template']);
+        $this->emailView->setPid($queryParams['page']);
 
         // check for incoming marker overrides
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
+            
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-                $templateParser->overrideMarker($params['markerOverrides']);
+                $this->emailView->overrideMarker($params['markerOverrides']);
             }
+
             // check for provider settings in post data
             if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
                 $providerSettings = $params['provider'];
@@ -214,19 +198,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                     $selectedContactIndex = $providerSettings[$providerSettings['id']]['selectedContact'];
                 }
                 $contact = $contacts[$selectedContactIndex];
-                $templateParser->insertContact($contact);
+                $this->emailView->insertContact($contact);
             }
         }
 
         // check for internal links
-        $hasInternalLinks = sizeof($templateParser->getInternalLinks()) ? true : false;
-
-        // convert html
-        $templateParser->inkyHtml();
-        $templateParser->makeAbsoluteUrls($host);
-        $templateParser->inlineCss();
-        $templateParser->cleanHeadTag();
-        $html = $templateParser->getHtml();
+        $hasInternalLinks = sizeof($this->emailView->getInternalLinks()) ? true : false;
+        $marker = $this->emailView->getMarker();
+        $html = $this->emailView->render();
 
         // encode for display inside <iframe src="...">
         function encodeURIComponent($str)
@@ -290,11 +269,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function sendMailAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         if ($request->getMethod() !== 'POST') {
-            return $response->withStatus(405, 'Method not allowed');
+            $this->throwStatus(405, 'Method not allowed');
         }
 
         $params = $request->getParsedBody();
