@@ -2,7 +2,6 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
-use Blueways\BwEmail\View\EmailView;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -72,8 +71,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $templateView->setPartialRootPaths($this->typoscript['page.']['10.']['partialRootPaths.']);
             $templateView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
         }
-        $this->templateView = $templateView;
 
+        $this->templateView = $templateView;
+        $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
         $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
     }
 
@@ -91,8 +91,8 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $defaults = $this->getDefaultEmailSettings();
         $templates = $this->getTemplates();
 
-        $providers = [];
         // @TODO: use hook to call all contact provider
+        $providers = [];
         $contactProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ContactSourceContactProvider');
         $providers[] = $contactProvider->getModalConfiguration();
         $exampleProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ExampleContactProvider');
@@ -122,12 +122,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $uriArguments['arguments'] = json_encode([
 
         ]);
-        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
+        $uriArguments['signature'] = GeneralUtility::hmac(
             $uriArguments['arguments'],
             $routeName
         );
-        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-        return (string)$uriBuilder->buildUriFromRoute($routeName);
+        return (string)$this->uriBuilder->buildUriFromRoute($routeName);
     }
 
     /**
@@ -173,7 +172,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->emailView->setTemplate($queryParams['template']);
         $this->emailView->setPid($queryParams['page']);
 
-
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
 
@@ -203,15 +201,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $hasInternalLinks = sizeof($this->emailView->getInternalLinks()) ? true : false;
         $marker = $this->emailView->getMarker();
         $html = $this->emailView->render();
-
-        // encode for display inside <iframe src="...">
-        function encodeURIComponent($str)
-        {
-            $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
-            return strtr(rawurlencode($str), $revert);
-        }
-
-        $src = 'data:text/html;charset=utf-8,' . encodeURIComponent($html);
+        $src = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
         // build and encode response
         $content = json_encode(array(
@@ -228,38 +218,13 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @param int $id
-     * @param int $typeNum
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @param string $str
+     * @return string
      */
-    protected function initTSFE($id = 1, $typeNum = 0)
+    public static function encodeURIComponent($str)
     {
-        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
-        if (!is_object($GLOBALS['TT'])) {
-            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-            $GLOBALS['TT']->start();
-        }
-
-        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
-            $GLOBALS['TYPO3_CONF_VARS'],
-            $id,
-            $typeNum
-        );
-        $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-        $GLOBALS['TSFE']->sys_page->init(true);
-        $GLOBALS['TSFE']->connectToDB();
-        $GLOBALS['TSFE']->initFEuser();
-        $GLOBALS['TSFE']->determineId();
-        $GLOBALS['TSFE']->initTemplate();
-        $GLOBALS['TSFE']->rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($id, '');
-        $GLOBALS['TSFE']->getConfigArray();
-
-        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-            $_SERVER['HTTP_HOST'] = $host;
-        }
+        $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
+        return strtr(rawurlencode($str), $revert);
     }
 
     /**
@@ -485,6 +450,41 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * @param int $id
+     * @param int $typeNum
+     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     */
+    protected function initTSFE($id = 1, $typeNum = 0)
+    {
+        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
+        if (!is_object($GLOBALS['TT'])) {
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
+            $GLOBALS['TT']->start();
+        }
+
+        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
+            $GLOBALS['TYPO3_CONF_VARS'],
+            $id,
+            $typeNum
+        );
+        $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $GLOBALS['TSFE']->sys_page->init(true);
+        $GLOBALS['TSFE']->connectToDB();
+        $GLOBALS['TSFE']->initFEuser();
+        $GLOBALS['TSFE']->determineId();
+        $GLOBALS['TSFE']->initTemplate();
+        $GLOBALS['TSFE']->rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($id, '');
+        $GLOBALS['TSFE']->getConfigArray();
+
+        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
+            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
+            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+            $_SERVER['HTTP_HOST'] = $host;
+        }
+    }
+
+    /**
      * @param $html
      * @return array
      * @deprecated
@@ -605,8 +605,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $routeName
         );
 
-        $uriBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-
-        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
+        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 }
