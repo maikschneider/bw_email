@@ -2,6 +2,11 @@
 
 namespace Blueways\BwEmail\Service;
 
+/**
+ * Class ContactSourceContactProvider
+ *
+ * @package Blueways\BwEmail\Service
+ */
 class ContactSourceContactProvider extends ContactProvider
 {
 

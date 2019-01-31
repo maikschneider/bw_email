@@ -15,7 +15,6 @@ class ContentPostProcessorHook
 
     /**
      * @param $parameters
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
     public function noCache(&$parameters)
     {

@@ -4,6 +4,11 @@ namespace Blueways\BwEmail\Service;
 
 use \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
+/**
+ * Class ContactProvider
+ *
+ * @package Blueways\BwEmail\Service
+ */
 abstract class ContactProvider
 {
 
@@ -85,6 +90,9 @@ abstract class ContactProvider
         return $GLOBALS['LANG'];
     }
 
+    /**
+     * @return array
+     */
     public function getModalConfiguration()
     {
         return [
@@ -96,6 +104,9 @@ abstract class ContactProvider
         ];
     }
 
+    /**
+     * @param $optionsConfiguration
+     */
     public function applyConfiguration($optionsConfiguration)
     {
         if (!$optionsConfiguration || !sizeof($optionsConfiguration)) {

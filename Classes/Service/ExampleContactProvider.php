@@ -2,6 +2,11 @@
 
 namespace Blueways\BwEmail\Service;
 
+/**
+ * Class ExampleContactProvider
+ *
+ * @package Blueways\BwEmail\Service
+ */
 class ExampleContactProvider extends ContactProvider
 {
     protected $name = 'Example Provider';

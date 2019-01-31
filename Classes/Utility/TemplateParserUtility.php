@@ -6,6 +6,11 @@ use Hampe\Inky\Inky;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class TemplateParserUtility
+ *
+ * @package Blueways\BwEmail\Utility
+ */
 class TemplateParserUtility
 {
 
@@ -129,7 +134,7 @@ class TemplateParserUtility
         $regex = '/(<a[^>]href=")(.[^"]*)/';
         preg_match_all($regex, $this->html, $links);
 
-        // abbort if no links were found
+        // abort if no links were found
         if (!sizeof($links)) {
             return [];
         }

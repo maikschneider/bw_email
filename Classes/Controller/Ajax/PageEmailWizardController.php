@@ -2,12 +2,21 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 
+/**
+ * Class PageEmailWizardController
+ *
+ * @package Blueways\BwEmail\Controller\Ajax
+ */
 class PageEmailWizardController extends EmailWizardController
 {
 
+    /**
+     * PageEmailWizardController constructor.
+     *
+     * @param \TYPO3\CMS\Fluid\View\StandaloneView|null $templateView
+     */
     public function __construct(?\TYPO3\CMS\Fluid\View\StandaloneView $templateView = null)
     {
         parent::__construct($templateView);

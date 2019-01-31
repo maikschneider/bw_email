@@ -52,7 +52,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
             $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->pid);
             $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
         }
-        $host = $host ? $host : $GLOBALS['_SERVER']['REQUEST_SCHEME'] . '://' . $GLOBALS['_SERVER']['SERVER_NAME'];
+        $host = isset($host) ? $host : $GLOBALS['_SERVER']['REQUEST_SCHEME'] . '://' . $GLOBALS['_SERVER']['SERVER_NAME'];
         $this->templateParser->makeAbsoluteUrls($host);
 
         $this->templateParser->inlineCss();
