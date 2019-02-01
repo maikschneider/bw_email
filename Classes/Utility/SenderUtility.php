@@ -74,9 +74,15 @@ class SenderUtility
         ArrayUtility::mergeRecursiveWithOverrule($this->mailSettings, $settings, false, false);
     }
 
+    protected function validateSettings()
+    {
+
+    }
+
     /**
      * @param \Blueways\BwEmail\View\EmailView $emailView
      * @return array
+     * @TODO: use language service for translations
      */
     public function sendEmailView(EmailView $emailView)
     {
@@ -90,7 +96,7 @@ class SenderUtility
             ];
         }
 
-        // @TODO: create log
+        // @TODO: create persistence log
         $mailsSend = 0;
 
         if ((int)$this->mailSettings['provider']['use'] === 1) {
@@ -135,9 +141,24 @@ class SenderUtility
      * @param \Blueways\BwEmail\Domain\Model\Contact $contact
      * @return boolean
      */
-    public function sendEmailViewToContact(EmailView $emailView, Contact $contact)
+    protected function sendEmailViewToContact(EmailView $emailView, Contact $contact)
     {
+        // @TODO: implement
         return true;
+    }
+
+    private function sendMail($from, $to, $subject, $body, $replyTo)
+    {
+        /*
+        $message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+        $message->setTo($to)
+            ->setReplyTo($replyTo)
+            ->setFrom($from)
+            ->setSubject($subject)
+            ->setBody($body, 'text/html');
+
+        $message->send();
+        */
     }
 
 }

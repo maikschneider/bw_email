@@ -3,6 +3,7 @@
 namespace Blueways\BwEmail\View;
 
 use Blueways\BwEmail\Utility\TemplateParserUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
@@ -38,6 +39,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     }
 
     /**
+     * @param null $actionName
      * @return string
      */
     public function render($actionName = null)
@@ -52,7 +54,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
             $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->pid);
             $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
         }
-        $host = isset($host) ? $host : $GLOBALS['_SERVER']['REQUEST_SCHEME'] . '://' . $GLOBALS['_SERVER']['SERVER_NAME'];
+        $host = isset($host) ? $host : GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
         $this->templateParser->makeAbsoluteUrls($host);
 
         $this->templateParser->inlineCss();

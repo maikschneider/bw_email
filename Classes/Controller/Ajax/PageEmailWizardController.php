@@ -23,7 +23,6 @@ class PageEmailWizardController extends EmailWizardController
     }
 
     /**
-     * @TODO: works only for pages, not tt_content
      * @return array
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */

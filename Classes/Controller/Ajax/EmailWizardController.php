@@ -234,7 +234,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->senderUtility->mergeMailSettings($params);
 
         // check that all params are collected and valid
-        // @TODO: return error if anything required is missing
+        // @TODO: return error if any required data is missing
 
         // init email template
         $this->emailView->setTemplate($params['template']);
