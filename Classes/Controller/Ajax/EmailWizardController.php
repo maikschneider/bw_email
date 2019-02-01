@@ -274,7 +274,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $routeName
         );
 
-        return (string)$$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
+        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
 }
