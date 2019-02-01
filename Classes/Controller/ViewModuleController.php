@@ -7,6 +7,11 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class ViewModuleController
+ *
+ * @package Blueways\BwEmail\Controller
+ */
 class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleController
 {
 

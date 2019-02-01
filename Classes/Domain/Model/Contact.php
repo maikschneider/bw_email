@@ -5,6 +5,14 @@ namespace Blueways\BwEmail\Domain\Model;
 class Contact
 {
 
+    public $name;
+
+    public $prename;
+
+    public $lastname;
+
+    public $email;
+
     /**
      * Contact constructor.
      *
@@ -79,19 +87,27 @@ class Contact
         $this->email = $email;
     }
 
-    public $name;
-
-    public $prename;
-
-    public $lastname;
-
-    public $email;
-
     /**
      * @return array
      */
     public function getAttributes()
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getFullName()
+    {
+        if ($this->name) {
+            return $this->name;
+        }
+
+        if ($this->prename && $this->lastname) {
+            return $this->prename . ' ' . $this->lastname;
+        }
+
+        return false;
     }
 }

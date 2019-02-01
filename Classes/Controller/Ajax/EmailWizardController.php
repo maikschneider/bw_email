@@ -48,6 +48,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected $emailView;
 
     /**
+     * @var \Blueways\BwEmail\Utility\SenderUtility
+     */
+    protected $senderUtility;
+
+    /**
      * @var StandaloneView
      */
     private $templateView;
@@ -75,6 +80,8 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->templateView = $templateView;
         $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
         $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
+        $this->senderUtility = GeneralUtility::makeInstance('Blueways\BwEmail\Utility\SenderUtility',
+            $this->typoscript);
     }
 
     /**
@@ -88,7 +95,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $formActionUri = $this->getSendUri();
-        $defaults = $this->getDefaultEmailSettings();
+        $defaults = $this->senderUtility->getMailSettings();
         $templates = $this->getTemplates();
 
         // @TODO: use hook to call all contact provider
@@ -130,27 +137,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * read typoscript for email settings
-     *
-     * @TODO: move to email helper utility
-     * @return array
-     */
-    protected function getDefaultEmailSettings()
-    {
-        $defaults = array(
-            'senderAddress' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['senderAddress'],
-            'senderName' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['senderName'],
-            'replytoAddress' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['replytoAddress'] ? $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['replytoAddress'] : $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['senderAddress'],
-            'subject' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['subject'],
-            'emailTemplate' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['template'],
-            'showUid' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['showUid'] ?? null,
-            'recipientAddress' => '',
-            'recipientName' => '',
-        );
-        return $defaults;
-    }
-
-    /**
      * @return array
      */
     protected function getTemplates()
@@ -159,6 +145,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * This action is currently limited to preview emails by requests that send a page uid.
+     * This needs to be shifted to the child class PageEmailWizard
+     *
      * @param \TYPO3\CMS\Core\Http\ServerRequest $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
@@ -168,7 +157,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     {
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        // init email tempalte
+        // init email template
         $this->emailView->setTemplate($queryParams['template']);
         $this->emailView->setPid($queryParams['page']);
 
@@ -235,74 +224,41 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function sendMailAction(ServerRequestInterface $request, ResponseInterface $response)
+    public function sendAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         if ($request->getMethod() !== 'POST') {
             $this->throwStatus(405, 'Method not allowed');
         }
 
         $params = $request->getParsedBody();
-        $entryUid = $params['entryUid'] ?? false;
-
-        if (!$entryUid) {
-            return $response->withStatus(400, 'Form error');
-        }
-
-        $mailSettings = $this->getDefaultEmailSettings();
-
-        // override defaults with POST parameter
-        array_walk($mailSettings, function (&$value, $key, $params) {
-            if (isset($params[$key]) && $params[$key] && $params[$key] !== "") {
-                $value = $params[$key];
-            }
-        }, $params);
+        $this->senderUtility->mergeMailSettings($params);
 
         // check that all params are collected and valid
-        // @TODO: implement check
+        // @TODO: return error if anything required is missing
 
-        // get html template
-        $entry = $this->entryRepository->findByUid($entryUid);
-        $this->templateView->getRenderingContext()->setControllerName('Email');
-        $this->templateView->setTemplate($mailSettings['emailTemplate']);
-        $this->templateView->assign('entry', $entry);
-        $this->templateView->assign('showUid', $mailSettings['showUid']);
-        $html = $this->templateView->render();
+        // init email template
+        $this->emailView->setTemplate($params['template']);
+        $this->emailView->setPid($params['page']);
 
-        // check for overrides in POST and override html
+        // check for overrides
         if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-            $marker = $this->getMarkerInHtml($html);
-            $html = $this->overrideMarkerContentInHtml($html, $marker, $params['markerOverrides']);
+            $this->emailView->overrideMarker($params['markerOverrides']);
         }
 
-        // hijack links and replace frontend links
-        $html = $this->replaceInternalLinks($html, $mailSettings['showUid']);
+        // check for provider settings and possible list of recipients
+        if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
+            $providerSettings = $params['provider'];
+            /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
+            $provider = GeneralUtility::makeInstance($providerSettings['id']);
+            $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
+            $contacts = $provider->getContacts();
 
-        // actual send
-        $message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
-        $message->setTo($mailSettings['recipientAddress'], $mailSettings['recipientName'] ?? null)
-            ->setFrom($mailSettings['senderAddress'], $mailSettings['senderName'] ?? null)
-            ->setSubject($mailSettings['subject'])
-            ->setBody($html, 'text/html');
-
-        if ($mailSettings['senderAddress'] !== $mailSettings['replytoAddress']) {
-            $message->setReplyTo($mailSettings['replytoAddress']);
+            $this->senderUtility->setRecipients($contacts);
         }
 
-        $sendSuccess = $message->send();
+        $status = $this->senderUtility->sendEmailView($this->emailView);
 
-        // sending successfull?
-        if (!$sendSuccess) {
-            // @TODO: return error
-        }
-
-        $content = array(
-            'status' => 'OK',
-            'message' => [
-                'headline' => 'E-Mail send',
-                'text' => 'Mail successfully send.'
-            ]
-        );
-        $response->getBody()->write(json_encode($content));
+        $response->getBody()->write(json_encode($status));
         return $response;
     }
 
@@ -450,89 +406,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @param int $id
-     * @param int $typeNum
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
-     */
-    protected function initTSFE($id = 1, $typeNum = 0)
-    {
-        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
-        if (!is_object($GLOBALS['TT'])) {
-            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
-            $GLOBALS['TT']->start();
-        }
-
-        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
-            $GLOBALS['TYPO3_CONF_VARS'],
-            $id,
-            $typeNum
-        );
-        $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-        $GLOBALS['TSFE']->sys_page->init(true);
-        $GLOBALS['TSFE']->connectToDB();
-        $GLOBALS['TSFE']->initFEuser();
-        $GLOBALS['TSFE']->determineId();
-        $GLOBALS['TSFE']->initTemplate();
-        $GLOBALS['TSFE']->rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($id, '');
-        $GLOBALS['TSFE']->getConfigArray();
-
-        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
-            $_SERVER['HTTP_HOST'] = $host;
-        }
-    }
-
-    /**
-     * @param $html
-     * @return array
-     * @deprecated
-     */
-    protected function getInternalLinks($html)
-    {
-        // find all links
-        $regex = '/(<a[^>]href=")(.[^"]*)/';
-        preg_match_all($regex, $html, $links);
-
-        // abort if no links were found
-        if (!sizeof($links)) {
-            return [];
-        }
-
-        // remove links that are not internal
-        $links = array_filter($links[2], function ($uri) {
-            return strpos($uri, '/typo3/index.php?M=');
-        });
-
-        return $links;
-    }
-
-    /**
+     * @TODO: implement and connect with hook to use wizard as dynamic TCA element
      * @return array
      */
     protected function getViewData()
     {
         return [];
-    }
-
-    /**
-     * @param $html
-     * @param $marker
-     * @return array
-     * @deprecated
-     */
-    protected function getMarkerContentInHtml($html, $marker)
-    {
-        $content = [];
-        foreach ($marker as $m) {
-            preg_match('/(<!--\s+###' . $m . '###\s+-->)([\s\S]*)(<!--\s+###' . $m . '###\s+-->)/', $html, $result);
-            $content[] = array(
-                'name' => $m,
-                'content' => $result[2]
-            );
-        }
-        return $content;
     }
 
     /**
@@ -558,53 +437,4 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
-    /**
-     * @return array
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getEmailTemplateSelection()
-    {
-        $pageTsConfig = BackendUtility::getPagesTSconfig(0);
-        $emailTemplates = $pageTsConfig['TCEFORM.']['tt_content.']['pi_flexform.']['bwbookingmanager_pi1.']['email.']['settings.mail.template.']['addItems.'];
-        $selection = [];
-        foreach ($emailTemplates as $key => $emailTemplate) {
-            $selection[] = array(
-                'file' => $key,
-                'name' => $this->getLanguageService()->sL($emailTemplate),
-                'previewUri' => $this->getEmailPreviewUri($key)
-            );
-        }
-        return $selection;
-    }
-
-    /**
-     * Returns the LanguageService
-     *
-     * @return \TYPO3\CMS\Lang\LanguageService
-     */
-    protected function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
-    }
-
-    /**
-     * @param string $emailTemplate
-     * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getEmailPreviewUri($emailTemplate)
-    {
-        $routeName = 'ajax_emailpreview';
-
-        $newQueryParams = $this->queryParams;
-        $newQueryParams['emailTemplate'] = $emailTemplate;
-
-        $uriArguments['arguments'] = json_encode($newQueryParams);
-        $uriArguments['signature'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(
-            $uriArguments['arguments'],
-            $routeName
-        );
-
-        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
-    }
 }

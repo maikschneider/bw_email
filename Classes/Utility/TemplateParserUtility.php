@@ -29,7 +29,7 @@ class TemplateParserUtility
      *
      * @param $html
      */
-    public function __construct($html)
+    public function __construct($html = null)
     {
         $this->html = $html ?: null;
         $this->marker = null;

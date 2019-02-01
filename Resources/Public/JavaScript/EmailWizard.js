@@ -218,19 +218,19 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
         };
         EmailWizard.prototype.onSendResponse = function (data) {
             this.confirmModal.trigger('modal-dismiss');
-            this.$loaderTarget.addClass('closeing');
-            setTimeout(function () {
-                this.currentModal.trigger('modal-dismiss');
-                if (data.status === 'OK') {
+            if (data.status === 'OK') {
+                this.$loaderTarget.addClass('closeing');
+                setTimeout(function () {
+                    this.currentModal.trigger('modal-dismiss');
                     top.TYPO3.Notification.success(data.message.headline, data.message.text);
-                }
-                else if (data.status === 'WARNING') {
-                    top.TYPO3.Notification.warning(data.message.headline, data.message.text);
-                }
-                else {
-                    top.TYPO3.Notification.error(data.message.headline, data.message.text);
-                }
-            }.bind(this), 2000);
+                }.bind(this), 2000);
+            }
+            else if (data.status === 'WARNING') {
+                top.TYPO3.Notification.warning(data.message.headline, data.message.text);
+            }
+            else {
+                top.TYPO3.Notification.error(data.message.headline, data.message.text);
+            }
         };
         return EmailWizard;
     }());
