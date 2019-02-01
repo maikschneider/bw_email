@@ -12,7 +12,7 @@ The templates are parsed with [Zurb Foundation Inky](https://foundation.zurb.com
 
 * require via composer ````composer require blueways/bw-email````
 * install via Extension manager
-* include typoscript setup and constants **after** your typoscript code:
+* include typoscript setup and constants **after** your typoscript code via ```static template``` or by manuel include:
 
 constants:
 ```
