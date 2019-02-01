@@ -102,5 +102,11 @@ If you like to use external data, you can write your own ContactProvider. Just e
 # Known issues
 
 * CSS files need to be hard coded in email template (see Default.html)
-* RTE links are getting removed
+* Inline RTE links are wrapped with an additional ````<p></p>```` that causes line breaks
 * Internal links may be broken
+
+# Improvement ideas
+
+* embed images in message
+* separate backend module
+* send mail log
