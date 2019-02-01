@@ -157,7 +157,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     {
         \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
         if (!is_object($GLOBALS['TT'])) {
-            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker;
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\TimeTracker(false);
             $GLOBALS['TT']->start();
         }
 
