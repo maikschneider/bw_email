@@ -180,7 +180,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
                 title: 'Are you sure?',
                 size: Modal.sizes.small,
                 style: Modal.styles.dark,
-                content: '<p>You are going to send the displayed HTML mail to <strong>' + recipientText + '</strong>.</p>',
+                content: 'You are going to send the displayed HTML mail to ' + recipientText + '.',
                 buttons: [
                     {
                         text: 'Yes, send',
