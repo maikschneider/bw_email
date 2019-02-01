@@ -1,6 +1,6 @@
 {
   "name": "bw_email",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generic email wizard for TYPO3 CMS",
   "repository": "https://bitbucket.org/blueways/bw_email",
   "main": "Gruntfile.js",
