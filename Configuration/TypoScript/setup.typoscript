@@ -89,6 +89,11 @@ config.tx_extbase {
 		TYPO3\CMS\Viewpage\Controller\ViewModuleController {
 			className = Blueways\BwEmail\Controller\ViewModuleController
 		}
+
+
+		TYPO3\CMS\Backend\Controller\PageLayoutController {
+			className = Blueways\BwEmail\Controller\PageLayoutController
+		}
 	}
 
 		# declare inheritance of contact sources
