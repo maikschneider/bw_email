@@ -44,7 +44,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
      */
     public function render($actionName = null)
     {
-        if ($this->templateParser->getHtml() === null) {
+        if (empty($this->templateParser->getHtml())) {
             $this->templateParser->setHtml(parent::render($actionName));
         }
 
@@ -70,7 +70,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     {
         $marker = $this->templateParser->getMarker();
 
-        if ($marker === null) {
+        if (empty($marker)) {
             $html = parent::render();
             $this->templateParser->setHtml($html);
             $this->templateParser->parseMarker();
