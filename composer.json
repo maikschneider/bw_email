@@ -3,9 +3,11 @@
   "description": "TYPO3 extension for creating responsive email templates",
   "type": "typo3-cms-extension",
   "require": {
-    "typo3/cms-core": "^8.7 || ^9.5",
     "tijsverkoyen/css-to-inline-styles": "^2.2",
-    "maikschneider/inky": "1.3.6.*",
+    "maikschneider/inky": "1.3.6.*"
+  },
+  "require-dev": {
+    "typo3/cms-core": "^8.7 || ^9.5",
     "ext-json": "*"
   },
   "license": "MIT",
@@ -17,7 +19,7 @@
       "role": "Developer"
     }
   ],
-  "version": "1.0.1",
+  "version": "1.0.2",
   "keywords": [
     "TYPO3",
     "Zurb Foundation",
