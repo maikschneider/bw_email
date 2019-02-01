@@ -241,7 +241,7 @@ class EmailWizard {
 			title: 'Are you sure?',
 			size: Modal.sizes.small,
 			style: Modal.styles.dark,
-			content: '<p>You are going to send the displayed HTML mail to <strong>' + recipientText + '</strong>.</p>',
+			content: 'You are going to send the displayed HTML mail to ' + recipientText + '.',
 			buttons: [
 				{
 					text: 'Yes, send',
@@ -269,7 +269,7 @@ class EmailWizard {
 	}
 
 	private doSend() {
-
+		
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.confirmModal.find('.modal-title').html('Sending..');
 			this.confirmModal.find('.modal-body').css('text-align', 'center').html(icon);
