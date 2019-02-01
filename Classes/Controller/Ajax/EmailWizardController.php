@@ -5,14 +5,9 @@ namespace Blueways\BwEmail\Controller\Ajax;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\TimeTracker\TimeTracker;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * Class EmailWizardController
@@ -23,19 +18,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 {
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
      * @var array
      */
     protected $queryParams = null;
-
-    /**
-     * @var UriBuilder
-     */
-    protected $uriBuilder;
 
     /**
      * @var array
@@ -263,149 +248,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @param $html
-     * @return array
-     * @deprecated
-     */
-    protected function getMarkerInHtml($html)
-    {
-        preg_match_all('/(<!--\s+###)([\w\d]\w+)(###\s+-->)/', $html, $foundMarker);
-
-        // abort if no marker were found
-        if (!sizeof($foundMarker[2])) {
-            return [];
-        }
-
-        // ensure that two markers were found
-        $markerOccurrences = array_count_values($foundMarker[2]);
-        $markerOccurrences = array_filter($markerOccurrences, function ($occurrences) {
-            return $occurrences === 2 ? true : false;
-        });
-
-        return array_keys($markerOccurrences);
-    }
-
-    /**
-     * @param $html
-     * @param $marker
-     * @param $overrides
-     * @return mixed
-     * @deprecated
-     */
-    protected function overrideMarkerContentInHtml($html, $marker, $overrides)
-    {
-        // abbort if no overrides
-        if (!$overrides || !sizeof($overrides)) {
-            return $html;
-        }
-
-        // checks that there are no overrides for marker that dont exist
-        $validOverrides = array_intersect($marker, array_keys($overrides));
-
-        foreach ($validOverrides as $overrideName) {
-            // abbort if no override content
-            if (!$overrides[$overrideName]) {
-                continue;
-            }
-
-            // replace everything from marker start to marker end with override content
-            $regex = '/<!--\s+###' . $overrideName . '###\s+-->[\s\S]*<!--\s+###' . $overrideName . '###\s+-->/';
-            $html = preg_replace($regex, $overrides[$overrideName], $html);
-        }
-
-        return $html;
-    }
-
-    /**
-     * @param $html
-     * @param $pageUid
-     * @return string
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
-     * @deprecated
-     */
-    protected function replaceInternalLinks($html, $pageUid)
-    {
-        //$links = $this->getInternalLinks($html);
-        $links = $this->getLinks($html);
-
-        foreach ($links as $rawLink) {
-
-            // extract parameters
-            $link = htmlspecialchars_decode(urldecode($rawLink));
-            preg_match_all('/(tx_bwbookingmanager_pi1\[)([\w]+)(\]=)([\w]+)(&|$)/', $link, $linkArgs);
-
-            // create new link
-            $getArgs = [];
-            for ($i = 0; $i < sizeof($linkArgs[0]); $i++) {
-                $getArgs['tx_bwbookingmanager_pi1[' . $linkArgs[2][$i] . ']'] = $linkArgs[4][$i];
-            }
-
-            // initialize time tracker
-            if (!is_object($GLOBALS['TT'])) {
-                $GLOBALS['TT'] = new TimeTracker();
-                $GLOBALS['TT']->start();
-            }
-
-            // initialize TSFE
-            if (!is_object($GLOBALS['TSFE'])) {
-                /** @var TypoScriptFrontendController */
-                $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
-                    TypoScriptFrontendController::class,
-                    $GLOBALS['TYPO3_CONF_VARS'],
-                    $pageUid,
-                    0
-                );
-                $GLOBALS['TSFE']->connectToDB();
-                $GLOBALS['TSFE']->initFEuser();
-                $GLOBALS['TSFE']->determineId();
-                $GLOBALS['TSFE']->initTemplate();
-                $GLOBALS['TSFE']->getConfigArray();
-            }
-
-            // make it work with realurl too
-            if (ExtensionManagementUtility::isLoaded('realurl')) {
-                $rootLine = BackendUtility::BEgetRootLine($pageUid);
-                $host = BackendUtility::firstDomainRecord($rootLine);
-                $_SERVER['HTTP_HOST'] = $host;
-            }
-
-            // create uri by typolink helper
-            $cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $uri = $cObj->typolink_URL([
-                'parameter' => $pageUid,
-                'linkAccessRestrictedPages' => 1,
-                'forceAbsoluteUrl' => 1,
-                'useCacheHash' => 1,
-                'additionalParams' => GeneralUtility::implodeArrayForUrl(null, $getArgs),
-            ]);
-
-            // replace link with new absolute one
-            $html = str_replace($rawLink, $uri, $html);
-        }
-
-        return $html;
-    }
-
-    /**
-     * @param $html
-     * @return array
-     * @deprecated
-     */
-    protected function getLinks($html)
-    {
-        // find all links
-        $regex = '/(<a[^>]href=")(.[^"]*)/';
-        preg_match_all($regex, $html, $links);
-
-        // abort if no links were found
-        if (!sizeof($links)) {
-            return [];
-        }
-
-        return $links;
-    }
-
-    /**
      * @TODO: implement and connect with hook to use wizard as dynamic TCA element
      * @return array
      */
@@ -432,9 +274,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $routeName
         );
 
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-
-        return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
+        return (string)$$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
 }
