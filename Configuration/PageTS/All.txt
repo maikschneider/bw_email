@@ -6,7 +6,7 @@ mod {
     web_layout {
         BackendLayouts {
             bw_email_default {
-                title = Default
+                title = DefaultMail
                 config {
                     backend_layout {
                         colCount = 1

@@ -11,7 +11,7 @@ plugin.tx_bwemail_pi1 {
 		senderName = Example sender name
 		replytoAddress =
 		subject = Example subject
-		template = Default
+		template = DefaultMail
 		showUid = 1
 		recipientAddress =
 		fluid_styled_content {

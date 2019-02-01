@@ -16,7 +16,7 @@
 			key.data = pagelayout
 
 			pagets__bw_email_default = TEXT
-			pagets__bw_email_default.value = Default
+			pagets__bw_email_default.value = DefaultMail
 
 			pagets__bw_email_drip = TEXT
 			pagets__bw_email_drip.value = Drip
@@ -49,7 +49,7 @@
 			pagets__bw_email_welcome.value = Welcome
 
 			default = TEXT
-			default.value = Default
+			default.value = DefaultMail
 		}
 
 		variables {
