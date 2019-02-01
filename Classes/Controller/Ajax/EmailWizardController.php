@@ -4,7 +4,6 @@ namespace Blueways\BwEmail\Controller\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -73,13 +72,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        $formActionUri = $this->getSendUri();
+        $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
         $defaults = $this->senderUtility->getMailSettings();
         $templates = $this->getTemplates();
 
@@ -105,20 +103,24 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * @param $routeName
+     * @param array $params
      * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    protected function getSendUri()
+    protected function getAjaxUri($routeName, $params = [])
     {
-        $routeName = 'ajax_wizard_modal_send';
-        $uriArguments['arguments'] = json_encode([
+        $queryParams = $this->queryParams;
+        foreach ($params as $paramName => $paramValue) {
+            $queryParams[$paramName] = $paramValue;
+        }
 
-        ]);
+        $uriArguments['arguments'] = json_encode($queryParams);
         $uriArguments['signature'] = GeneralUtility::hmac(
             $uriArguments['arguments'],
             $routeName
         );
-        return (string)$this->uriBuilder->buildUriFromRoute($routeName);
+
+        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
     /**
@@ -215,6 +217,8 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $this->throwStatus(405, 'Method not allowed');
         }
 
+        $queryParams = json_decode($request->getQueryParams()['arguments'], true);
+
         $params = $request->getParsedBody();
         $this->senderUtility->mergeMailSettings($params);
 
@@ -223,7 +227,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // init email template
         $this->emailView->setTemplate($params['template']);
-        $this->emailView->setPid($params['page']);
+        $this->emailView->setPid($queryParams['page']);
 
         // check for overrides
         if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
@@ -254,27 +258,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected function getViewData()
     {
         return [];
-    }
-
-    /**
-     * @param string $emailTemplate
-     * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     */
-    protected function getPreviewUri($template)
-    {
-        $routeName = 'ajax_wizard_modal_preview';
-
-        $newQueryParams = $this->queryParams;
-        $newQueryParams['template'] = $template;
-
-        $uriArguments['arguments'] = json_encode($newQueryParams);
-        $uriArguments['signature'] = GeneralUtility::hmac(
-            $uriArguments['arguments'],
-            $routeName
-        );
-
-        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
 }

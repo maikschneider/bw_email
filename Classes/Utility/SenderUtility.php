@@ -5,6 +5,7 @@ namespace Blueways\BwEmail\Utility;
 use Blueways\BwEmail\Domain\Model\Contact;
 use Blueways\BwEmail\View\EmailView;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class SenderUtility
@@ -74,11 +75,6 @@ class SenderUtility
         ArrayUtility::mergeRecursiveWithOverrule($this->mailSettings, $settings, false, false);
     }
 
-    protected function validateSettings()
-    {
-
-    }
-
     /**
      * @param \Blueways\BwEmail\View\EmailView $emailView
      * @return array
@@ -103,7 +99,7 @@ class SenderUtility
             foreach ($this->recipients as $recipient) {
                 $success = $this->sendEmailViewToContact($emailView, $recipient);
                 if ($success) {
-                    $mailsSend = $mailsSend + 1;
+                    $mailsSend = $mailsSend + $success;
                 }
             }
         }
@@ -113,7 +109,7 @@ class SenderUtility
             $contact->setName($this->mailSettings['recipientName']);
             $success = $this->sendEmailViewToContact($emailView, $contact);
             if ($success) {
-                $mailsSend = $mailsSend + 1;
+                $mailsSend = $mailsSend + $success;
             }
         }
 
@@ -139,26 +135,62 @@ class SenderUtility
     /**
      * @param \Blueways\BwEmail\View\EmailView $emailView
      * @param \Blueways\BwEmail\Domain\Model\Contact $contact
-     * @return boolean
+     * @return int
      */
     protected function sendEmailViewToContact(EmailView $emailView, Contact $contact)
     {
-        // @TODO: implement
-        return true;
+        $emailView->insertContact($contact);
+        $html = $emailView->render();
+
+        return $this->sendMail(
+            $this->getSenderArray(),
+            $contact->getRecipientArray(),
+            $this->mailSettings['subject'],
+            $html,
+            $this->mailSettings['replytoAddress']
+        );
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @param $subject
+     * @param $body
+     * @param $replyTo
+     * @return int
+     */
     private function sendMail($from, $to, $subject, $body, $replyTo)
     {
-        /*
-        $message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
-        $message->setTo($to)
-            ->setReplyTo($replyTo)
+        $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+        $mailMessage->setTo($to)
             ->setFrom($from)
             ->setSubject($subject)
             ->setBody($body, 'text/html');
 
-        $message->send();
-        */
+        if (!empty($replyTo)) {
+            $mailMessage->setReplyTo($replyTo);
+        }
+
+        return $mailMessage->send();
+    }
+
+    /**
+     * Returns array in form array(senderMail => 'Sender Name')
+     *
+     * @return array
+     */
+    private function getSenderArray()
+    {
+        if ($this->mailSettings['senderName']) {
+            return [$this->mailSettings['senderAddress'] => $this->mailSettings['senderName']];
+        }
+
+        return [$this->mailSettings['senderAddress']];
+    }
+
+    protected function validateSettings()
+    {
+
     }
 
 }

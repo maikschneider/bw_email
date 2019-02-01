@@ -36,7 +36,12 @@ class PageEmailWizardController extends EmailWizardController
             $selection[] = array(
                 'file' => $template['title'],
                 'name' => $template['title'],
-                'previewUri' => $this->getPreviewUri($template['title'])
+                'previewUri' => $this->getAjaxUri(
+                    'ajax_wizard_modal_preview',
+                    [
+                        'template' => $template['title']
+                    ]
+                )
             );
         }
         return $selection;

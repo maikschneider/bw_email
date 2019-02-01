@@ -72,27 +72,25 @@ class Contact
     }
 
     /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email): void
-    {
-        $this->email = $email;
-    }
-
-    /**
      * @return array
      */
     public function getAttributes()
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * Returns array in form array(email => 'Full Name')
+     *
+     * @return array
+     */
+    public function getRecipientArray()
+    {
+        if ($this->getFullName()) {
+            return [$this->getEmail() => $this->getFullName()];
+        }
+
+        return [$this->getEmail()];
     }
 
     /**
@@ -109,5 +107,21 @@ class Contact
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email): void
+    {
+        $this->email = $email;
     }
 }

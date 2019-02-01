@@ -25,6 +25,11 @@ class TemplateParserUtility
     protected $marker;
 
     /**
+     * @var string|null
+     */
+    protected $backupHtml;
+
+    /**
      * TemplateParserUtility constructor.
      *
      * @param $html
@@ -32,6 +37,7 @@ class TemplateParserUtility
     public function __construct($html = null)
     {
         $this->html = $html ?: null;
+        $this->backupHtml = null;
         $this->marker = null;
     }
 
@@ -115,6 +121,10 @@ class TemplateParserUtility
      */
     public function insertContact($contact)
     {
+        // backup html and use this one to keep contact marker
+        $this->html = $this->backupHtml ?? $this->html;
+        $this->backupHtml = $this->html;
+
         $attributes = array_keys((array)$contact);
         foreach ($attributes as $attr) {
             $regex = '/\$' . $attr . '/';
