@@ -1,6 +1,6 @@
 {
-    "name": "blueways/email",
-    "description": "TYPO3 extension for creating email templates",
+    "name": "blueways/bw-email",
+    "description": "TYPO3 extension for creating responsive email templates",
     "type": "typo3-cms-extension",
     "require": {
         "tijsverkoyen/css-to-inline-styles": "^2.2",
