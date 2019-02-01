@@ -77,7 +77,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
             $marker = $this->templateParser->getMarker();
         }
 
-        return $marker;
+        return $marker ?? [];
     }
 
     /**
