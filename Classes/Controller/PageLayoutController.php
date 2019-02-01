@@ -32,7 +32,7 @@ class PageLayoutController extends \TYPO3\CMS\Backend\Controller\PageLayoutContr
             $emailPageButton = $this->buttonBar->makeLinkButton()
                 ->setClasses('viewmodule_email_button')
                 ->setHref('#')
-                ->setTitle($lang->getLL('editPageProperties'))
+                ->setTitle($lang->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
                 ->setIcon($this->iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
                 ->setDataAttributes([
                     'wizard-uri' => $this->getPageWizardUri(),
