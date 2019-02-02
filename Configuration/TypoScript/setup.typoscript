@@ -70,15 +70,15 @@
 page.10 {
 	templateRootPaths {
 		117 = EXT:bw_email/Resources/Private/Templates/Email/
-		118 = {$plugin.tx_bwemail_pi1.templateRootPath}
+		118 = {$plugin.tx_bwemail.templateRootPath}
 	}
 	partialRootPaths {
 		117 = EXT:bw_email/Resources/Private/Partials/Email/
-		118 = {$plugin.tx_bwemail_pi1.partialRootPath}
+		118 = {$plugin.tx_bwemail.partialRootPath}
 	}
 	layoutRootPaths {
 		117 = EXT:bw_email/Resources/Private/Layouts/Email/
-		118 = {$plugin.tx_bwemail_pi1.layoutRootPath}
+		118 = {$plugin.tx_bwemail.layoutRootPath}
 	}
 }
 
@@ -88,11 +88,6 @@ config.tx_extbase {
 		# Extending a controller
 		TYPO3\CMS\Viewpage\Controller\ViewModuleController {
 			className = Blueways\BwEmail\Controller\ViewModuleController
-		}
-
-
-		TYPO3\CMS\Backend\Controller\PageLayoutController {
-			className = Blueways\BwEmail\Controller\PageLayoutController
 		}
 	}
 
@@ -110,17 +105,17 @@ config.tx_extbase {
 	}
 }
 
-plugin.tx_bwemail_pi1 {
+plugin.tx_bwemail {
 	settings {
-		senderAddress = {$plugin.tx_bwemail_pi1.settings.senderAddress}
-		senderName = {$plugin.tx_bwemail_pi1.settings.senderName}
-		replytoAddress = {$plugin.tx_bwemail_pi1.settings.replytoAddress}
-		subject = {$plugin.tx_bwemail_pi1.settings.subject}
-		template = {$plugin.tx_bwemail_pi1.settings.template}
-		showUid = {$plugin.tx_bwemail_pi1.settings.showUid}
-		recipientAddress = {$plugin.tx_bwemail_pi1.settings.recipientAddress}
+		senderAddress = {$plugin.tx_bwemail.settings.senderAddress}
+		senderName = {$plugin.tx_bwemail.settings.senderName}
+		replytoAddress = {$plugin.tx_bwemail.settings.replytoAddress}
+		subject = {$plugin.tx_bwemail.settings.subject}
+		template = {$plugin.tx_bwemail.settings.template}
+		showUid = {$plugin.tx_bwemail.settings.showUid}
+		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 	}
 	persistence {
-		storagePid = 17
+		storagePid = {$plugin.tx_bwemail.persistence.storagePid}
 	}
 }

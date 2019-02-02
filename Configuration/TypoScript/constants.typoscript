@@ -1,4 +1,4 @@
-plugin.tx_bwemail_pi1 {
+plugin.tx_bwemail {
 	view {
 		templateRootPath =
 		partialRootPath =

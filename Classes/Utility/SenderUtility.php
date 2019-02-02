@@ -37,12 +37,12 @@ class SenderUtility
         $this->typoscript = $typoscript;
 
         $this->mailSettings = array(
-            'senderAddress' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['senderAddress'],
-            'senderName' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['senderName'],
-            'replytoAddress' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['replytoAddress'],
-            'subject' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['subject'],
-            'emailTemplate' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['template'],
-            'showUid' => $this->typoscript['plugin.']['tx_bwemail_pi1.']['settings.']['showUid'] ?? null,
+            'senderAddress' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['senderAddress'],
+            'senderName' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['senderName'],
+            'replytoAddress' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['replytoAddress'],
+            'subject' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['subject'],
+            'emailTemplate' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['template'],
+            'showUid' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['showUid'] ?? null,
             'recipientAddress' => '',
             'recipientName' => '',
             'provider' => [

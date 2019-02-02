@@ -32,7 +32,7 @@ setup:
 The extensions offers some default templates located in ``ÈXT:bw_email/Resources/Private/Templates``. You can add your own templates via constants:
 
 ```
-plugin.tx_bwemail_pi1 {
+plugin.tx_bwemail {
 	view {
 		templateRootPath =
 		partialRootPath =
@@ -46,7 +46,7 @@ Keep in mind that the templates are added to ````page.10.templatRootPaths.118```
 ## Default mail settings
 
 ````
-plugin.tx_bwemail_pi1 {
+plugin.tx_bwemail {
     settings {
             css = EXT:bw_email/Resources/Public/Css/app.css
             senderAddress = noreply@example.com
