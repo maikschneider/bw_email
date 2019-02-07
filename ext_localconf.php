@@ -12,6 +12,9 @@ call_user_func(
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Backend\\Controller\\PageLayoutController'] = array(
             'className' => 'Blueways\\BwEmail\\Controller\\PageLayoutController'
         );
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Form\\Domain\\Finishers\\EmailFinisher'] = array(
+            'className' => 'Blueways\\BwEmail\\Domain\\Finishers\\EmailFinisher'
+        );
     },
     'bw_email'
 );

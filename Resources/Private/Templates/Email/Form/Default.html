@@ -1,0 +1,86 @@
+{namespace formvh=TYPO3\CMS\Form\ViewHelpers}
+<f:layout name="Mail"/>
+
+<f:section name="Description">Hello World!</f:section>
+
+<f:section name="Main">
+
+    <wrapper class="header">
+        <container>
+            <row class="collapse">
+                <columns small="6">
+                    <img src="http://placehold.it/200x50/663399">
+                </columns>
+                <columns small="6">
+                    <p class="text-right">BASIC</p>
+                </columns>
+            </row>
+        </container>
+    </wrapper>
+
+    <container>
+
+        <spacer size="16"></spacer>
+
+        <row>
+            <columns small="12">
+                <formvh:renderAllFormValues renderable="{form.formDefinition}" as="formValue">
+                    <tr>
+                        <td width="600" valign="top" align="left">{formvh:translateElementProperty(element:
+                            formValue.element, property: 'label') }</td>
+                        <td width="600" valign="top" align="left">
+                            <f:if condition="{formValue.value}">
+                                <f:then>
+                                    <f:if condition="{formValue.isMultiValue}">
+                                        <f:then>
+                                            <table cellspacing="0" border="0">
+                                                <f:for each="{formValue.processedValue}" as="value">
+                                                    <tr>
+                                                        <td>{value}</td>
+                                                    </tr>
+                                                </f:for>
+                                            </table>
+                                        </f:then>
+                                        <f:else>
+                                            <table cellspacing="0" border="0">
+                                                <tr>
+                                                    <td>
+                                                        <f:format.nl2br>{formValue.processedValue}</f:format.nl2br>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </f:else>
+                                    </f:if>
+                                </f:then>
+                                <f:else>
+                                    -
+                                </f:else>
+                            </f:if>
+                        </td>
+                    </tr>
+                </formvh:renderAllFormValues>
+            </columns>
+        </row>
+        <wrapper class="secondary">
+
+            <spacer size="16"></spacer>
+
+            <row>
+                <columns large="6">
+                    <h5>Connect With Us:</h5>
+                    <button class="facebook expand" href="http://zurb.com">Facebook</button>
+                    <button class="twitter expand" href="http://zurb.com">Twitter</button>
+                    <button class="google expand" href="http://zurb.com">Google+</button>
+                </columns>
+                <columns large="6">
+                    <h5>Contact Info:</h5>
+                    <p>Phone: 408-341-0600</p>
+                    <p>Email:
+                        <a href="mailto:foundation@zurb.com">foundation@zurb.com</a>
+                    </p>
+                </columns>
+            </row>
+        </wrapper>
+    </container>
+
+</f:section>

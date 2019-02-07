@@ -119,3 +119,14 @@ plugin.tx_bwemail {
 		storagePid = {$plugin.tx_bwemail.persistence.storagePid}
 	}
 }
+
+
+module.tx_form {
+	settings {
+		yamlConfigurations {
+			117 = EXT:bw_email/Configuration/Yaml/FormFinisher.yaml
+		}
+	}
+}
+
+@import 'EXT:bw_email/Configuration/Typoscript/Setup/ddev.typoscript'
