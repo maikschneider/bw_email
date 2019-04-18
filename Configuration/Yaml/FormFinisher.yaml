@@ -1,0 +1,27 @@
+TYPO3:
+  CMS:
+    Form:
+      mixins:
+        formElementMixins:
+          formEmailFinisherMixin:
+            editors:
+              1000:
+                selectOptions:
+                  30:
+                    value: 'bwemail'
+                    label: 'Responsive HTML'
+              1117:
+                identifier: 'template'
+                templateName: 'Inspector-SingleSelectEditor'
+                label: 'Responsive Email Template'
+                propertyPath: 'options.template'
+                selectOptions:
+                  10:
+                    value: 'Form/Default'
+                    label: 'Default'
+                  20:
+                    value: 'Form/Default'
+                    label: 'Custom1'
+                  30:
+                    value: 'Form/Default'
+                    label: 'Custom1'
