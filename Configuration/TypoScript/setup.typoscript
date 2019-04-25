@@ -129,4 +129,4 @@ module.tx_form {
 	}
 }
 
-@import 'EXT:bw_email/Configuration/Typoscript/Setup/ddev.typoscript'
+@import 'EXT:bw_email/Configuration/TypoScript/Setup/ddev.typoscript'
