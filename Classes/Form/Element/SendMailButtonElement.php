@@ -3,6 +3,7 @@
 namespace Blueways\BwEmail\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -24,36 +25,29 @@ class SendMailButtonElement extends AbstractFormElement
     protected $databaseUid;
 
     /**
+     * @var array
+     */
+    protected $config = [
+        'modalTitle' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalTitle',
+        'modalSendButton' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton',
+        'modalCancelButton' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton',
+        'buttonText' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:buttonText',
+    ];
+
+    /**
      * @return array|string
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     public function render()
     {
+        $this->generateConfig();
+        $wizardUri = $this->getWizardUri();
+
         $resultArray = $this->initializeResultArray();
         $resultArray['requireJsModules'][] = 'TYPO3/CMS/BwEmail/EmailWizard';
 
-        $wizardUri = $this->getWizardUri([]);
+        \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->data, 'Debug: ' . __FILE__ . ' in Line: ' . __LINE__);
 
-        // @TODO implement, get additional configuration from TCA conf
-        $this->databaseTable = '';
-        $this->databaseUid = 1;
-
-        // @TODO get the title from TCA configuration to make use of localization
-        $buttonLabel = 'Send new Email';
-        $buttonText = 'New Email';
-        $modalTitle = 'Send new Email';
-        $modalSendButtonText = 'Send';
-        $modalCancelButtonText = 'Cancel';
-
-        // @TODO possible variables to configure
-        /*
-         * $buttonText
-         * $buttonHelp
-         * $modalConfiguration
-         *
-         * DATAHANDELING
-         * [$keys] => $value
-         */
         $html = '';
         // @TODO check why there is an inline style
         $html .= '<div class="formengine-field-item t3js-formengine-field-item">';
@@ -63,10 +57,10 @@ class SendMailButtonElement extends AbstractFormElement
         $html .= '<button 
             class="btn btn-default t3js-sendmail-trigger sendMailButton"
             data-wizard-uri="' . $wizardUri . '" 
-            data-modal-title="' . $modalTitle . '" 
-            data-modal-send-button-text="' . $modalSendButtonText . '" 
-            data-modal-cancel-button-text="' . $modalCancelButtonText . '">
-			  <span class="t3-icon fa fa-envelope-o"></span> ' . $buttonText . '</button>';
+            data-modal-title="' . $this->config['modalTitle'] . '" 
+            data-modal-send-button-text="' . $this->config['modalSendButton'] . '" 
+            data-modal-cancel-button-text="' . $this->config['modalCancelButtonText'] . '">
+			  <span class="t3-icon fa fa-envelope-o"></span> ' . $this->config['buttonText'] . '</button>';
         $html .= '</div>';
         $html .= '</div>';
         $html .= '</div>';
@@ -75,6 +69,26 @@ class SendMailButtonElement extends AbstractFormElement
         $resultArray['html'] = $html;
 
         return $resultArray;
+    }
+
+    /**
+     * Merge settings from TCA with default config
+     * Set data needed for content injection
+     *
+     * @TODO Allow injection of foreign data (like extending some query)
+     */
+    private function generateConfig()
+    {
+        ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
+        $this->config['databaseTable'] = $this->data['tableName'];
+        $this->config['databaseUid'] = $this->data['vanillaUid'];
+
+        // translate labels
+        foreach ($this->config as $key => $config) {
+            if (substr($config, 0, 4) === 'LLL:') {
+                $this->config[$key] = $this->getLanguageService()->sL($config);
+            }
+        }
     }
 
     /**
@@ -87,10 +101,7 @@ class SendMailButtonElement extends AbstractFormElement
         $routeName = 'ajax_wizard_modal_page';
 
         $uriArguments = [];
-        $uriArguments['arguments'] = json_encode([
-            'databaseTable' => $this->databaseTable,
-            'databaseUid' => $this->databaseUid
-        ]);
+        $uriArguments['arguments'] = json_encode($this->config);
         $uriArguments['signature'] = GeneralUtility::hmac(
             $uriArguments['arguments'],
             $routeName

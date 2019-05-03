@@ -21,8 +21,14 @@
 			<trans-unit id="sendPage">
 				<source>Send Page</source>
 			</trans-unit>
+			<trans-unit id="buttonText">
+				<source>Send Email</source>
+			</trans-unit>
 			<trans-unit id="modalCancelButton">
 				<source>Cancel</source>
+			</trans-unit>
+			<trans-unit id="modalTitle">
+				<source>Send Email from record</source>
 			</trans-unit>
 			<trans-unit id="modalSendButton">
 				<source>Send</source>
