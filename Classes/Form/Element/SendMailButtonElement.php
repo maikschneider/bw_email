@@ -5,6 +5,7 @@ namespace Blueways\BwEmail\Form\Element;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class SendMailButtonElement
@@ -32,6 +33,22 @@ class SendMailButtonElement extends AbstractFormElement
         'modalSendButton' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton',
         'modalCancelButton' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton',
         'buttonText' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:buttonText',
+
+        // single || multiple
+        'recipientCount' => 'single',
+        // possible values:
+        // - empty value
+        // - fixed value (e.g. hi@example.com)
+        // - field value (e.g. FIELD:email)
+        'recipientAddress' => 'FIELD:header',
+        // samle as recipientAddress
+        'recipientName' => 'Example name from default conf',
+        // if empty, value taken from typoscript
+        'senderAdress' => '',
+        'senderName' => '',
+        'replytoAddress' => '',
+        'subject' => 'Example subject from default conf',
+        'template' => ''
     ];
 
     /**
@@ -72,19 +89,35 @@ class SendMailButtonElement extends AbstractFormElement
     }
 
     /**
-     * Merge settings from TCA with default config
-     * Set data needed for content injection
+     * Merge settings from TCA and TypoScript with default config
+     * Set and transform data needed for content injection
      *
      * @TODO Allow injection of foreign data (like extending some query)
      */
     private function generateConfig()
     {
+        // merge with TypoScript
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
+        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $typoScript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        ArrayUtility::mergeRecursiveWithOverrule($this->config, $typoScript['plugin.']['tx_bwemail.']['settings.']);
+
+        // merge with TCA
         ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
+
+        // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
         $this->config['databaseUid'] = $this->data['vanillaUid'];
 
-        // translate labels
+        // transform config
         foreach ($this->config as $key => $config) {
+            // insert data from record
+            if (substr($config, 0, 6) === 'FIELD:' && $savedData = $this->data['databaseRow'][substr($config, 6)]) {
+                $this->config[$key] = $savedData;
+            }
+
+            // translate labels
             if (substr($config, 0, 4) === 'LLL:') {
                 $this->config[$key] = $this->getLanguageService()->sL($config);
             }
