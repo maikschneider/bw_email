@@ -105,8 +105,13 @@ If you like to use external data, you can write your own ContactProvider. Just e
 * Inline RTE links are wrapped with an additional ````<p></p>```` that causes line breaks
 * Internal links may be broken
 
+# Usage in other content elements
+
+It is possible to use the email wizard in other content elements like Textmedia or News: Just add the TCA-Type "emailWizard".
+
 # Improvement ideas
 
+* integration into TCA
 * embed images in message
 * separate backend module
 * send mail log
