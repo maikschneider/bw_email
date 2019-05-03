@@ -32,23 +32,49 @@ class SendMailButtonElement extends AbstractFormElement
         $resultArray = $this->initializeResultArray();
         $resultArray['requireJsModules'][] = 'TYPO3/CMS/BwEmail/EmailWizard';
 
+        $wizardUri = $this->getWizardUri([]);
+
         // @TODO implement, get additional configuration from TCA conf
         $this->databaseTable = '';
         $this->databaseUid = 1;
 
+        // @TODO get the title from TCA configuration to make use of localization
+        $buttonLabel = 'Send new Email';
+        $buttonText = 'New Email';
+        $modalTitle = 'Send new Email';
+        $modalSendButtonText = 'Send';
+        $modalCancelButtonText = 'Cancel';
+
         // @TODO possible variables to configure
         /*
          * $buttonText
-         * $buttonHeadline
          * $buttonHelp
+         * $modalConfiguration
          *
          * DATAHANDELING
          * [$keys] => $value
          */
+        $html = '';
+        // @TODO check why there is an inline style
+        $html .= '<div class="formengine-field-item t3js-formengine-field-item">';
+        $html .= '<div class="form-wizards-wrap">';
+        $html .= '<div class="form-wizards-element">';
+        $html .= '<div class="form-control-wrap">';
+        $html .= '<button 
+            class="btn btn-default t3js-sendmail-trigger sendMailButton"
+            data-wizard-uri="' . $wizardUri . '" 
+            data-modal-title="' . $modalTitle . '" 
+            data-modal-send-button-text="' . $modalSendButtonText . '" 
+            data-modal-cancel-button-text="' . $modalCancelButtonText . '">
+			  <span class="t3-icon fa fa-envelope-o"></span> ' . $buttonText . '</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
 
-        $wizardUri = $this->getWizardUri([]);
+        $resultArray['html'] = $html;
 
-        return '';
+        return $resultArray;
     }
 
     /**
@@ -58,7 +84,7 @@ class SendMailButtonElement extends AbstractFormElement
      */
     private function getWizardUri()
     {
-        $routeName = 'wizard_modal_page';
+        $routeName = 'ajax_wizard_modal_page';
 
         $uriArguments = [];
         $uriArguments['arguments'] = json_encode([
