@@ -155,7 +155,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      */
     protected function getTemplates()
     {
-        $pageUid = $this->queryParams['page'] ?? 3;
+        $pageUid = $this->queryParams['databasePid'] ?? 0;
         $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
         $templates = $pageTsConfig['mod.']['web_layout.']['BackendLayouts.'];
         $selection = [];

@@ -116,14 +116,20 @@ plugin.tx_bwemail {
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 		typoscriptSelects {
 			pages {
-				leftContent {
+				defaultColumn {
 					table = tt_content
 					select {
 						pidInList = FIELD:pid
-						where = colPos=1
+						where = colPos=0
 						orderBy = sorting
 					}
 				}
+
+				leftColumn < .defaultColumn
+				leftColumn.select.where = colPos=1
+
+				rightColumn < .defaultColumn
+				rightColumn.select.where = colPos=2
 			}
 		}
 	}
