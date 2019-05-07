@@ -18,7 +18,9 @@ call_user_func(function () {
                 'type' => 'sendMailButton',
                 'size' => 30,
                 'eval' => 'int',
-                'senderAddress' => 'new@bla.ex'
+                'recipientAddress' => 'FIELD:header',
+                'senderAddress' => 'tca@bla.ex',
+                'replytoAddress' => 'reply@tca.de'
             ],
         ]
     ];

@@ -30,14 +30,14 @@ class SendMailButtonElement extends AbstractFormElement
         // - empty value
         // - fixed value (e.g. hi@example.com)
         // - field value (e.g. FIELD:email)
-        'recipientAddress' => 'FIELD:header',
+        'recipientAddress' => '',
         // samle as recipientAddress
-        'recipientName' => 'Example name from default conf',
+        'recipientName' => '',
         // if empty, value taken from typoscript
         'senderAddress' => '',
         'senderName' => '',
         'replytoAddress' => '',
-        'subject' => 'Example subject from default conf',
+        'subject' => '',
         'template' => ''
     ];
 
@@ -94,9 +94,7 @@ class SendMailButtonElement extends AbstractFormElement
 
         // merge with TCA (TCA can unset settings)
         ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
-
-        \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->config, 'Debug: ' . __FILE__ . ' in Line: ' . __LINE__);
-
+        
         // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
         $this->config['databaseUid'] = $this->data['vanillaUid'];
