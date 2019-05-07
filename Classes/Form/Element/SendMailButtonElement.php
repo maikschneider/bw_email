@@ -89,12 +89,16 @@ class SendMailButtonElement extends AbstractFormElement
         /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $typoScript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        ArrayUtility::mergeRecursiveWithOverrule($this->config, $typoScript['plugin.']['tx_bwemail.']['settings.'],
-            true, false);
+        ArrayUtility::mergeRecursiveWithOverrule(
+            $this->config,
+            $typoScript['plugin.']['tx_bwemail.']['settings.'],
+            true,
+            false
+        );
 
         // merge with TCA (TCA can unset settings)
         ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
-        
+
         // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
         $this->config['databaseUid'] = $this->data['vanillaUid'];

@@ -80,6 +80,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      */
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
+        // security: check signature
+        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_page')) {
+            return $response->withStatus(403);
+        }
+
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
@@ -167,6 +172,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      */
     public function previewAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
     {
+        // security: check signature
+        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_preview')) {
+            return $response->withStatus(403);
+        }
+
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         // init email template
@@ -242,6 +252,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $this->throwStatus(405, 'Method not allowed');
         }
 
+        // security: check signature
+        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_send')) {
+            return $response->withStatus(403);
+        }
+
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $params = $request->getParsedBody();
@@ -288,5 +303,18 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected function getLanguageService()
     {
         return $GLOBALS['LANG'];
+    }
+
+    /**
+     * Check if hmac signature is correct
+     *
+     * @param ServerRequestInterface $request the request with the GET parameters
+     * @param string $route
+     * @return bool
+     */
+    protected function isSignatureValid(ServerRequestInterface $request, string $route)
+    {
+        $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
+        return $token === $request->getQueryParams()['signature'];
     }
 }
