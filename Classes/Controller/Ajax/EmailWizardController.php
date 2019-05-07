@@ -4,6 +4,8 @@ namespace Blueways\BwEmail\Controller\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -64,21 +66,27 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->templateView = $templateView;
         $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
         $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
-        $this->senderUtility = GeneralUtility::makeInstance('Blueways\BwEmail\Utility\SenderUtility',
-            $this->typoscript);
+        $this->senderUtility = GeneralUtility::makeInstance(
+            'Blueways\BwEmail\Utility\SenderUtility',
+            $this->typoscript
+        );
     }
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
+
         $defaults = $this->senderUtility->getMailSettings();
+        ArrayUtility::mergeRecursiveWithOverrule($defaults, $this->queryParams, true, false);
+
         $templates = $this->getTemplates();
 
         // @TODO: use hook to call all contact provider
@@ -125,10 +133,27 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
     /**
      * @return array
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     protected function getTemplates()
     {
-        return [];
+        $pageUid = $this->queryParams['page'] ?? 3;
+        $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
+        $templates = $pageTsConfig['mod.']['web_layout.']['BackendLayouts.'];
+        $selection = [];
+        foreach ($templates as $template) {
+            $selection[] = array(
+                'file' => $template['title'],
+                'name' => $this->getLanguageService()->sL($template['title']),
+                'previewUri' => $this->getAjaxUri(
+                    'ajax_wizard_modal_preview',
+                    [
+                        'template' => $template['title']
+                    ]
+                )
+            );
+        }
+        return $selection;
     }
 
     /**
@@ -260,4 +285,8 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         return [];
     }
 
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
+    }
 }

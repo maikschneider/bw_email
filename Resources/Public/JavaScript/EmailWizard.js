@@ -13,11 +13,10 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery", "TYPO3/CMS/Ba
             this.initEvents();
         };
         EmailWizard.prototype.cacheElements = function () {
+            // @TODO: change the class name of the button element
             this.$viewModuleButton = $('.viewmodule_email_button');
-            this.$sendMailButton = $('#sendMailButton');
         };
         EmailWizard.prototype.initEvents = function () {
-            this.$sendMailButton.on('click', this.onButtonClick.bind(this));
             this.$viewModuleButton.on('click', this.onButtonClick.bind(this));
         };
         EmailWizard.prototype.onButtonClick = function (e) {

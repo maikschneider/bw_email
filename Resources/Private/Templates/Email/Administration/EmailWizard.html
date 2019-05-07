@@ -1,7 +1,6 @@
 <div class="row">
     <div class="col-md-4">
         <form action="{formActionUri}" method="POST">
-            <input type="hidden" name="entryUid" value="{entry.uid}"/>
             <h2 class="form-section-headline">Settings</h2>
             <f:if condition="{templates}">
                 <fieldset class="form-section">
@@ -127,7 +126,7 @@
                                         <input name="recipientAddress"
                                                id="recipientAddress"
                                                class="form-control"
-                                               value="{entry.email}"/>
+                                               value="{defaults.recipientAddress}"/>
                                     </div>
                                 </div>
                                 <div class="form-group provider">
@@ -136,7 +135,7 @@
                                         <input name="recipientName"
                                                id="recipientName"
                                                class="form-control"
-                                               value="{entry.prename} {entry.name}"/>
+                                               value="{defaults.recipientName}"/>
                                     </div>
                                 </div>
                             </div>

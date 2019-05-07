@@ -17,7 +17,8 @@ call_user_func(function () {
             'config' => [
                 'type' => 'sendMailButton',
                 'size' => 30,
-                'eval' => 'int'
+                'eval' => 'int',
+                'senderAddress' => 'new@bla.ex'
             ],
         ]
     ];

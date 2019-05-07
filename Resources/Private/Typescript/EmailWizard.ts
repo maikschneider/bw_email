@@ -17,7 +17,6 @@ declare global {
  */
 class EmailWizard {
 
-	private $sendMailButton: JQuery;
 	private $viewModuleButton: JQuery;
 	private currentModal: JQuery;
 	private confirmModal: JQuery;
@@ -29,12 +28,11 @@ class EmailWizard {
 	}
 
 	private cacheElements() {
+		// @TODO: change the class name of the button element
 		this.$viewModuleButton = $('.viewmodule_email_button');
-		this.$sendMailButton = $('#sendMailButton');
 	}
 
 	private initEvents() {
-		this.$sendMailButton.on('click', this.onButtonClick.bind(this));
 		this.$viewModuleButton.on('click', this.onButtonClick.bind(this));
 	}
 
@@ -269,7 +267,7 @@ class EmailWizard {
 	}
 
 	private doSend() {
-		
+
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.confirmModal.find('.modal-title').html('Sending..');
 			this.confirmModal.find('.modal-body').css('text-align', 'center').html(icon);

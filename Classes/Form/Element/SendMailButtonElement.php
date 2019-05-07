@@ -16,16 +16,6 @@ class SendMailButtonElement extends AbstractFormElement
 {
 
     /**
-     * @var string
-     */
-    protected $databaseTable;
-
-    /**
-     * @var int
-     */
-    protected $databaseUid;
-
-    /**
      * @var array
      */
     protected $config = [
@@ -44,7 +34,7 @@ class SendMailButtonElement extends AbstractFormElement
         // samle as recipientAddress
         'recipientName' => 'Example name from default conf',
         // if empty, value taken from typoscript
-        'senderAdress' => '',
+        'senderAddress' => '',
         'senderName' => '',
         'replytoAddress' => '',
         'subject' => 'Example subject from default conf',
@@ -63,20 +53,18 @@ class SendMailButtonElement extends AbstractFormElement
         $resultArray = $this->initializeResultArray();
         $resultArray['requireJsModules'][] = 'TYPO3/CMS/BwEmail/EmailWizard';
 
-        \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->data, 'Debug: ' . __FILE__ . ' in Line: ' . __LINE__);
-
         $html = '';
-        // @TODO check why there is an inline style
         $html .= '<div class="formengine-field-item t3js-formengine-field-item">';
         $html .= '<div class="form-wizards-wrap">';
         $html .= '<div class="form-wizards-element">';
         $html .= '<div class="form-control-wrap">';
         $html .= '<button 
-            class="btn btn-default t3js-sendmail-trigger sendMailButton"
+                id="sendMailButton"
+            class="btn btn-default t3js-sendmail-trigger viewmodule_email_button"
             data-wizard-uri="' . $wizardUri . '" 
             data-modal-title="' . $this->config['modalTitle'] . '" 
             data-modal-send-button-text="' . $this->config['modalSendButton'] . '" 
-            data-modal-cancel-button-text="' . $this->config['modalCancelButtonText'] . '">
+            data-modal-cancel-button-text="' . $this->config['modalCancelButton'] . '">
 			  <span class="t3-icon fa fa-envelope-o"></span> ' . $this->config['buttonText'] . '</button>';
         $html .= '</div>';
         $html .= '</div>';
@@ -96,15 +84,18 @@ class SendMailButtonElement extends AbstractFormElement
      */
     private function generateConfig()
     {
-        // merge with TypoScript
+        // merge with TypoScript (TypoScript cannot unset settings)
         $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $typoScript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        ArrayUtility::mergeRecursiveWithOverrule($this->config, $typoScript['plugin.']['tx_bwemail.']['settings.']);
+        ArrayUtility::mergeRecursiveWithOverrule($this->config, $typoScript['plugin.']['tx_bwemail.']['settings.'],
+            true, false);
 
-        // merge with TCA
+        // merge with TCA (TCA can unset settings)
         ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
+
+        \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->config, 'Debug: ' . __FILE__ . ' in Line: ' . __LINE__);
 
         // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
@@ -112,6 +103,12 @@ class SendMailButtonElement extends AbstractFormElement
 
         // transform config
         foreach ($this->config as $key => $config) {
+
+            // abort if no string
+            if (!is_string($config)) {
+                continue;
+            }
+
             // insert data from record
             if (substr($config, 0, 6) === 'FIELD:' && $savedData = $this->data['databaseRow'][substr($config, 6)]) {
                 $this->config[$key] = $savedData;
