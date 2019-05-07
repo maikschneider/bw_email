@@ -119,13 +119,14 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     public function setPid($pid)
     {
         $this->pid = $pid;
-        $this->injectPageContentElements();
     }
 
     /**
+     * @param string $markerName
+     * @param array $typoscript
      * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
      */
-    protected function injectPageContentElements()
+    public function injectTyposcriptSelect(string $markerName, array $typoscript)
     {
         if (!$this->pid) {
             return;
@@ -133,19 +134,8 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
 
         $this->initTSFE($this->pid);
         $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-        $colPositions = [0 => 'defaultColumn', 1 => 'leftColumn', 2 => 'rightColumn'];
-        foreach ($colPositions as $colPos => $colName) {
-            $typoscriptSelect = [
-                'table' => 'tt_content',
-                'select.' => [
-                    'pidInList' => $this->pid,
-                    'where' => 'colPos=' . $colPos,
-                    'orderBy' => 'sorting'
-                ]
-            ];
-            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscriptSelect);
-            $this->assign($colName, $contentElements);
-        }
+        $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
+        $this->assign($markerName, $contentElements);
     }
 
     /**

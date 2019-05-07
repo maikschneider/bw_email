@@ -44,6 +44,7 @@ class SendMailButtonElement extends AbstractFormElement
     /**
      * @return array|string
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
     public function render()
     {
@@ -80,7 +81,7 @@ class SendMailButtonElement extends AbstractFormElement
      * Merge settings from TCA and TypoScript with default config
      * Set and transform data needed for content injection
      *
-     * @TODO Allow injection of foreign data (like extending some query)
+     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
     private function generateConfig()
     {
@@ -88,7 +89,9 @@ class SendMailButtonElement extends AbstractFormElement
         $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
-        $typoScript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $typoScript = $configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+        );
         ArrayUtility::mergeRecursiveWithOverrule(
             $this->config,
             $typoScript['plugin.']['tx_bwemail.']['settings.'],
@@ -102,25 +105,28 @@ class SendMailButtonElement extends AbstractFormElement
         // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
         $this->config['databaseUid'] = $this->data['vanillaUid'];
+        $this->config['databasePid'] = $this->data['effectivePid'];
 
-        // transform config
-        foreach ($this->config as $key => $config) {
-
-            // abort if no string
-            if (!is_string($config)) {
-                continue;
-            }
+        /**
+         * Alter config fields
+         *
+         * @param string $item
+         * @param $key
+         * @param self $self
+         */
+        $editFields = function (&$item, $key, $self) {
 
             // insert data from record
-            if (substr($config, 0, 6) === 'FIELD:' && $savedData = $this->data['databaseRow'][substr($config, 6)]) {
-                $this->config[$key] = $savedData;
+            if (substr($item, 0, 6) === 'FIELD:' && $savedData = $self->data['databaseRow'][substr($item, 6)]) {
+                $item = $savedData;
             }
 
             // translate labels
-            if (substr($config, 0, 4) === 'LLL:') {
-                $this->config[$key] = $this->getLanguageService()->sL($config);
+            if (substr($item, 0, 4) === 'LLL:') {
+                $item = $self->getLanguageService()->sL($item);
             }
-        }
+        };
+        array_walk_recursive($this->config, $editFields, $this);
     }
 
     /**

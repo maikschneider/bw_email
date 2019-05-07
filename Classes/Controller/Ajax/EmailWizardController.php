@@ -116,6 +116,19 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * Check if hmac signature is correct
+     *
+     * @param ServerRequestInterface $request the request with the GET parameters
+     * @param string $route
+     * @return bool
+     */
+    protected function isSignatureValid(ServerRequestInterface $request, string $route)
+    {
+        $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
+        return $token === $request->getQueryParams()['signature'];
+    }
+
+    /**
      * @param $routeName
      * @param array $params
      * @return string
@@ -152,13 +165,16 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 'name' => $this->getLanguageService()->sL($template['title']),
                 'previewUri' => $this->getAjaxUri(
                     'ajax_wizard_modal_preview',
-                    [
-                        'template' => $template['title']
-                    ]
+                    $this->queryParams
                 )
             );
         }
         return $selection;
+    }
+
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
     }
 
     /**
@@ -181,7 +197,42 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // init email template
         $this->emailView->setTemplate($queryParams['template']);
-        $this->emailView->setPid($queryParams['page']);
+        $this->emailView->setPid($queryParams['databasePid']);
+
+        // inject current record
+        $record = BackendUtility::getRecord(
+            $queryParams['databaseTable'],
+            $queryParams['databaseUid']
+        );
+        $this->emailView->assign('record', $record);
+
+        // inject records from typoscript (or tca override
+        foreach ($queryParams['typoscriptSelects.'] as $table => $marker) {
+            // abort if select is not for this record (e.g. tt_content select for pages from default conf)
+            if (substr($table, 0, -1) !== $queryParams['databaseTable']) {
+                continue;
+            }
+
+            foreach ($marker as $markerName => $typoscript) {
+                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
+            }
+        }
+
+        /**
+         * // inject elements defined via config (typoscriptSelects)
+         * foreach ($queryParams['typoscriptSelects'] as $key => $typoscriptSelect) {
+         * $typoscriptSelect = [
+         * 'table' => 'tt_content',
+         * 'select.' => [
+         * 'pidInList' => $this->pid,
+         * 'where' => 'colPos=' . $colPos,
+         * 'orderBy' => 'sorting'
+         * ]
+         * ];
+         * $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscriptSelect);
+         * $this->assign($colName, $contentElements);
+         * }
+         **/
 
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
@@ -298,23 +349,5 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected function getViewData()
     {
         return [];
-    }
-
-    protected function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
-    }
-
-    /**
-     * Check if hmac signature is correct
-     *
-     * @param ServerRequestInterface $request the request with the GET parameters
-     * @param string $route
-     * @return bool
-     */
-    protected function isSignatureValid(ServerRequestInterface $request, string $route)
-    {
-        $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
-        return $token === $request->getQueryParams()['signature'];
     }
 }

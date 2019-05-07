@@ -114,6 +114,18 @@ plugin.tx_bwemail {
 		template = {$plugin.tx_bwemail.settings.template}
 		showUid = {$plugin.tx_bwemail.settings.showUid}
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
+		typoscriptSelects {
+			pages {
+				leftContent {
+					table = tt_content
+					select {
+						pidInList = FIELD:pid
+						where = colPos=1
+						orderBy = sorting
+					}
+				}
+			}
+		}
 	}
 	persistence {
 		storagePid = {$plugin.tx_bwemail.persistence.storagePid}

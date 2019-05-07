@@ -20,7 +20,19 @@ call_user_func(function () {
                 'eval' => 'int',
                 'recipientAddress' => 'FIELD:header',
                 'senderAddress' => 'tca@bla.ex',
-                'replytoAddress' => 'reply@tca.de'
+                'replytoAddress' => 'reply@tca.de',
+                'typoscriptSelects.' => [
+                    'pages.' => [
+                        'defaultColumn.' => [
+                            'table' => 'tt_content',
+                            'select.' => [
+                                'pidInList' => 'FIELD:pid',
+                                'where' => 'colPos=0',
+                                'orderBy' => 'sorting'
+                            ]
+                        ]
+                    ]
+                ],
             ],
         ]
     ];
