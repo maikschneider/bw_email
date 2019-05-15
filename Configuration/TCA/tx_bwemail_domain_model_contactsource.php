@@ -29,6 +29,7 @@ return [
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type.none',
@@ -101,6 +102,7 @@ return [
             'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.0',
