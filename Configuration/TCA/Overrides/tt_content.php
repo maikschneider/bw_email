@@ -16,8 +16,6 @@ call_user_func(function () {
             'label' => 'Insert label here',
             'config' => [
                 'type' => 'sendMailButton',
-                'size' => 30,
-                'eval' => 'int',
                 'recipientAddress' => 'FIELD:header',
                 'senderAddress' => 'tca@bla.ex',
                 'replytoAddress' => 'reply@tca.de',

@@ -207,14 +207,16 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
-        foreach ($queryParams['typoscriptSelects.'] as $table => $marker) {
-            // abort if select is not for this record (e.g. tt_content select for pages from default conf)
-            if (substr($table, 0, -1) !== $queryParams['databaseTable']) {
-                continue;
-            }
+        if (is_array($queryParams['typoscriptSelects.'])) {
+            foreach ($queryParams['typoscriptSelects.'] as $table => $marker) {
+                // abort if select is not for this record (e.g. tt_content select for pages from default conf)
+                if (substr($table, 0, -1) !== $queryParams['databaseTable']) {
+                    continue;
+                }
 
-            foreach ($marker as $markerName => $typoscript) {
-                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
+                foreach ($marker as $markerName => $typoscript) {
+                    $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
+                }
             }
         }
 
