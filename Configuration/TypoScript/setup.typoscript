@@ -114,6 +114,7 @@ plugin.tx_bwemail {
 		template = {$plugin.tx_bwemail.settings.template}
 		showUid = {$plugin.tx_bwemail.settings.showUid}
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
+		recipientCount = {$plugin.tx_bwemail.settings.recipientCount}
 		typoscriptSelects {
 			pages {
 				defaultColumn {

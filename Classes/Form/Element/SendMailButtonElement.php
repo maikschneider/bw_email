@@ -127,7 +127,7 @@ class SendMailButtonElement extends AbstractFormElement
             }
         };
         array_walk_recursive($this->config, $editFields, $this);
-        
+
     }
 
     /**

@@ -218,22 +218,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             }
         }
 
-        /**
-         * // inject elements defined via config (typoscriptSelects)
-         * foreach ($queryParams['typoscriptSelects'] as $key => $typoscriptSelect) {
-         * $typoscriptSelect = [
-         * 'table' => 'tt_content',
-         * 'select.' => [
-         * 'pidInList' => $this->pid,
-         * 'where' => 'colPos=' . $colPos,
-         * 'orderBy' => 'sorting'
-         * ]
-         * ];
-         * $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscriptSelect);
-         * $this->assign($colName, $contentElements);
-         * }
-         **/
-
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
 

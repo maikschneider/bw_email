@@ -14,6 +14,7 @@ plugin.tx_bwemail {
 		template = DefaultMail
 		showUid = 1
 		recipientAddress =
+		recipientCount =
 		fluid_styled_content {
 			templateRootPath = EXT:fluid_styled_content/Resources/Private/Templates/
 			partialRootPath = EXT:fluid_styled_content/Resources/Private/Partials/
