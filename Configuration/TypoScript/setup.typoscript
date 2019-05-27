@@ -71,14 +71,17 @@ page.10 {
 	templateRootPaths {
 		117 = EXT:bw_email/Resources/Private/Templates/Email/
 		118 = {$plugin.tx_bwemail.templateRootPath}
+		119 = {$plugin.tx_bwemail.view.templateRootPath}
 	}
 	partialRootPaths {
 		117 = EXT:bw_email/Resources/Private/Partials/Email/
 		118 = {$plugin.tx_bwemail.partialRootPath}
+		119 = {$plugin.tx_bwemail.view.partialRootPath}
 	}
 	layoutRootPaths {
 		117 = EXT:bw_email/Resources/Private/Layouts/Email/
 		118 = {$plugin.tx_bwemail.layoutRootPath}
+		119 = {$plugin.tx_bwemail.view.layoutRootPath}
 	}
 }
 
