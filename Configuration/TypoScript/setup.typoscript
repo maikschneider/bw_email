@@ -87,14 +87,8 @@ page.10 {
 
 
 config.tx_extbase {
-	objects {
-		# Extending a controller
-		TYPO3\CMS\Viewpage\Controller\ViewModuleController {
-			className = Blueways\BwEmail\Controller\ViewModuleController
-		}
-	}
 
-		# declare inheritance of contact sources
+	# declare inheritance of contact sources
 	persistence.classes {
 		Blueways\BwEmail\Domain\Model\ContactSource {
 			subclasses {
