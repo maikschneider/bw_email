@@ -116,6 +116,7 @@ plugin.tx_bwemail {
 		subject = {$plugin.tx_bwemail.settings.subject}
 		template = {$plugin.tx_bwemail.settings.template}
 		showUid = {$plugin.tx_bwemail.settings.showUid}
+		recipientName = {$plugin.tx_bwemail.settings.recipientName}
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 		recipientCount = {$plugin.tx_bwemail.settings.recipientCount}
 		typoscriptSelects {
@@ -136,6 +137,10 @@ plugin.tx_bwemail {
 				rightColumn.select.where = colPos=2
 			}
 		}
+		modalTitle = {$plugin.tx_bwemail.settings.modalTitle}
+		modalSendButton = {$plugin.tx_bwemail.settings.modalSendButton}
+		modalCancelButton = {$plugin.tx_bwemail.settings.modalCancelButton}
+		buttonText = {$plugin.tx_bwemail.settings.buttonText}
 	}
 	persistence {
 		storagePid = {$plugin.tx_bwemail.persistence.storagePid}

@@ -15,11 +15,16 @@ plugin.tx_bwemail {
 		showUid = 1
 		recipientAddress =
 		recipientCount =
+		recipientName =
 		fluid_styled_content {
 			templateRootPath = EXT:fluid_styled_content/Resources/Private/Templates/
 			partialRootPath = EXT:fluid_styled_content/Resources/Private/Partials/
 			layoutRootPaths = EXT:fluid_styled_content/Resources/Private/Layouts/
 		}
+		modalTitle = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalTitle
+		modalSendButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton
+		modalCancelButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton
+		buttonText = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:buttonText
 	}
 
 	persistence {
