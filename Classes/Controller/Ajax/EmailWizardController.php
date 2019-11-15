@@ -204,6 +204,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $queryParams['databaseTable'],
             $queryParams['databaseUid']
         );
+        // the record is just an array, we need to query the repository to access all properties with fluid
+        if(isset($record['record_type'])) {
+            $recordTypeParts = explode("\\", $record['record_type']);
+            $recordTypeParts[3] = 'Repository';
+            $recordTypeParts[4] .= 'Repository';
+            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
+            $record = $repository->findByUid($queryParams['databaseUid']);
+        }
         $this->emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
@@ -311,6 +319,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $queryParams['databaseTable'],
             $queryParams['databaseUid']
         );
+        // the record is just an array, we need to query the repository to access all properties with fluid
+        if (isset($record['record_type'])) {
+            $recordTypeParts = explode("\\", $record['record_type']);
+            $recordTypeParts[3] = 'Repository';
+            $recordTypeParts[4] .= 'Repository';
+            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
+            $record = $repository->findByUid($queryParams['databaseUid']);
+        }
         $this->emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
