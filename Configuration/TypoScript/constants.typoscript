@@ -23,7 +23,7 @@ plugin.tx_bwemail {
 	}
 
 	persistence {
-		storagePid = 17
+		storagePid =
 	}
 }
 
@@ -33,5 +33,13 @@ plugin.tx_bwemail {
 		templateRootPath = EXT:bw_email/Resources/Private/Templates/fluid_styled_content
 		partialRootPath = EXT:bw_email/Resources/Private/Partials/fluid_styled_content
 		layoutRootPaths = EXT:bw_email/Resources/Private/Layouts/fluid_styled_content
+	}
+[GLOBAL]
+
+[applicationContext = Development/Local]
+	plugin.tx_bwemail {
+		persistence {
+			storagePid = 17
+		}
 	}
 [GLOBAL]
