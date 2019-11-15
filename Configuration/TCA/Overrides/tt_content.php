@@ -34,10 +34,12 @@ call_user_func(function () {
     ];
 
     ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);
+    /*
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',
         'mail_button',
         '',
         'before:CType'
     );
+    */
 });
