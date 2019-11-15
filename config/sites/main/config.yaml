@@ -1,5 +1,5 @@
 rootPageId: 1
-base: 'http://bw-email.ddev.local/'
+base: /
 languages:
   -
     title: English
@@ -15,3 +15,4 @@ languages:
     flag: us
 errorHandling: {  }
 routes: {  }
+baseVariants: {  }
