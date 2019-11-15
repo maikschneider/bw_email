@@ -31,9 +31,9 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
         $configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
-        $this->setLayoutRootPaths($typoscript['page.']['10.']['layoutRootPaths.']);
-        $this->setPartialRootPaths($typoscript['page.']['10.']['partialRootPaths.']);
-        $this->setTemplateRootPaths($typoscript['page.']['10.']['templateRootPaths.']);
+        $this->setLayoutRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
+        $this->setPartialRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
+        $this->setTemplateRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
 
         $this->templateParser = $this->objectManager->get('Blueways\\BwEmail\\Utility\\TemplateParserUtility');
     }
