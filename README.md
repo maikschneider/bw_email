@@ -4,32 +4,19 @@ This is the offical documentation of the bw_email extension.
 
 ## About
 
-You can use this extension to send whole pages or any other content entry that has a TCA definition.
+You can use this extension to send whole pages or any other element that has a TCA definition.
 
-The templates are parsed with [Zurb Foundation Inky](https://foundation.zurb.com/emails.html). You can use the Inky markup to generate the table markup needed for most mail clients.
+The templates are parsed with [Zurb Foundation Inky](https://foundation.zurb.com/emails.html). You can use the Inky markup in your fluid templates to generate the table markup needed for most mail clients.
 
 ## Installation
 
-* require via composer ````composer require blueways/bw-email````
-* install via Extension manager
-* include typoscript setup and constants **after** your typoscript code via ```static template``` or by manuel include:
-
-constants:
-```
-[your typoscript]
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:bw_email/Configuration/TypoScript/constants.typoscript">
-``` 
-
-setup:
-```
-[your typoscript]
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:bw_email/Configuration/TypoScript/setup.typoscript">
-``` 
-* include the static pageTS to the root of your page tree
+* Require via composer ````composer require blueways/bw-email````
+* Activate in Extension Manager
+* Include static TypoScript template 
 
 ## Templates
 
-The extensions offers some default templates located in ``ÈXT:bw_email/Resources/Private/Templates``. You can add your own templates via constants:
+The extensions offers some default templates located in ``ÈXT:bw_email/Resources/Private/Templates``. You can or override by setting the paths via constants:
 
 ```
 plugin.tx_bwemail {
@@ -40,8 +27,6 @@ plugin.tx_bwemail {
     }
 }		
 ```
-
-Keep in mind that the templates are added to ````page.10.templatRootPaths.118```` - naming a template like one of your default page templates will cause an override in your frontend!
 
 ## Default mail settings
 

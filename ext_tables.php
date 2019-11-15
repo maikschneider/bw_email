@@ -11,6 +11,10 @@ call_user_func(
             'allowedTables' => '*',
         ];
 
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+            '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:bw_email/Configuration/PageTS/All.typoscript">'
+        );
+
         // Provide icon for page tree, list view, ... :
         \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class)
             ->registerIcon(
