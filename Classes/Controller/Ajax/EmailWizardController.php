@@ -56,9 +56,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         if (!$templateView) {
             $templateView = GeneralUtility::makeInstance(StandaloneView::class);
-            $templateView->setLayoutRootPaths($this->typoscript['page.']['10.']['layoutRootPaths.']);
-            $templateView->setPartialRootPaths($this->typoscript['page.']['10.']['partialRootPaths.']);
-            $templateView->setTemplateRootPaths($this->typoscript['page.']['10.']['templateRootPaths.']);
+            $templateView->setLayoutRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
+            $templateView->setPartialRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
+            $templateView->setTemplateRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
         }
 
         $this->templateView = $templateView;

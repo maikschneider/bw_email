@@ -1,4 +1,4 @@
-[page|doktype = 117]
+[page | doktype = 117]
 
 	config.doctype = xhtml_strict
 	config.disableAllHeaderCode = 1
@@ -16,11 +16,13 @@
 				118 = {$plugin.tx_bwemail.templateRootPath}
 				119 = {$plugin.tx_bwemail.view.templateRootPath}
 			}
+
 			partialRootPaths {
 				117 = EXT:bw_email/Resources/Private/Partials/Email/
 				118 = {$plugin.tx_bwemail.partialRootPath}
 				119 = {$plugin.tx_bwemail.view.partialRootPath}
 			}
+
 			layoutRootPaths {
 				117 = EXT:bw_email/Resources/Private/Layouts/Email/
 				118 = {$plugin.tx_bwemail.layoutRootPath}
@@ -99,6 +101,7 @@ config.tx_extbase {
 				Blueways\BwEmail\Domain\Model\FeUserContactSource = Blueways\BwEmail\Domain\Model\FeUserContactSource
 			}
 		}
+
 		Blueways\BwEmail\Domain\Model\FeUserContactSource {
 			mapping.recordType = Blueways\BwEmail\Domain\Model\FeUserContactSource
 			mapping.tableName = tx_bwemail_domain_model_contactsource
@@ -116,8 +119,29 @@ plugin.tx_bwemail {
 		showUid = {$plugin.tx_bwemail.settings.showUid}
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 	}
+
 	persistence {
 		storagePid = {$plugin.tx_bwemail.persistence.storagePid}
+	}
+
+	view {
+		templateRootPaths {
+			0 = EXT:bw_email/Resources/Private/Templates/Email/
+			1 = {$plugin.tx_bwemail.templateRootPath}
+			2 = {$plugin.tx_bwemail.view.templateRootPath}
+		}
+
+		partialRootPaths {
+			0 = EXT:bw_email/Resources/Private/Partials/Email/
+			1 = {$plugin.tx_bwemail.partialRootPath}
+			2 = {$plugin.tx_bwemail.view.partialRootPath}
+		}
+
+		layoutRootPaths {
+			0 = EXT:bw_email/Resources/Private/Layouts/Email/
+			1 = {$plugin.tx_bwemail.layoutRootPath}
+			2 = {$plugin.tx_bwemail.view.layoutRootPath}
+		}
 	}
 }
 
