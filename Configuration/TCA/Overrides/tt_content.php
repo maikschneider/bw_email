@@ -15,7 +15,8 @@ call_user_func(function () {
             'exclude' => false,
             'label' => 'Insert label here',
             'config' => [
-                'type' => 'sendMailButton',
+                'type' => 'passthrough',
+                'renderType' => 'sendMailButton',
                 'recipientAddress' => 'FIELD:header',
                 'senderAddress' => 'tca@bla.ex',
                 'replytoAddress' => 'reply@tca.de',

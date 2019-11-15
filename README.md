@@ -119,7 +119,7 @@ If you like to use external data, you can write your own ContactProvider. Just e
 
 # Usage in other content elements
 
-It is possible to use the email wizard in other content elements like Textmedia or News: Just add the TCA-Type "sendMailButton". Here is an example of how to add a Send Mail button to tt_content elements:
+It is possible to use the email wizard in other content elements like Textmedia or News: Just add an element with the TCA-RenderType "sendMailButton". Here is an example of how to add a Send Mail button to tt_content elements:
 
 ```php
 // TCA/Overrides/tt_content.php
@@ -129,7 +129,8 @@ $tempColumns = [
     'mail_button' => [
         'label' => 'Send this tt_content',
         'config' => [
-            'type' => 'sendMailButton',
+            'type' => 'passthrough',
+            'renderType' => 'sendMailButton',
             // optional: override default TypoScript settings
             'recipientAddress' => 'FIELD:header',
             'senderAddress' => 'tca@bla.ex',
