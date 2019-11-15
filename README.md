@@ -16,9 +16,9 @@ The templates are parsed with [Zurb Foundation Inky](https://foundation.zurb.com
 
 ## Templates
 
-The extensions offers some default templates located in ``ÈXT:bw_email/Resources/Private/Templates``. You can or override by setting the paths via constants:
+The extensions offers some default templates located in ``ÈXT:bw_email/Resources/Private/Templates``. You can override the templates by setting the paths via constants:
 
-```
+```typo3_typoscript
 plugin.tx_bwemail {
 	view {
 		templateRootPath =
@@ -28,9 +28,36 @@ plugin.tx_bwemail {
 }		
 ```
 
+To register new templates, use PageTS:
+
+```typo3_typoscript
+mod.web_layout.EmailLayouts {
+    new_template {
+        title = NewTemplate
+        config {
+            icon = EXT:my_ext/Resources/Public/Icons/MyIcon.svg
+            backend_layout {
+                colCount = 1
+                rowCount = 1
+                rows {
+                    1 {
+                        columns {
+                            1 {
+                                name = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:backend_layout.column.normal
+                                colPos = 0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
 ## Default mail settings
 
-````
+```typo3_typoscript
 plugin.tx_bwemail {
     settings {
             css = EXT:bw_email/Resources/Public/Css/app.css
@@ -66,7 +93,7 @@ If you like to configure your source via Backend, you can use the existing DataS
 
 Don't forget to register the inheritance via typoscript:
 
-```
+```typo3_typoscript
 config.tx_extbase.persistence.classes {
     Blueways\BwEmail\Domain\Model\ContactSource {
         subclasses {
@@ -92,7 +119,50 @@ If you like to use external data, you can write your own ContactProvider. Just e
 
 # Usage in other content elements
 
-It is possible to use the email wizard in other content elements like Textmedia or News: Just add the TCA-Type "emailWizard".
+It is possible to use the email wizard in other content elements like Textmedia or News: Just add the TCA-Type "sendMailButton". Here is an example of how to add a Send Mail button to tt_content elements:
+
+```php
+// TCA/Overrides/tt_content.php
+<?php
+
+$tempColumns = [
+    'mail_button' => [
+        'label' => 'Send this tt_content',
+        'config' => [
+            'type' => 'sendMailButton',
+            // optional: override default TypoScript settings
+            'recipientAddress' => 'FIELD:header',
+            'senderAddress' => 'tca@bla.ex',
+            'replytoAddress' => 'reply@tca.de',
+            'typoscriptSelects.' => [
+                // inject additional elements to the tempalte
+                'tt_content.' => [
+                    'myVariableName.' => [
+                        'table' => 'pages',
+                        'select.' => [
+                            'uidInList' => 'FIELD:pid'
+                        ]
+                    ]
+                ]
+            ],
+        ],
+    ]
+];
+
+ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);
+ExtensionManagementUtility::addToAllTCAtypes(
+    'tt_content',
+    'mail_button',
+    '',
+    'before:CType'
+);
+```
+
+You can reference data from the current record as subject, sender name,.. by using the prefix ```FIELD:```.
+
+The current record will be available in the Fluid Template as ```{record}```.
+
+To inject additional elements to the Fluid Template, you can use the ```typoscriptSelects``` configuration. In the example above, you can access page properties from the tt_content element
 
 # Improvement ideas
 

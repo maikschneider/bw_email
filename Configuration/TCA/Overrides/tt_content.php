@@ -20,13 +20,11 @@ call_user_func(function () {
                 'senderAddress' => 'tca@bla.ex',
                 'replytoAddress' => 'reply@tca.de',
                 'typoscriptSelects.' => [
-                    'pages.' => [
-                        'defaultColumn.' => [
-                            'table' => 'tt_content',
+                    'tt_content.' => [
+                        'pages.' => [
+                            'table' => 'pages',
                             'select.' => [
-                                'pidInList' => 'FIELD:pid',
-                                'where' => 'colPos=0',
-                                'orderBy' => 'sorting'
+                                'uidInList' => 'FIELD:pid'
                             ]
                         ]
                     ]

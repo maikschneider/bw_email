@@ -157,7 +157,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     {
         $pageUid = $this->queryParams['databasePid'] ?? 0;
         $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
-        $templates = $pageTsConfig['mod.']['web_layout.']['BackendLayouts.'];
+        $templates = $pageTsConfig['mod.']['web_layout.']['EmailLayouts.'];
         $selection = [];
         foreach ($templates as $template) {
             $selection[] = array(

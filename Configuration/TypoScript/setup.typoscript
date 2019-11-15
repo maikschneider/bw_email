@@ -117,6 +117,7 @@ plugin.tx_bwemail {
 		typoscriptSelects {
 			pages {
 				defaultColumn {
+					render = 1
 					table = tt_content
 					select {
 						pidInList = FIELD:pid

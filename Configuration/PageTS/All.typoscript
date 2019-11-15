@@ -1,35 +1,33 @@
-[page|doktype = 117]
-
-mod.web_layout.BackendLayouts >
-
 mod {
-    web_layout {
-        BackendLayouts {
-            bw_email_default {
-                title = DefaultMail
-                config {
-                    backend_layout {
-                        colCount = 1
-                        rowCount = 2
-                        rows {
-                            1 {
-                                columns {
-                                    1 {
-                                        name = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:backend_layout.column.normal
-                                        colPos = 0
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                icon = EXT:bw_email/Resources/Public/Icons/Basic.svg
-            }
-            bw_email_drip < .bw_email_default
-            bw_email_drip.title = Drip
-            bw_email_drip.icon = EXT:bw_email/Resources/Public/Icons/Drill.svg
+	web_layout {
+		EmailLayouts {
+			bw_email_default {
+				title = DefaultMail
+				config {
+					backend_layout {
+						colCount = 1
+						rowCount = 2
+						rows {
+							1 {
+								columns {
+									1 {
+										name = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:backend_layout.column.normal
+										colPos = 0
+									}
+								}
+							}
+						}
+					}
+				}
 
-            bw_email_hero < .bw_email_default
+				icon = EXT:bw_email/Resources/Public/Icons/Basic.svg
+			}
+
+			bw_email_drip < .bw_email_default
+			bw_email_drip.title = Drip
+			bw_email_drip.icon = EXT:bw_email/Resources/Public/Icons/Drill.svg
+
+			bw_email_hero < .bw_email_default
 			bw_email_hero.title = Hero
 			bw_email_hero.icon = EXT:bw_email/Resources/Public/Icons/Hero.svg
 
@@ -64,9 +62,12 @@ mod {
 			bw_email_welcome < .bw_email_default
 			bw_email_welcome.title = Welcome
 			bw_email_welcome.icon = EXT:bw_email/Resources/Public/Icons/Welcome.svg
-        }
-    }
+		}
+	}
 }
 
-
+[page | doktype = 117]
+	# unset does not work if base templates are included as base templates as well
+	mod.web_layout.BackendLayouts >
+	mod.web_layout.BackendLayouts < mod.web_layout.EmailLayouts
 [GLOBAL]

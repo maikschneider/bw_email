@@ -134,7 +134,14 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
 
         $this->initTSFE($this->pid);
         $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-        $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
+
+        if (isset($typoscript['render']) && $typoscript['render'] === '1') {
+            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
+        } else {
+            $tableName = $cObjRenderer->stdWrapValue('table', $typoscript);
+            $contentElements = $cObjRenderer->getRecords($tableName, $typoscript['select.']);
+        }
+
         $this->assign($markerName, $contentElements);
     }
 
