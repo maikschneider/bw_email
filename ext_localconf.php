@@ -1,4 +1,7 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3_MODE') || die('Access denied');
 
 call_user_func(
@@ -25,6 +28,10 @@ call_user_func(
             'priority' => '70',
             'class' => \Blueways\BwEmail\Form\Element\SendMailButtonElement::class,
         ];
+
+        // Add TypoScript
+        ExtensionManagementUtility::addTypoScript('bw_email', 'constants', '@import \'EXT:bw_email/Configuration/TypoScript/setup.typoscript\'');
+        ExtensionManagementUtility::addTypoScript('bw_email', 'setup', '@import \'EXT:bw_email/Configuration/TypoScript/constants.typoscript\'');
     },
     'bw_email'
 );
