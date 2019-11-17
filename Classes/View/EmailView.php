@@ -128,17 +128,31 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
      */
     public function injectTyposcriptSelect(string $markerName, array $typoscript)
     {
-        if (!$this->pid) {
+        if (!$pid = $this->pid) {
             return;
         }
 
-        $this->initTSFE($this->pid);
+        // check pid if FE Context can be created (not possible if sys_folder) or go page level upwards
+        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($pid);
+        for ($i = sizeof($rootline); $i > 0; $i--) {
+            $pid = $rootline[$i]['doktype'];
+            if ($pid === 1) {
+                break;
+            }
+        }
+
+        $this->initTSFE($pid);
         $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 
         if (isset($typoscript['render']) && $typoscript['render'] === '1') {
             $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
         } else {
             $tableName = $cObjRenderer->stdWrapValue('table', $typoscript);
+            // fix: to make typoScript query work, we need to enter a pid
+            if (!isset($typoscript['select.']['pidInList'])) {
+                $typoscript['select.']['pidInList'] = 'root,-1';
+                $typoscript['select.']['recursive'] = '9';
+            }
             $contentElements = $cObjRenderer->getRecords($tableName, $typoscript['select.']);
         }
 
