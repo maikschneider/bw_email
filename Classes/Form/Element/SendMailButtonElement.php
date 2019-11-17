@@ -3,9 +3,11 @@
 namespace Blueways\BwEmail\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class SendMailButtonElement
@@ -119,15 +121,58 @@ class SendMailButtonElement extends AbstractFormElement
             // check for FIELDS
             preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $item, $fieldStatements);
 
-            foreach ($fieldStatements[0] as $key => $fieldStatement) {
-                $propertyName = $fieldStatements[2][$key];
-                $replaceWith = '';
-                if (isset($self->data['databaseRow'][$propertyName])) {
-                    if (is_string($self->data['databaseRow'][$propertyName])) {
-                        $replaceWith = $self->data['databaseRow'][$propertyName];
+            if (sizeof($fieldStatements[0])) {
+
+                $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
+
+                $record = BackendUtility::getRecord(
+                    $this->config['databaseTable'],
+                    $this->config['databaseUid']
+                );
+
+                foreach ($fieldStatements[0] as $key => $fieldStatement) {
+                    $propertyName = $fieldStatements[2][$key];
+                    $replaceWith = '';
+
+                    if (isset($self->data['databaseRow'][$propertyName])) {
+                        $propertyValue = $self->data['databaseRow'][$propertyName];
+
+                        if (is_string($propertyValue)) {
+                            $replaceWith = $propertyValue;
+                        }
+
+                        if (is_array($propertyValue)) {
+                            // just set the uid
+                            $replaceWith = (int)$propertyValue[0];
+
+                            // check if foreign property should be accessed FIELD:calendar.name
+                            if (isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key])) {
+                                $schema = $reflectionService->getClassSchema($record['record_type']);
+                                $properties = $schema->getProperties();
+                                $foreignPropertyType = $properties[$propertyName]['type'];
+
+                                $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+                                $dataMapper = $objectManager->get(
+                                    \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class
+                                );
+                                $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
+
+                                // query foreign record
+                                $foreignRecord = BackendUtility::getRecord(
+                                    $tableName,
+                                    $replaceWith
+                                );
+
+                                if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key]])) {
+                                    $replaceWith = $foreignRecord[$fieldStatements[4][$key]];
+                                }
+                            }
+                        }
+
+                        $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
                     }
+                    $item = str_replace($fieldStatement, $replaceWith, $item);
                 }
-                $item = str_replace($fieldStatement, $replaceWith, $item);
             }
 
             // check for LLLs
