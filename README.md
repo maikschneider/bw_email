@@ -133,8 +133,8 @@ $tempColumns = [
             'renderType' => 'sendMailButton',
             // optional: override default TypoScript settings
             'recipientAddress' => 'FIELD:header',
-            'senderAddress' => 'tca@bla.ex',
-            'replytoAddress' => 'reply@tca.de',
+            'senderAddress' => 'other@example.com',
+            'subject' => 'Hello FIELD:bodytext',
             'typoscriptSelects.' => [
                 // inject additional elements to the tempalte
                 'tt_content.' => [
@@ -163,7 +163,7 @@ You can reference data from the current record as subject, sender name,.. by usi
 
 The current record will be available in the Fluid Template as ```{record}```.
 
-To inject additional elements to the Fluid Template, you can use the ```typoscriptSelects``` option with the common select statement syntax from TypoScript. In the example above, you can access page properties from the tt_content it is on element with the varibale ```{pages.0.title}```.
+To inject additional elements to the Fluid Template, you can use the ```typoscriptSelects``` option with the common select statement syntax from TypoScript. In the example above, you can access page properties from the tt_content it is on element with the varibale ```{myVariableName.0.title}```.
 
 # Improvement ideas
 
