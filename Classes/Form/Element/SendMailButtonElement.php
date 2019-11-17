@@ -116,18 +116,29 @@ class SendMailButtonElement extends AbstractFormElement
          */
         $editFields = function (&$item, $key, $self) {
 
-            // insert data from record
-            if (substr($item, 0, 6) === 'FIELD:' && $savedData = $self->data['databaseRow'][substr($item, 6)]) {
-                $item = $savedData;
+            // check for FIELDS
+            preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $item, $fieldStatements);
+
+            foreach ($fieldStatements[0] as $key => $fieldStatement) {
+                $propertyName = $fieldStatements[2][$key];
+                $replaceWith = '';
+                if (isset($self->data['databaseRow'][$propertyName])) {
+                    if (is_string($self->data['databaseRow'][$propertyName])) {
+                        $replaceWith = $self->data['databaseRow'][$propertyName];
+                    }
+                }
+                $item = str_replace($fieldStatement, $replaceWith, $item);
             }
 
-            // translate labels
-            if (substr($item, 0, 4) === 'LLL:') {
-                $item = $self->getLanguageService()->sL($item);
+            // check for LLLs
+            preg_match_all('/(LLL:)(EXT\:)?([\w\-\/]+\.\w+\:[\.?\w]+)/', $item, $llStatements);
+
+            foreach ($llStatements[0] as $key => $llStatement) {
+                $translation = $self->getLanguageService()->sL($llStatement);
+                $item = str_replace($llStatement, $translation, $item);
             }
         };
         array_walk_recursive($this->config, $editFields, $this);
-
     }
 
     /**
