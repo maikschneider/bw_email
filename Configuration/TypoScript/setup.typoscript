@@ -115,24 +115,31 @@ plugin.tx_bwemail {
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 		recipientCount = {$plugin.tx_bwemail.settings.recipientCount}
 		typoscriptSelects {
+		}
+
+		tableOverrides {
 			pages {
-				defaultColumn {
-					render = 1
-					table = tt_content
-					select {
-						pidInList = FIELD:pid
-						where = colPos=0
-						orderBy = sorting
+				recipientName = FIELD:title
+				typoscriptSelects {
+					defaultColumn {
+						render = 1
+						table = tt_content
+						select {
+							pidInList = FIELD:pid
+							where = colPos=0
+							orderBy = sorting
+						}
 					}
+
+					leftColumn < .defaultColumn
+					leftColumn.select.where = colPos=1
+
+					rightColumn < .defaultColumn
+					rightColumn.select.where = colPos=2
 				}
-
-				leftColumn < .defaultColumn
-				leftColumn.select.where = colPos=1
-
-				rightColumn < .defaultColumn
-				rightColumn.select.where = colPos=2
 			}
 		}
+
 		modalTitle = {$plugin.tx_bwemail.settings.modalTitle}
 		modalSendButton = {$plugin.tx_bwemail.settings.modalSendButton}
 		modalCancelButton = {$plugin.tx_bwemail.settings.modalCancelButton}

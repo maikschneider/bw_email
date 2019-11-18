@@ -104,6 +104,12 @@ class SendMailButtonElement extends AbstractFormElement
         // merge with TCA (TCA can unset settings)
         ArrayUtility::mergeRecursiveWithOverrule($this->config, $this->data['parameterArray']['fieldConf']['config']);
 
+        // override typoscript settings with current custom table settings
+        if (isset($this->config['tableOverrides.'][$this->data['tableName'] . '.'])) {
+            ArrayUtility::mergeRecursiveWithOverrule($this->config,
+                $this->config['tableOverrides.'][$this->data['tableName'] . '.']);
+        }
+
         // set fixed values (even if record was not saved before)
         $this->config['databaseTable'] = $this->data['tableName'];
         $this->config['databaseUid'] = $this->data['vanillaUid'];

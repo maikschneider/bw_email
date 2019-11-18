@@ -49,6 +49,12 @@ class WizardConf
             true,
             false
         );
+
+        // override typoscript settings with overrides from page table
+        if (isset($this->settings['tableOverrides.']['pages.'])) {
+            ArrayUtility::mergeRecursiveWithOverrule($this->settings,
+                $this->settings['tableOverrides.']['pages.']);
+        }
     }
 
     /**
