@@ -131,21 +131,6 @@ $tempColumns = [
         'config' => [
             'type' => 'passthrough',
             'renderType' => 'sendMailButton',
-            // optional: override default TypoScript settings
-            'recipientAddress' => 'FIELD:header',
-            'senderAddress' => 'other@example.com',
-            'subject' => 'Hello FIELD:bodytext',
-            'typoscriptSelects.' => [
-                // inject additional elements to the tempalte
-                'tt_content.' => [
-                    'myVariableName.' => [
-                        'table' => 'pages',
-                        'select.' => [
-                            'uidInList' => 'FIELD:pid'
-                        ]
-                    ]
-                ]
-            ],
         ],
     ]
 ];
@@ -159,15 +144,45 @@ ExtensionManagementUtility::addToAllTCAtypes(
 );
 ```
 
-You can reference data from the current record as subject, sender name,.. by using the prefix ```FIELD:```.
-
 The current record will be available in the Fluid Template as ```{record}```.
 
-To inject additional elements to the Fluid Template, you can use the ```typoscriptSelects``` option with the common select statement syntax from TypoScript. In the example above, you can access page properties from the tt_content it is on element with the varibale ```{myVariableName.0.title}```.
+To inject additional elements or override default settings you can use the ```tableOverrides``` TypoScript setting.
+
+```typo3_typoscript
+plugin.tx_bwemail {
+    settings {
+        subject = Default subject in all places
+        tableOverrides {
+            tt_content {
+                subject = New subject
+                recipientName = FIELD:header
+                typoscriptSelects {
+                    latestNews {
+                        table = tx_news
+                        select {
+                            pidInList = 3
+                            orderBy = sorting
+                            max = 3
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+With the ```typoscriptSelects``` setting you can insert records to the email template. In the example above, you can display the latest news records with ```<f:for each="{latestNews}" as="news">{news.title}</f:for>```.
+
+# Todo
+
+* better translations
+* check SenderUtility with new TypoScript settings
+* default template organisation
 
 # Improvement ideas
 
-* integration into TCA
 * embed images in message
 * separate backend module
 * send mail log
+* sass compiler for Foundation for Email
