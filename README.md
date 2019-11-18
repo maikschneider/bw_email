@@ -70,7 +70,7 @@ plugin.tx_bwemail {
             recipientAddress =
     }
 }
-````
+```
 
 ## Data sources
 
@@ -81,7 +81,7 @@ Right from the start you can send single Emails to an email address from inside 
 
 ## Usage in other extensions
 
-You can use the ``Blueways\View\EmailView`` in your own extension to render responsive email HTML with Inky syntax. It works just like the ````StandaloneView````.
+You can use the ``Blueways\View\EmailView`` in your own extension to render responsive email HTML with Inky syntax. It works just like the ```StandaloneView```.
 
 ## Extend
 
