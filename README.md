@@ -179,6 +179,7 @@ With the ```typoscriptSelects``` setting you can insert records to the email tem
 * better translations
 * check SenderUtility with new TypoScript settings
 * default template organisation
+* Absolute URL handling for new v9
 
 # Improvement ideas
 
