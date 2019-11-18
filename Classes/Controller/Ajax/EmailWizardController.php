@@ -197,12 +197,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // init email template
         $this->emailView->setTemplate($queryParams['template']);
-        $this->emailView->setPid($queryParams['databasePid']);
+        $this->emailView->setPid($queryParams['pid']);
 
         // inject current record
         $record = BackendUtility::getRecord(
-            $queryParams['databaseTable'],
-            $queryParams['databaseUid']
+            $queryParams['table'],
+            $queryParams['uid']
         );
         // the record is just an array, we need to query the repository to access all properties with fluid
         if (isset($record['record_type'])) {
@@ -210,15 +210,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $recordTypeParts[3] = 'Repository';
             $recordTypeParts[4] .= 'Repository';
             $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['databaseUid']);
+            $record = $repository->findByUid($queryParams['uid']);
         }
         $this->emailView->assign('record', $record);
-
-        // override typoscript settings with current typoscript table override
-        if (isset($queryParams['tableOverrides.'][$queryParams['databaseTable'] . '.'])) {
-            ArrayUtility::mergeRecursiveWithOverrule($queryParams,
-                $queryParams['tableOverrides.'][$queryParams['databaseTable'] . '.']);
-        }
 
         // inject records from typoscript (or tca override
         if (is_array($queryParams['typoscriptSelects.'])) {
@@ -311,12 +305,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         // init email template
         $this->emailView->setTemplate($params['template']);
-        $this->emailView->setPid($queryParams['page']);
+        $this->emailView->setPid($queryParams['pid']);
 
         // inject current record
         $record = BackendUtility::getRecord(
-            $queryParams['databaseTable'],
-            $queryParams['databaseUid']
+            $queryParams['table'],
+            $queryParams['uid']
         );
         // the record is just an array, we need to query the repository to access all properties with fluid
         if (isset($record['record_type'])) {
@@ -324,15 +318,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $recordTypeParts[3] = 'Repository';
             $recordTypeParts[4] .= 'Repository';
             $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['databaseUid']);
+            $record = $repository->findByUid($queryParams['uid']);
         }
         $this->emailView->assign('record', $record);
-
-        // override typoscript settings with current typoscript table override
-        if (isset($queryParams['tableOverrides.'][$queryParams['databaseTable'] . '.'])) {
-            ArrayUtility::mergeRecursiveWithOverrule($queryParams,
-                $queryParams['tableOverrides.'][$queryParams['databaseTable'] . '.']);
-        }
 
         // inject records from typoscript (or tca override
         if (is_array($queryParams['typoscriptSelects.'])) {

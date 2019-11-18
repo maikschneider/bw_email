@@ -16,26 +16,13 @@ call_user_func(function () {
             'label' => 'Insert label here',
             'config' => [
                 'type' => 'passthrough',
-                'renderType' => 'sendMailButton',
-                'recipientAddress' => 'FIELD:header',
-                'senderAddress' => 'tca@bla.ex',
-                'replytoAddress' => 'reply@tca.de',
-                'typoscriptSelects.' => [
-                    'tt_content.' => [
-                        'pages.' => [
-                            'table' => 'pages',
-                            'select.' => [
-                                'uidInList' => 'FIELD:pid'
-                            ]
-                        ]
-                    ]
-                ],
+                'renderType' => 'sendMailButton'
             ],
         ]
     ];
 
-    ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);
     /*
+    ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',
         'mail_button',

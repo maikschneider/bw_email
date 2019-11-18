@@ -27,8 +27,12 @@ class PageLayoutController extends \TYPO3\CMS\Backend\Controller\PageLayoutContr
         if ($this->getBackendUser()->isAdmin() && $this->pageinfo['doktype'] === 117) {
             $this->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
 
-            $config = GeneralUtility::makeInstance(WizardConf::class);
-            $config->preparePageRendering($this->pageinfo['uid']);
+            $config = GeneralUtility::makeInstance(
+                WizardConf::class,
+                'pages',
+                $this->pageinfo['uid'],
+                $this->pageinfo['pid']
+            );
 
             $emailPageButton = $this->buttonBar->makeLinkButton()
                 ->setClasses('viewmodule_email_button')

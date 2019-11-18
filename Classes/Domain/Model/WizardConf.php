@@ -2,9 +2,11 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class WizardConf
@@ -20,12 +22,30 @@ class WizardConf
     public $settings = [];
 
     /**
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * @var string
+     */
+    protected $uid;
+
+    /**
+     * @var string
+     */
+    protected $pid;
+
+    /**
      * WizardConf constructor.
      *
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    public function __construct()
+    public function __construct($table, $uid, $pid)
     {
+        $this->table = $table;
+        $this->uid = $uid;
+        $this->pid = $pid;
         $this->createFromTypoScript();
     }
 
@@ -50,11 +70,100 @@ class WizardConf
             false
         );
 
-        // override typoscript settings with overrides from page table
-        if (isset($this->settings['tableOverrides.']['pages.'])) {
+        // override typoscript settings with overrides from table
+        if (isset($this->settings['tableOverrides.'][$this->table . '.'])) {
             ArrayUtility::mergeRecursiveWithOverrule($this->settings,
-                $this->settings['tableOverrides.']['pages.']);
+                $this->settings['tableOverrides.'][$this->table . '.']);
         }
+
+        // set fixed values (even if record was not saved before)
+        $this->settings['table'] = $this->table;
+        $this->settings['uid'] = $this->uid;
+        $this->settings['pid'] = $this->pid;
+
+        /**
+         * Alter config fields
+         *
+         * @param string $item
+         * @param $key
+         * @param self $self
+         */
+        $editFields = function (&$item, $key, $self) {
+
+            // check for FIELDS
+            preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $item, $fieldStatements);
+
+            if (sizeof($fieldStatements[0])) {
+
+                $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
+
+                $record = BackendUtility::getRecord(
+                    $this->settings['table'],
+                    $this->settings['uid']
+                );
+
+                foreach ($fieldStatements[0] as $key => $fieldStatement) {
+                    $propertyName = $fieldStatements[2][$key];
+                    $replaceWith = '';
+
+                    if (isset($record[$propertyName])) {
+                        $propertyValue = $record[$propertyName];
+
+                        if (is_string($propertyValue)) {
+                            $replaceWith = $propertyValue;
+                        }
+
+                        if (is_array($propertyValue)) {
+                            // just set the uid
+                            $replaceWith = (int)$propertyValue[0];
+
+                            // check if foreign property should be accessed FIELD:calendar.name
+                            if (isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key])) {
+                                $schema = $reflectionService->getClassSchema($record['record_type']);
+                                $properties = $schema->getProperties();
+                                $foreignPropertyType = $properties[$propertyName]['type'];
+
+                                $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+                                $dataMapper = $objectManager->get(
+                                    \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class
+                                );
+                                $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
+
+                                // query foreign record
+                                $foreignRecord = BackendUtility::getRecord(
+                                    $tableName,
+                                    $replaceWith
+                                );
+
+                                if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key]])) {
+                                    $replaceWith = $foreignRecord[$fieldStatements[4][$key]];
+                                }
+                            }
+                        }
+
+                        $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
+                    }
+                    $item = str_replace($fieldStatement, $replaceWith, $item);
+                }
+            }
+
+            // check for LLLs
+            preg_match_all('/(LLL:)(EXT\:)?([\w\-\/]+\.\w+\:[\.?\w]+)/', $item, $llStatements);
+
+            foreach ($llStatements[0] as $key => $llStatement) {
+                $translation = $self->getLanguageService()->sL($llStatement);
+                $item = str_replace($llStatement, $translation, $item);
+            }
+        };
+        array_walk_recursive($this->settings, $editFields, $this);
+    }
+
+    /**
+     * @return mixed|\TYPO3\CMS\Lang\LanguageService
+     */
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
     }
 
     /**
@@ -126,49 +235,5 @@ class WizardConf
         array_walk_recursive($this->settings, $editFields, $tcaConfig);
 
         $this->translateFields();
-    }
-
-    public function translateFields()
-    {
-        $editFields = function (&$item, $key, $self) {
-            if (substr($item, 0, 4) === 'LLL:') {
-                $item = $self->getLanguageService()->sL($item);
-            }
-        };
-        array_walk_recursive($this->settings, $editFields, $this);
-    }
-
-    /**
-     * @param int $pageUid
-     */
-    public function preparePageRendering(int $pageUid)
-    {
-        $this->settings['databaseTable'] = 'pages';
-        $this->settings['databaseUid'] = $pageUid;
-        $this->settings['databasePid'] = $pageUid;
-        $this->translateFields();
-
-        /**
-         * Replace FIELD:pid in settings with actual pid
-         *
-         * @param string $item
-         * @param $key
-         * @param $pageUid
-         */
-        $editFields = function (&$item, $key, $pageUid) {
-            if (substr($item, 0, 9) === 'FIELD:pid') {
-                $item = $pageUid;
-            }
-        };
-        // insert data from record
-        array_walk_recursive($this->settings, $editFields, $pageUid);
-    }
-
-    /**
-     * @return mixed|\TYPO3\CMS\Lang\LanguageService
-     */
-    protected function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
     }
 }
