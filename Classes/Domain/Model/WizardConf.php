@@ -109,39 +109,37 @@ class WizardConf
                     if (isset($record[$propertyName])) {
                         $propertyValue = $record[$propertyName];
 
-                        if (is_string($propertyValue)) {
+                        if ($propertyValue) {
                             $replaceWith = $propertyValue;
                         }
 
+                        // in case of 1:n select the first foreign element
                         if (is_array($propertyValue)) {
-                            // just set the uid
                             $replaceWith = (int)$propertyValue[0];
-
-                            // check if foreign property should be accessed FIELD:calendar.name
-                            if (isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key])) {
-                                $schema = $reflectionService->getClassSchema($record['record_type']);
-                                $properties = $schema->getProperties();
-                                $foreignPropertyType = $properties[$propertyName]['type'];
-
-                                $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-                                $dataMapper = $objectManager->get(
-                                    \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class
-                                );
-                                $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
-
-                                // query foreign record
-                                $foreignRecord = BackendUtility::getRecord(
-                                    $tableName,
-                                    $replaceWith
-                                );
-
-                                if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key]])) {
-                                    $replaceWith = $foreignRecord[$fieldStatements[4][$key]];
-                                }
-                            }
                         }
 
-                        $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
+                        // check if foreign property should be accessed FIELD:calendar.name
+                        if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key]) && $fieldStatements[4][$key] !== "") {
+                            $schema = $reflectionService->getClassSchema($record['record_type']);
+                            $properties = $schema->getProperties();
+                            $foreignPropertyType = $properties[$propertyName]['type'];
+
+                            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+                            $dataMapper = $objectManager->get(
+                                \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class
+                            );
+                            $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
+
+                            // query foreign record
+                            $foreignRecord = BackendUtility::getRecord(
+                                $tableName,
+                                $replaceWith
+                            );
+
+                            if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key]])) {
+                                $replaceWith = $foreignRecord[$fieldStatements[4][$key]];
+                            }
+                        }
                     }
                     $item = str_replace($fieldStatement, $replaceWith, $item);
                 }
