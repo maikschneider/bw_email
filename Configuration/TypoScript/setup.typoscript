@@ -140,6 +140,10 @@ plugin.tx_bwemail {
 			}
 		}
 
+		provider {
+			use = 0
+		}
+
 		modalTitle = {$plugin.tx_bwemail.settings.modalTitle}
 		modalSendButton = {$plugin.tx_bwemail.settings.modalSendButton}
 		modalCancelButton = {$plugin.tx_bwemail.settings.modalCancelButton}

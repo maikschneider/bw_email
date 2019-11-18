@@ -18,46 +18,12 @@ class SenderUtility
     /**
      * @var array
      */
-    protected $mailSettings;
-
-    /**
-     * SenderUtility constructor.
-     *
-     * @param array $typoscript
-     */
-    protected $typoscript;
+    protected $settings;
 
     /**
      * @var \Blueways\BwEmail\Domain\Model\Contact[]
      */
     protected $recipients;
-
-    public function __construct($typoscript)
-    {
-        $this->typoscript = $typoscript;
-
-        $this->mailSettings = array(
-            'senderAddress' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['senderAddress'],
-            'senderName' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['senderName'],
-            'replytoAddress' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['replytoAddress'],
-            'subject' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['subject'],
-            'emailTemplate' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['template'],
-            'showUid' => $this->typoscript['plugin.']['tx_bwemail.']['settings.']['showUid'] ?? null,
-            'recipientAddress' => '',
-            'recipientName' => '',
-            'provider' => [
-                'use' => '0'
-            ]
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function getMailSettings(): array
-    {
-        return $this->mailSettings;
-    }
 
     /**
      * @param \Blueways\BwEmail\Domain\Model\Contact[] $recipients
@@ -72,7 +38,7 @@ class SenderUtility
      */
     public function mergeMailSettings($settings)
     {
-        ArrayUtility::mergeRecursiveWithOverrule($this->mailSettings, $settings, false, false);
+        ArrayUtility::mergeRecursiveWithOverrule($this->settings, $settings, true, false);
     }
 
     /**
@@ -82,7 +48,7 @@ class SenderUtility
      */
     public function sendEmailView(EmailView $emailView)
     {
-        if (((int)$this->mailSettings['provider']['use'] === 1 && !$this->recipients) || ((int)$this->mailSettings['provider']['use'] === 0 && empty($this->mailSettings['recipientAddress']))) {
+        if (((int)$this->settings['provider']['use'] === 1 && !$this->recipients) || ((int)$this->settings['provider']['use'] === 0 && empty($this->settings['recipientAddress']))) {
             return [
                 'status' => 'WARNING',
                 'message' => [
@@ -95,7 +61,7 @@ class SenderUtility
         // @TODO: create persistence log
         $mailsSend = 0;
 
-        if ((int)$this->mailSettings['provider']['use'] === 1) {
+        if ((int)$this->settings['provider']['use'] === 1) {
             foreach ($this->recipients as $recipient) {
                 $success = $this->sendEmailViewToContact($emailView, $recipient);
                 if ($success) {
@@ -104,9 +70,9 @@ class SenderUtility
             }
         }
 
-        if ((int)$this->mailSettings['provider']['use'] === 0) {
-            $contact = new Contact($this->mailSettings['recipientAddress']);
-            $contact->setName($this->mailSettings['recipientName']);
+        if ((int)$this->settings['provider']['use'] === 0) {
+            $contact = new Contact($this->settings['recipientAddress']);
+            $contact->setName($this->settings['recipientName']);
             $success = $this->sendEmailViewToContact($emailView, $contact);
             if ($success) {
                 $mailsSend = $mailsSend + $success;
@@ -145,9 +111,9 @@ class SenderUtility
         return $this->sendMail(
             $this->getSenderArray(),
             $contact->getRecipientArray(),
-            $this->mailSettings['subject'],
+            $this->settings['subject'],
             $html,
-            $this->mailSettings['replytoAddress']
+            $this->settings['replytoAddress']
         );
     }
 
@@ -181,11 +147,19 @@ class SenderUtility
      */
     private function getSenderArray()
     {
-        if ($this->mailSettings['senderName']) {
-            return [$this->mailSettings['senderAddress'] => $this->mailSettings['senderName']];
+        if ($this->settings['senderName']) {
+            return [$this->settings['senderAddress'] => $this->settings['senderName']];
         }
 
-        return [$this->mailSettings['senderAddress']];
+        return [$this->settings['senderAddress']];
+    }
+
+    /**
+     * @param $settings
+     */
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
     }
 
     protected function validateSettings()

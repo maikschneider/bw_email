@@ -176,10 +176,10 @@ With the ```typoscriptSelects``` setting you can insert records to the email tem
 
 # Todo
 
-* better translations
-* check SenderUtility with new TypoScript settings
-* default template organisation
+* Better translations
+* Better default template organisation
 * Absolute URL handling for new v9
+* Move provider settings to TypoScript
 
 # Improvement ideas
 

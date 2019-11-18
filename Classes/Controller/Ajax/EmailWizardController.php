@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -89,12 +90,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
 
-        $defaults = $this->senderUtility->getMailSettings();
-        ArrayUtility::mergeRecursiveWithOverrule($defaults, $this->queryParams, true, false);
+        $defaults = $this->queryParams;
 
         $templates = $this->getTemplates();
 
-        // @TODO: use hook to call all contact provider
+        // @TODO: use typoScript to call enable contact provider
         $providers = [];
         $contactProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ContactSourceContactProvider');
         $providers[] = $contactProvider->getModalConfiguration();
@@ -298,7 +298,11 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $params = $request->getParsedBody();
-        $this->senderUtility->mergeMailSettings($params);
+
+        /** @var SenderUtility $senderUtility */
+        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class);
+        $senderUtility->setSettings($queryParams);
+        $senderUtility->mergeMailSettings($params);
 
         // check that all params are collected and valid
         // @TODO: return error if any required data is missing
@@ -342,10 +346,10 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
             $contacts = $provider->getContacts();
 
-            $this->senderUtility->setRecipients($contacts);
+            $senderUtility->setRecipients($contacts);
         }
 
-        $status = $this->senderUtility->sendEmailView($this->emailView);
+        $status = $senderUtility->sendEmailView($this->emailView);
 
         $response->getBody()->write(json_encode($status));
         return $response;
