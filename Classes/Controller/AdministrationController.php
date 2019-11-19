@@ -154,7 +154,7 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
 
         $src = 'data:text/html;charset=utf-8,' . EmailWizardController::encodeURIComponent($log->getBody());
 
-        $content = '<iframe frameborder="0" width="100%" height="100%" src="'.$src.'"></iframe>';
+        $content = '<iframe frameborder="0" width="100%" height="97%" src="'.$src.'"></iframe>';
 
         $response->getBody()->write($content);
 
