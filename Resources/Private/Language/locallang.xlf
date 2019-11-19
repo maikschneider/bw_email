@@ -39,6 +39,9 @@
 			<trans-unit id="contactSourceProvider.description">
 				<source>Get contacts from created contact sources</source>
 			</trans-unit>
+			<trans-unit id="module.name">
+				<source>E-Mails</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
