@@ -6,17 +6,31 @@
     "removeComments": false,
     "pretty": true,
     "baseUrl": ".",
+    "moduleResolution": "node",
+    "alwaysStrict": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
     "paths": {
-      "TYPO3/CMS/BwBookingmanager/*": [
+      "TYPO3/CMS/BwEmail/*": [
         "Resources/Private/TypeScript/*",
         "Resources/Public/JavaScript/*"
       ],
       "TYPO3/CMS/Backend/*": [
         "public/typo3/sysext/backend/Resources/Private/TypeScript/*",
         "public/typo3/sysext/backend/Resources/Public/JavaScript/*"
+      ],
+      "TYPO3/CMS/Core/*": [
+        "public/typo3/sysext/core/Resources/Private/TypeScript/*"
+      ],
+      "typeRoots": [
+        "node_modules/@types",
+        "types"
       ]
     }
   },
+  "include": [
+    "Resources/Private/TypeScript/*"
+  ],
   "exclude": [
     "node_modules",
     "Configuration",
