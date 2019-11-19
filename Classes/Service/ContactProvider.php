@@ -2,7 +2,7 @@
 
 namespace Blueways\BwEmail\Service;
 
-use \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class ContactProvider
@@ -28,6 +28,11 @@ abstract class ContactProvider
     protected $options;
 
     /**
+     * @var mixed
+     */
+    protected $settings;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
      */
     protected $configurationManager;
@@ -36,6 +41,11 @@ abstract class ContactProvider
     {
         $this->createOptions();
     }
+
+    /**
+     * @return mixed
+     */
+    abstract protected function createOptions();
 
     /**
      * Injects the Configuration Manager and loads the settings
@@ -49,9 +59,18 @@ abstract class ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return array
      */
-    abstract public function getContacts();
+    public function getModalConfiguration()
+    {
+        return [
+            'fqcn' => get_class($this),
+            'name' => $this->getProviderName(),
+            'description' => $this->getProviderDescription(),
+            'options' => $this->getOptions(),
+            'contacts' => $this->getContacts()
+        ];
+    }
 
     /**
      * @return string
@@ -59,6 +78,14 @@ abstract class ContactProvider
     public function getProviderName()
     {
         return $this->getLanguageService()->sL($this->name);
+    }
+
+    /**
+     * @return mixed|\TYPO3\CMS\Lang\LanguageService
+     */
+    private function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
     }
 
     /**
@@ -78,31 +105,9 @@ abstract class ContactProvider
     }
 
     /**
-     * @return mixed
+     * @return \Blueways\BwEmail\Domain\Model\Contact[]
      */
-    abstract protected function createOptions();
-
-    /**
-     * @return mixed|\TYPO3\CMS\Lang\LanguageService
-     */
-    private function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
-    }
-
-    /**
-     * @return array
-     */
-    public function getModalConfiguration()
-    {
-        return [
-            'fqcn' => get_class($this),
-            'name' => $this->getProviderName(),
-            'description' => $this->getProviderDescription(),
-            'options' => $this->getOptions(),
-            'contacts' => $this->getContacts()
-        ];
-    }
+    abstract public function getContacts();
 
     /**
      * @param $optionsConfiguration
@@ -118,6 +123,16 @@ abstract class ContactProvider
                 $option->value = (int)$optionsConfiguration[$key];
             }
         }
+    }
+
+    /**
+     * @TODO: Do something meaningful like setting defaults.
+     * Warning: these settings are not available when initialized in preview and sendAction
+     * @param $providerSettings
+     */
+    public function applySettings($providerSettings)
+    {
+        $this->settings = $providerSettings;
     }
 
 }

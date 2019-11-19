@@ -6,7 +6,6 @@ use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -94,12 +93,15 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $templates = $this->getTemplates();
 
-        // @TODO: use typoScript to call enable contact provider
         $providers = [];
-        $contactProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ContactSourceContactProvider');
-        $providers[] = $contactProvider->getModalConfiguration();
-        $exampleProvider = GeneralUtility::makeInstance('Blueways\BwEmail\Service\ExampleContactProvider');
-        $providers[] = $exampleProvider->getModalConfiguration();
+        if (isset($defaults['provider.'])) {
+            foreach ($defaults['provider.'] as $providerClass => $providerSettings) {
+                /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
+                $provider = GeneralUtility::makeInstance(substr($providerClass, 0, -1));
+                $provider->applySettings($providerSettings);
+                $providers[] = $provider->getModalConfiguration();
+            }
+        }
 
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,
