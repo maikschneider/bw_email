@@ -1,4 +1,7 @@
 <?php
+
+use Blueways\BwEmail\Controller\AdministrationController;
+
 return [
     'wizard_modal_page' => [
         'path' => '/email/modal/page',
@@ -12,4 +15,8 @@ return [
         'path' => '/email/modal/preview',
         'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::previewAction'
     ],
+    'email_preview' => [
+        'path' => '/email/preview',
+        'target' => AdministrationController::class . '::previewAction'
+    ]
 ];

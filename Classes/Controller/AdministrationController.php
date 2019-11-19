@@ -2,7 +2,10 @@
 
 namespace Blueways\BwEmail\Controller;
 
+use Blueways\BwEmail\Controller\Ajax\EmailWizardController;
 use Blueways\BwEmail\Domain\Model\WizardConf;
+use Blueways\BwEmail\Domain\Repository\MailLogRepository;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
@@ -34,6 +37,17 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
      * @var BackendTemplateView
      */
     protected $defaultViewObjectName = BackendTemplateView::class;
+
+    /**
+     * AdministrationController constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $this->mailLogRepository = $this->objectManager->get(MailLogRepository::class);
+    }
 
     public function indexAction()
     {
@@ -80,7 +94,9 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
      */
     protected function makeButtons(): void
     {
-        $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
+        $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailModule');
 
         $config = GeneralUtility::makeInstance(
             WizardConf::class,
@@ -124,5 +140,24 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
         return $uriBuilder->reset()->uriFor($action, $parameters, $controller);
+    }
+
+    /**
+     * @param int $logId
+     * @return
+     */
+    public function previewAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $logId = $request->getQueryParams()['id'];
+        /** @var \Blueways\BwEmail\Domain\Model\MailLog $log */
+        $log = $this->mailLogRepository->findByUid($logId);
+
+        $src = 'data:text/html;charset=utf-8,' . EmailWizardController::encodeURIComponent($log->getBody());
+
+        $content = '<iframe frameborder="0" width="100%" height="100%" src="'.$src.'"></iframe>';
+
+        $response->getBody()->write($content);
+
+        return $response;
     }
 }

@@ -2,7 +2,6 @@
 {namespace be = TYPO3\CMS\Backend\ViewHelpers} {namespace bu = TPO3\CMS\Beuser\ViewHelpers} {namespace core
 =TYPO3\CMS\Core\ViewHelpers}
 
-
 <f:layout name="Administration/Default"/>
 
 <f:section name="content">
@@ -37,9 +36,9 @@
                         <td>{log.recipientAddress}</td>
                         <td>{log.recipientName}</td>
                         <td align="right">
-                            <f:link.action action="index" class="btn btn-default"><i class="fa fa-search"
+                            <f:be.link route="ajax_email_preview" parameters="{id: log.uid}" class="btn btn-default preview"><i class="fa fa-search"
                                                                                      aria-hidden="true"></i> View E-Mail
-                            </f:link.action>
+                            </f:be.link>
                             <f:link.action action="index" class="btn btn-primary"><i class="fa fa-refresh"
                                                                                         aria-hidden="true"></i> Send again..
                             </f:link.action>
