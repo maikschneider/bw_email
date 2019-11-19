@@ -2,7 +2,13 @@
 
 namespace Blueways\BwEmail\Controller;
 
+use Blueways\BwEmail\Domain\Model\WizardConf;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Lang\LanguageService;
@@ -62,10 +68,37 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         /** @var BackendTemplateView $view */
         parent::initializeView($view);
 
+        $this->makeButtons();
+
         $this->view->assign('successfullMails', $this->mailLogRepository->countByStatus(1));
         $this->view->assign('errorMails', $this->mailLogRepository->countByStatus(0));
         $this->view->assign('action', $this->request->getControllerActionName());
+    }
 
+    /**
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     */
+    protected function makeButtons(): void
+    {
+        $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
+
+        $config = GeneralUtility::makeInstance(
+            WizardConf::class,
+            '',
+            $this->pageinfo['uid'],
+            $this->pageinfo['pid']
+        );
+
+        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+
+        $emailPageButton = $buttonBar->makeLinkButton()
+            ->setClasses('viewmodule_email_button')
+            ->setHref('#')
+            ->setTitle($this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
+            ->setIcon($iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
+            ->setDataAttributes($config->getDataAttributesForButton());
+        $buttonBar->addButton($emailPageButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
     }
 
     /**
