@@ -9,7 +9,8 @@
   },
   "require-dev": {
     "typo3/cms-base-distribution": "9.5.*",
-    "bk2k/bootstrap-package": "9.1.*"
+    "bk2k/bootstrap-package": "9.1.*",
+    "typo3/cms-styleguide": "^10.0"
   },
   "license": "MIT",
   "authors": [

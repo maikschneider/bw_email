@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fc4a4ac5df826053e5ad9741dfe8c17",
+    "content-hash": "156dcce7a03973214afbebbd4dfc1121",
     "packages": [
         {
             "name": "maikschneider/inky",
@@ -253,6 +253,70 @@
             "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
             "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles",
             "time": "2017-11-27T11:13:29+00:00"
+        },
+        {
+            "name": "typo3/cms-styleguide",
+            "version": "10.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TYPO3/styleguide.git",
+                "reference": "d78e580d6831f8c11ea55605e2327fdff4f47181"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TYPO3/styleguide/zipball/d78e580d6831f8c11ea55605e2327fdff4f47181",
+                "reference": "d78e580d6831f8c11ea55605e2327fdff4f47181",
+                "shasum": ""
+            },
+            "replace": {
+                "styleguide": "*"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.4",
+                "typo3/cms-about": "10.*.*@dev",
+                "typo3/cms-core": "10.*.*@dev",
+                "typo3/cms-frontend": "10.*.*@dev",
+                "typo3/cms-install": "10.*.*@dev",
+                "typo3/testing-framework": "^5.0.0"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "app-dir": ".Build",
+                    "web-dir": ".Build/Web",
+                    "extension-key": "styleguide"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TYPO3\\CMS\\Styleguide\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "TYPO3 CMS Core Team",
+                    "homepage": "https://forge.typo3.org/projects/typo3cms-core",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Felix Kopp",
+                    "email": "felix-source@phorax.com",
+                    "homepage": "http://phorax.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "TYPO3 CMS Extension to test everything in the TYPO3 Backend",
+            "homepage": "https://github.com/TYPO3/styleguide",
+            "keywords": [
+                "style guide",
+                "typo3",
+                "typo3 backend"
+            ],
+            "time": "2019-09-04T14:04:43+00:00"
         }
     ],
     "packages-dev": [
@@ -4686,6 +4750,11 @@
         {
             "name": "typo3/minimal",
             "version": "v9.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TYPO3/minimal.git",
+                "reference": "6ca773e3a90f193ef6cbac7be810d2e8eb6d06fc"
+            },
             "require": {
                 "typo3/cms-backend": "9.5.*@dev",
                 "typo3/cms-core": "9.5.*@dev",
@@ -4807,8 +4876,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": {
+    "platform": {
         "ext-json": "*"
-    }
+    },
+    "platform-dev": []
 }
