@@ -31,7 +31,9 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
 
     public function indexAction()
     {
+        $logs = $this->mailLogRepository->findByStatus(1);
 
+        $this->view->assign('logs', $logs);
     }
 
     public function injectMailLogRepository(\Blueways\BwEmail\Domain\Repository\MailLogRepository $mailLogRepository)

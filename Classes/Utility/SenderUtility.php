@@ -157,8 +157,8 @@ class SenderUtility
             $log->setSenderName($from[\array_keys($from)[0]]);
         }
         $log->setRecipientAddress(\array_keys($to)[0]);
-        if (isset($to[0])) {
-            $log->setRecipientName($to[0]);
+        if (isset($to[\array_keys($to)[0]])) {
+            $log->setRecipientName($to[\array_keys($to)[0]]);
         }
         $log->setSubject($subject);
         $log->setBody($body);

@@ -18,4 +18,17 @@ class MailLogRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         return $query->count();
     }
+
+    public function findByStatus(int $status)
+    {
+        $query = $this->createQuery();
+        $query->matching(
+            $query->equals('status', $status)
+        );
+        $query->setOrderings([
+            'sendDate' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+        ]);
+
+        return $query->execute();
+    }
 }
