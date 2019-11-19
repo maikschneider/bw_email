@@ -45,7 +45,7 @@ call_user_func(
             'tx_email',
             'top',
             array(
-                'Administration' => 'index',
+                'Administration' => 'index, errorLog, contactList',
             ),
             array(
                 'access' => 'admin',

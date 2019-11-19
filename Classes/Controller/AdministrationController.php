@@ -41,27 +41,6 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         parent::initializeView($view);
     }
 
-    protected function createMenu()
-    {
-        $menu = $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
-        $ll = 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf';
-        $menu->setIdentifier('bw_email');
-
-        $actions = [
-            ['action' => 'index', 'label' => 'indexAction']
-        ];
-
-        foreach ($actions as $action) {
-            $item = $menu->makeMenuItem()
-                ->setTitle($this->getLanguageService()->sL($ll . ':module.' . $action['label']))
-                ->setHref($this->getHref('Administration', $action['action']))
-                ->setActive($this->request->getControllerActionName() === $action['action']);
-            $menu->addMenuItem($item);
-        }
-
-        $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
-    }
-
     /**
      * Returns the LanguageService
      *
@@ -85,5 +64,15 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
         return $uriBuilder->reset()->uriFor($action, $parameters, $controller);
+    }
+
+    public function errorLogAction()
+    {
+
+    }
+
+    public function contactListAction()
+    {
+
     }
 }
