@@ -63,7 +63,6 @@ return [
                 'eval' => 'trim',
             ],
         ],
-
         'status' => [
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.status',
             'onChange' => 'reload',
@@ -86,7 +85,7 @@ return [
                 ]
             ],
         ],
-        'start_date' => [
+        'send_date' => [
             'exclude' => true,
             'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.send_date',
             'config' => [
@@ -95,6 +94,15 @@ return [
                 'eval' => 'datetime,int',
             ],
         ],
+        'body' => [
+            'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.body',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
+
     ]
 ];
 

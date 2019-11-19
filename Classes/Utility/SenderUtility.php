@@ -3,9 +3,13 @@
 namespace Blueways\BwEmail\Utility;
 
 use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\MailLog;
+use Blueways\BwEmail\Domain\Repository\MailLogRepository;
 use Blueways\BwEmail\View\EmailView;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * Class SenderUtility
@@ -24,6 +28,26 @@ class SenderUtility
      * @var \Blueways\BwEmail\Domain\Model\Contact[]
      */
     protected $recipients;
+
+    /**
+     * @var \Blueways\BwEmail\Domain\Repository\MailLogRepository
+     */
+    protected $mailLogRepository;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+     */
+    protected $persistenceManager;
+
+    /**
+     * SenderUtility constructor.
+     */
+    public function __construct()
+    {
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->mailLogRepository = $objectManager->get(MailLogRepository::class);
+        $this->persistenceManager = $objectManager->get(PersistenceManager::class);
+    }
 
     /**
      * @param \Blueways\BwEmail\Domain\Model\Contact[] $recipients
@@ -118,7 +142,7 @@ class SenderUtility
     }
 
     /**
-     * @param $from
+     * @param array $from
      * @param $to
      * @param $subject
      * @param $body
@@ -127,6 +151,23 @@ class SenderUtility
      */
     private function sendMail($from, $to, $subject, $body, $replyTo)
     {
+        $log = new MailLog();
+        $log->setSenderAddress(\array_keys($from)[0]);
+        if (isset($from[\array_keys($from)[0]])) {
+            $log->setSenderName($from[\array_keys($from)[0]]);
+        }
+        $log->setRecipientAddress(\array_keys($to)[0]);
+        if (isset($to[0])) {
+            $log->setRecipientName($to[0]);
+        }
+        $log->setSubject($subject);
+        $log->setBody($body);
+        if ($replyTo) {
+            $log->setSenderReplyto($replyTo);
+        }
+        $log->setSendDate(new \DateTime());
+
+        /** @var \TYPO3\CMS\Core\Mail\MailMessage $mailMessage */
         $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
         $mailMessage->setTo($to)
             ->setFrom($from)
@@ -137,7 +178,17 @@ class SenderUtility
             $mailMessage->setReplyTo($replyTo);
         }
 
-        return $mailMessage->send();
+        $status = $mailMessage->send();
+
+        // @TODO: check for rejected
+
+        if ($status === 1) {
+            $log->setStatus(1);
+        }
+        $this->mailLogRepository->add($log);
+        $this->persistenceManager->persistAll();
+
+        return $status;
     }
 
     /**

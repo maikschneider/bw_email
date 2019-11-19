@@ -57,10 +57,10 @@
 			<trans-unit id="tx_bwemail_domain_model_maillog.status">
 				<source>Mail Status</source>
 			</trans-unit>
-			<trans-unit id="tx_bwemail_domain_model_maillog.status.0">
+			<trans-unit id="tx_bwemail_domain_model_maillog.status.1">
 				<source>Successfully send</source>
 			</trans-unit>
-			<trans-unit id="tx_bwemail_domain_model_maillog.status.1">
+			<trans-unit id="tx_bwemail_domain_model_maillog.status.0">
 				<source>Error</source>
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_maillog.status.2">
@@ -77,6 +77,9 @@
 			</trans-unit>
 			<trans-unit id="tx_bwemail_domain_model_maillog.sender_replyto">
 				<source>Sender ReplyTo Address</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.body">
+				<source>Mail Body</source>
 			</trans-unit>
 		</body>
 	</file>

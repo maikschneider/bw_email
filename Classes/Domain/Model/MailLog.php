@@ -1,6 +1,6 @@
 <?php
 
-namespace Blueways\BwEmail\Domain\Model\MailLog;
+namespace Blueways\BwEmail\Domain\Model;
 
 class MailLog extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
