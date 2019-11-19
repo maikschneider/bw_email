@@ -18,6 +18,11 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
     protected $view;
 
     /**
+     * @var \Blueways\BwEmail\Domain\Repository\MailLogRepository
+     */
+    protected $mailLogRepository;
+
+    /**
      * Backend Template Container
      *
      * @var BackendTemplateView
@@ -25,6 +30,21 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
     protected $defaultViewObjectName = BackendTemplateView::class;
 
     public function indexAction()
+    {
+
+    }
+
+    public function injectMailLogRepository(\Blueways\BwEmail\Domain\Repository\MailLogRepository $mailLogRepository)
+    {
+        $this->mailLogRepository = $mailLogRepository;
+    }
+
+    public function errorLogAction()
+    {
+
+    }
+
+    public function contactListAction()
     {
 
     }
@@ -39,6 +59,11 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
     {
         /** @var BackendTemplateView $view */
         parent::initializeView($view);
+
+        $this->view->assign('successfullMails', $this->mailLogRepository->countByStatus(1));
+        $this->view->assign('errorMails', $this->mailLogRepository->countByStatus(0));
+        $this->view->assign('action', $this->request->getControllerActionName());
+
     }
 
     /**
@@ -64,15 +89,5 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
         return $uriBuilder->reset()->uriFor($action, $parameters, $controller);
-    }
-
-    public function errorLogAction()
-    {
-
-    }
-
-    public function contactListAction()
-    {
-
     }
 }

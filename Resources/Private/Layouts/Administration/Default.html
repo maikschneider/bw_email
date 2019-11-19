@@ -6,20 +6,19 @@
 	}"/>
 
     <f:flashMessages/>
-
     <div class="container-navigation">
         <ul class="list-group">
-            <f:link.action action="index" class="list-group-item active"><i class="fa fa-list" aria-hidden="true"></i>
+            <f:link.action action="index" class="list-group-item {f:if(condition: '{action}==\'index\'}', then:'active')}"><i class="fa fa-list" aria-hidden="true"></i>
                 Mail Log
-                <span class="badge badge-primary badge-pill">214</span>
+                <span class="badge badge-primary badge-pill">{successfullMails}</span>
             </f:link.action>
-            <f:link.action action="errorLog" class="list-group-item"><i class="fa fa-exclamation-circle"
+            <f:link.action action="errorLog" class="list-group-item {f:if(condition: '{action}==\'errorLog\'}', then:'active')}"><i class="fa fa-exclamation-circle"
                                                                         aria-hidden="true"></i> Mail Errors
-                <span class="badge badge-primary badge-pill">14</span>
+                <span class="badge badge-primary badge-pill">{errorMails}</span>
             </f:link.action>
-            <f:link.action action="contactList" class="list-group-item"><i class="fa fa-user" aria-hidden="true"></i>
+            <f:link.action action="contactList" class="list-group-item {f:if(condition: '{action}==\'contactList\'}', then:'active')}"><i class="fa fa-user" aria-hidden="true"></i>
                 Contact Provider
-                <span class="badge badge-primary badge-pill">2</span>
+                <span class="badge badge-primary badge-pill">0</span>
             </f:link.action>
         </ul>
     </div>
