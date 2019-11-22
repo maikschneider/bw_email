@@ -39,15 +39,16 @@
                             <f:be.link route="ajax_email_preview" parameters="{id: log.uid}" class="btn btn-default preview"><i class="fa fa-search"
                                                                                      aria-hidden="true"></i> View E-Mail
                             </f:be.link>
-                            <f:link.action action="index" class="btn btn-primary"><i class="fa fa-refresh"
-                                                                                        aria-hidden="true"></i> Send again..
-                            </f:link.action>
                         </td>
                     </tr>
                 </f:for>
                 </tbody>
             </table>
         </div>
+    </f:if>
+
+    <f:if condition="!{logs}">
+        <f:be.infobox title="No log entries" state="-1"></f:be.infobox>
     </f:if>
 
 </f:section>

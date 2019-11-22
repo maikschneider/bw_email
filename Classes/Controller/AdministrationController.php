@@ -63,7 +63,9 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
 
     public function errorLogAction()
     {
+        $logs = $this->mailLogRepository->findByStatus(0);
 
+        $this->view->assign('logs', $logs);
     }
 
     public function contactListAction()
