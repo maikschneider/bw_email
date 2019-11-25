@@ -79,7 +79,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -156,14 +155,17 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
     /**
      * @return array
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
     protected function getTemplates()
     {
-        $pageUid = $this->queryParams['databasePid'] ?? 0;
+        $pageUid = $this->queryParams['table'] === 'pages' ? $this->queryParams['uid'] : $this->queryParams['pid'];
+        $pageUid = $pageUid ?? 0;
         $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
         $templates = $pageTsConfig['mod.']['web_layout.']['EmailLayouts.'];
         $selection = [];
+        if (!$templates) {
+            return $selection;
+        }
         foreach ($templates as $template) {
             $selection[] = array(
                 'file' => $template['title'],
