@@ -6,8 +6,11 @@ use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -202,18 +205,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->emailView->setPid($queryParams['pid']);
 
         // inject current record
-        $record = BackendUtility::getRecord(
-            $queryParams['table'],
-            $queryParams['uid']
-        );
-        // the record is just an array, we need to query the repository to access all properties with fluid
-        if (isset($record['record_type'])) {
-            $recordTypeParts = explode("\\", $record['record_type']);
-            $recordTypeParts[3] = 'Repository';
-            $recordTypeParts[4] .= 'Repository';
-            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['uid']);
-        }
+        $record = $this->getRecord($queryParams['uid'], $queryParams['table']);
         $this->emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
@@ -269,6 +261,62 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
+     * @param $uid
+     * @param $table
+     * @return array|mixed
+     */
+    private function getRecord($uid, $table)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $record = $queryBuilder
+            ->select('*')
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->eq('uid', $uid)
+            )
+            ->execute()
+            ->fetch();
+
+        // the record is just an array, we need to query the repository to access all properties with fluid
+        if (isset($record['record_type']) && $record['record_type'] !== "") {
+
+            // load record from repository (to make use of fluid getter/setter functions
+            $recordTypeParts = explode("\\", $record['record_type']);
+            $recordTypeParts[3] = 'Repository';
+            $recordTypeParts[4] .= 'Repository';
+
+            // use custom query to ignore hidden and pid field
+            /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $querySettings */
+            $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+            $querySettings->setIgnoreEnableFields(true);
+            $querySettings->setRespectStoragePage(false);
+            $querySettings->setIncludeDeleted(true);
+            /** @var \TYPO3\CMS\Extbase\Persistence\Repository $repository */
+            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
+            $repository->setDefaultQuerySettings($querySettings);
+            $query = $repository->createQuery();
+            $query->matching($query->equals('uid', $uid));
+            $record = $query->execute()->toArray();
+            $record = $record[0];
+
+            // manually load lazy related properties since fluid template is not able to in standalone view
+            $properties = ObjectAccess::getGettableProperties($record);
+            foreach ($properties as $propertyName => $property) {
+                if ($property instanceof LazyLoadingProxy) {
+                    \TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty(
+                        $record,
+                        $propertyName,
+                        $property->_loadRealInstance()
+                    );
+                }
+            }
+        }
+
+        return $record;
+    }
+
+    /**
      * @param string $str
      * @return string
      */
@@ -314,18 +362,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->emailView->setPid($queryParams['pid']);
 
         // inject current record
-        $record = BackendUtility::getRecord(
-            $queryParams['table'],
-            $queryParams['uid']
-        );
-        // the record is just an array, we need to query the repository to access all properties with fluid
-        if (isset($record['record_type'])) {
-            $recordTypeParts = explode("\\", $record['record_type']);
-            $recordTypeParts[3] = 'Repository';
-            $recordTypeParts[4] .= 'Repository';
-            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['uid']);
-        }
+        $record = $this->getRecord($queryParams['uid'], $queryParams['table']);
         $this->emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
