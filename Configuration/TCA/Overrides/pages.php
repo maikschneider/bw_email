@@ -5,6 +5,13 @@ call_user_func(
     function ($extKey, $table) {
         $emailDoktype = 117;
 
+        // PageTS for default templates
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerPageTSConfigFile(
+            $extKey,
+            'Configuration/PageTS/Templates.typoscript',
+            'E-Mail Templates'
+        );
+
         // Add new page type as possible select item:
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTcaSelectItem(
             $table,
