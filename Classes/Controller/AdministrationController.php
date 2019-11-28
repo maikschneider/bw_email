@@ -6,6 +6,7 @@ use Blueways\BwEmail\Controller\Ajax\EmailWizardController;
 use Blueways\BwEmail\Domain\Model\MailLog;
 use Blueways\BwEmail\Domain\Model\WizardConf;
 use Blueways\BwEmail\Domain\Repository\MailLogRepository;
+use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -114,12 +115,10 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
             0
         );
         $wizardConfig->createFromMailLog($log);
-        $wizardConfig->setJobType('BE-TCA-BUTTON');
+        $wizardConfig->setJobType('BE-RESEND-BUTTON');
 
         $this->settings = $wizardConfig->settings;
         $wizardUri = $wizardConfig->getWizardUri('ajax_wizard_modal_resend');
-
-        //$this->settings = $wizardConfig->settings;
 
         $this->view->assign('wizardUri', $wizardUri);
         $this->view->assign('log', $log);
@@ -197,5 +196,45 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
         return $uriBuilder->reset()->uriFor($action, $parameters, $controller);
+    }
+
+    public function resendAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        if ($request->getMethod() !== 'POST') {
+            $this->throwStatus(405, 'Method not allowed');
+        }
+
+        // security: check signature
+        if (!$this->isSignatureValid($request, 'ajax_email_resend')) {
+            return $response->withStatus(403);
+        }
+
+        $queryParams = json_decode($request->getQueryParams()['arguments'], true);
+        $params = $request->getParsedBody();
+
+        /** @var SenderUtility $senderUtility */
+        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class);
+        $senderUtility->setSettings($queryParams);
+        $senderUtility->mergeMailSettings($params);
+
+        $log = $this->mailLogRepository->findByUid($queryParams['mailLog']);
+
+        $status = $senderUtility->sendEmailLog($log);
+
+        $response->getBody()->write(json_encode($status));
+        return $response;
+    }
+
+    /**
+     * Check if hmac signature is correct
+     *
+     * @param ServerRequestInterface $request the request with the GET parameters
+     * @param string $route
+     * @return bool
+     */
+    protected function isSignatureValid(ServerRequestInterface $request, string $route)
+    {
+        $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
+        return $token === $request->getQueryParams()['signature'];
     }
 }

@@ -166,8 +166,8 @@ class SenderUtility
         }
         $log->setSendDate(new \DateTime());
         $log->setJobType($this->settings['jobType']);
-        $log->setRecordTable($this->settings['table']);
-        $log->setRecordUid($this->settings['uid']);
+        $log->setRecordTable($this->settings['table'] ?? '');
+        $log->setRecordUid($this->settings['uid'] ?? 0);
 
         /** @var \TYPO3\CMS\Core\Mail\MailMessage $mailMessage */
         $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
@@ -205,6 +205,39 @@ class SenderUtility
         }
 
         return [$this->settings['senderAddress']];
+    }
+
+    public function sendEmailLog(MailLog $log)
+    {
+        $html = $log->getBody();
+        $contact = new Contact($this->settings['recipientAddress']);
+        $contact->setName($this->settings['recipientName']);
+
+        $mailsSend = $this->sendMail(
+            $this->getSenderArray(),
+            $contact->getRecipientArray(),
+            $this->settings['subject'],
+            $html,
+            $this->settings['replytoAddress']
+        );
+
+        if ($mailsSend) {
+            return [
+                'status' => 'OK',
+                'message' => [
+                    'headline' => 'Success',
+                    'text' => $mailsSend === 1 ? 'Mail successfully send.' : $mailsSend . ' mails have been successfully send.'
+                ]
+            ];
+        }
+
+        return [
+            'status' => 'ERROR',
+            'message' => [
+                'headline' => 'Unknown error',
+                'text' => 'No mails have been send.'
+            ]
+        ];
     }
 
     /**

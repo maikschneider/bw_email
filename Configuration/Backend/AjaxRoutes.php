@@ -8,7 +8,7 @@ return [
         'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::modalAction'
     ],
     'wizard_modal_resend' => [
-        'path' => '/email/resend',
+        'path' => '/email/modal/resend',
         'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::modalResendAction'
     ],
     'wizard_modal_send' => [
@@ -22,5 +22,9 @@ return [
     'email_preview' => [
         'path' => '/email/preview',
         'target' => AdministrationController::class . '::previewAction'
+    ],
+        'email_resend' => [
+        'path' => '/email/resend',
+        'target' => AdministrationController::class . '::resendAction'
     ]
 ];

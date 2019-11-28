@@ -206,7 +206,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 ]
         ];
 
-        $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
+        $formActionUri = $this->getAjaxUri('ajax_email_resend');
 
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,
