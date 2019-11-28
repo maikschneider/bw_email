@@ -8,6 +8,30 @@
 
     <h1>{log.subject}</h1>
 
+    <f:if condition="{log.recordTable} && {log.recordUid}">
+        <be:link.editRecord uid="{log.recordUid}" table="{log.recordTable}" class="btn btn-default">
+            <i class="fa fa-pencil" aria-hidden="true"></i> Show linked record
+        </be:link.editRecord>
+    </f:if>
+
+    <f:be.link route="ajax_email_preview" parameters="{id: log.uid}" class="btn btn-default preview">
+        <i class="fa fa-search" aria-hidden="true"></i> View E-Mail
+    </f:be.link>
+
+    <f:if condition="{wizardUri}">
+        <button id="sendMailButton"
+                class="btn btn-default t3js-sendmail-trigger viewmodule_email_button"
+                data-wizard-uri="{wizardUri}"
+                data-modal-title="Resend Email"
+                data-modal-send-button-text="Send"
+                data-modal-cancel-button-text="Abort">
+            <span class="t3-icon fa fa-envelope-o"></span>
+            {settings.buttonText}
+        </button>
+    </f:if>
+
+    <hr />
+
     <div class="panel panel-default">
         <div class="table-fit">
             <table class="table">
@@ -77,6 +101,18 @@
                         <f:translate key="LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.sender_replyto"/>
                     </td>
                     <td>{f:if(condition: log.senderReplyto, then: '{log.senderReplyto}', else: '-')}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <f:translate key="LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.record_table"/>
+                    </td>
+                    <td>{f:if(condition: log.recordTable, then: '{log.recordTable}', else: '-')}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <f:translate key="LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.record_uid"/>
+                    </td>
+                    <td>{f:if(condition: log.recordUid, then: '{log.recordUid}', else: '-')}</td>
                 </tr>
                 </tbody>
             </table>

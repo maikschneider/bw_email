@@ -17,6 +17,7 @@ declare global {
 class EmailModule {
 
 	private $previewButtons: JQuery;
+	private $modal: JQuery;
 
 	init() {
 		this.cacheDom();
@@ -31,21 +32,15 @@ class EmailModule {
 		this.$previewButtons.on('click', this.onPreviewButtonClick.bind(this));
 	}
 
-	private onPreviewOpened() {
-
-	}
-
 	private onPreviewButtonClick(e: JQueryEventObject) {
 		e.preventDefault();
+		const self = this;
 		const link = $(e.currentTarget).attr('href');
 
-		const modal = Modal.advanced({
-			type: 'ajax',
-			content: link,
+		self.$modal = Modal.advanced({
+			type: 'content',
+			content: 'Loading..',
 			size: Modal.sizes.large,
-			title: 'Email',
-			style: Modal.styles.light,
-			ajaxCallback: this.onPreviewOpened.bind(this),
 			buttons: [
 				{
 					text: 'close',
@@ -61,7 +56,11 @@ class EmailModule {
 				}
 			]
 
-		})
+		});
+
+		$.get(link, function (response) {
+			self.$modal.find('.t3js-modal-body').html('<iframe frameborder="0" width="100%" height="97%" src="' + response.src + '"></iframe>');
+		});
 	}
 }
 

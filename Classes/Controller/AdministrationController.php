@@ -75,6 +75,57 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
     }
 
     /**
+     * @param int $logId
+     * @return
+     */
+    public function previewAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $logId = $request->getQueryParams()['id'];
+        /** @var \Blueways\BwEmail\Domain\Model\MailLog $log */
+        $log = $this->mailLogRepository->findByUid($logId);
+
+        $src = 'data:text/html;charset=utf-8,' . EmailWizardController::encodeURIComponent($log->getBody());
+
+        $content = '<iframe frameborder="0" width="100%" height="97%" src="' . $src . '"></iframe>';
+
+        // build and encode response
+        $content = json_encode(array(
+            'src' => $src,
+            'marker' => [],
+            'hasInternalLinks' => false,
+            'contacts' => [],
+            'selectedContact' => 0
+        ));
+
+        $response->getBody()->write($content);
+
+        return $response;
+    }
+
+    /**
+     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
+     */
+    public function showLogAction(MailLog $log)
+    {
+        $wizardConfig = GeneralUtility::makeInstance(
+            WizardConf::class,
+            $log->getRecordTable(),
+            $log->getRecordUid(),
+            0
+        );
+        $wizardConfig->createFromMailLog($log);
+        $wizardConfig->setJobType('BE-TCA-BUTTON');
+
+        $this->settings = $wizardConfig->settings;
+        $wizardUri = $wizardConfig->getWizardUri('ajax_wizard_modal_resend');
+
+        //$this->settings = $wizardConfig->settings;
+
+        $this->view->assign('wizardUri', $wizardUri);
+        $this->view->assign('log', $log);
+    }
+
+    /**
      * Set up the doc header properly here
      *
      * @param ViewInterface $view
@@ -111,13 +162,16 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
 
-        $emailPageButton = $buttonBar->makeLinkButton()
-            ->setClasses('viewmodule_email_button')
-            ->setHref('#')
-            ->setTitle($this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
-            ->setIcon($iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
-            ->setDataAttributes($config->getDataAttributesForButton());
-        $buttonBar->addButton($emailPageButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
+        if($this->request->getControllerActionName() !== 'showLog') {
+
+            $emailPageButton = $buttonBar->makeLinkButton()
+                ->setClasses('viewmodule_email_button')
+                ->setHref('#')
+                ->setTitle($this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
+                ->setIcon($iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
+                ->setDataAttributes($config->getDataAttributesForButton());
+            $buttonBar->addButton($emailPageButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
+        }
     }
 
     /**
@@ -143,32 +197,5 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
         return $uriBuilder->reset()->uriFor($action, $parameters, $controller);
-    }
-
-    /**
-     * @param int $logId
-     * @return
-     */
-    public function previewAction(ServerRequestInterface $request, ResponseInterface $response)
-    {
-        $logId = $request->getQueryParams()['id'];
-        /** @var \Blueways\BwEmail\Domain\Model\MailLog $log */
-        $log = $this->mailLogRepository->findByUid($logId);
-
-        $src = 'data:text/html;charset=utf-8,' . EmailWizardController::encodeURIComponent($log->getBody());
-
-        $content = '<iframe frameborder="0" width="100%" height="97%" src="'.$src.'"></iframe>';
-
-        $response->getBody()->write($content);
-
-        return $response;
-    }
-
-    /**
-     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
-     */
-    public function showLogAction(MailLog $log)
-    {
-        $this->view->assign('log', $log);
     }
 }

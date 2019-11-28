@@ -179,6 +179,48 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         return $GLOBALS['LANG'];
     }
 
+    public function modalResendAction(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_resend')) {
+            return $response->withStatus(403);
+        }
+
+        $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
+
+        $defaults = $this->queryParams;
+
+        $routeName = 'ajax_email_preview';
+        $uriArguments['id'] = $this->queryParams['mailLog'];
+        $uriArguments['signature'] = GeneralUtility::hmac(
+            $uriArguments['id'],
+            $routeName
+        );
+
+        $previewUri = (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
+
+        $templates = [
+            0 => [
+                'file' => '',
+                'name' => 'Saved HTML',
+                'previewUri' => $previewUri
+                ]
+        ];
+
+        $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
+
+        $this->templateView->assignMultiple([
+            'formActionUri' => $formActionUri,
+            'defaults' => $defaults,
+            'templates' => $templates,
+        ]);
+
+        $this->templateView->setTemplate('Administration/EmailWizard');
+        $content = $this->templateView->render();
+        $response->getBody()->write($content);
+
+        return $response;
+    }
+
     /**
      * This action is currently limited to preview emails by requests that send a page uid.
      * This needs to be shifted to the child class PageEmailWizard

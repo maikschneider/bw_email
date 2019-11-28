@@ -179,13 +179,12 @@ class WizardConf
     }
 
     /**
+     * @param string $routeName
      * @return string
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    public function getWizardUri()
+    public function getWizardUri($routeName = 'ajax_wizard_modal_page')
     {
-        $routeName = 'ajax_wizard_modal_page';
-
         $uriArguments = [];
         $uriArguments['arguments'] = json_encode($this->settings);
         $uriArguments['signature'] = GeneralUtility::hmac(
@@ -241,5 +240,20 @@ class WizardConf
     public function setJobType(string $jobType)
     {
         $this->settings['jobType'] = $jobType;
+    }
+
+    /**
+     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
+     */
+    public function createFromMailLog(MailLog $log)
+    {
+        $this->settings = [];
+        $this->settings['recipientAddress'] = $log->getRecipientAddress();
+        $this->settings['recipientName'] = $log->getRecipientName();
+        $this->settings['subject'] = $log->getSubject();
+        $this->settings['senderName'] = $log->getSenderName();
+        $this->settings['senderAddress'] = $log->getSenderAddress();
+        $this->settings['senderReplyto'] = $log->getSenderReplyto();
+        $this->settings['mailLog'] = $log->getUid();
     }
 }
