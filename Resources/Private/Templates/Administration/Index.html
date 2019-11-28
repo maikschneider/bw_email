@@ -31,10 +31,10 @@
                 <tbody>
                 <f:for each="{logs}" as="log">
                     <tr>
-                        <td>{log.sendDate->f:format.date(format:'d.m.Y H:i')}</td>
-                        <td>{log.subject}</td>
-                        <td>{log.recipientAddress}</td>
-                        <td>{log.recipientName}</td>
+                        <td><f:link.action action="showLog" arguments="{log: log.uid}">{log.sendDate->f:format.date(format:'d.m.Y H:i')}</f:link.action></td>
+                        <td><f:link.action action="showLog" arguments="{log: log.uid}">{log.subject}</f:link.action></td>
+                        <td><f:link.action action="showLog" arguments="{log: log.uid}">{log.recipientAddress}</f:link.action></td>
+                        <td><f:link.action action="showLog" arguments="{log: log.uid}">{log.recipientName}</f:link.action></td>
                         <td align="right">
                             <f:be.link route="ajax_email_preview" parameters="{id: log.uid}" class="btn btn-default preview"><i class="fa fa-search"
                                                                                      aria-hidden="true"></i> View E-Mail

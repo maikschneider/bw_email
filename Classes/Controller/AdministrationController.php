@@ -3,6 +3,7 @@
 namespace Blueways\BwEmail\Controller;
 
 use Blueways\BwEmail\Controller\Ajax\EmailWizardController;
+use Blueways\BwEmail\Domain\Model\MailLog;
 use Blueways\BwEmail\Domain\Model\WizardConf;
 use Blueways\BwEmail\Domain\Repository\MailLogRepository;
 use Psr\Http\Message\ResponseInterface;
@@ -161,5 +162,13 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $response->getBody()->write($content);
 
         return $response;
+    }
+
+    /**
+     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
+     */
+    public function showLogAction(MailLog $log)
+    {
+        $this->view->assign('log', $log);
     }
 }
