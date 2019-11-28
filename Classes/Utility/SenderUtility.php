@@ -82,7 +82,6 @@ class SenderUtility
             ];
         }
 
-        // @TODO: create persistence log
         $mailsSend = 0;
 
         if ((int)$this->settings['provider']['use'] === 1) {
@@ -166,6 +165,9 @@ class SenderUtility
             $log->setSenderReplyto($replyTo);
         }
         $log->setSendDate(new \DateTime());
+        $log->setJobType($this->settings['jobType']);
+        $log->setRecordTable($this->settings['table']);
+        $log->setRecordUid($this->settings['uid']);
 
         /** @var \TYPO3\CMS\Core\Mail\MailMessage $mailMessage */
         $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
@@ -211,11 +213,6 @@ class SenderUtility
     public function setSettings($settings)
     {
         $this->settings = $settings;
-    }
-
-    protected function validateSettings()
-    {
-
     }
 
 }

@@ -4,14 +4,14 @@ return [
         'title' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog',
         'label' => 'recipient_address',
         'crdate' => 'crdate',
-        'searchFields' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto',
+        'searchFields' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto,job_type,conversation_id,record_table,record_uid',
         'iconfile' => 'EXT:bw_email/Resources/Public/Icons/tx_bwemail_domain_model_maillog.svg',
     ],
     'interface' => [
-        'showRecordFieldList' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto',
+        'showRecordFieldList' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto,job_type,conversation_id,record_table,record_uid',
     ],
     'types' => [
-        0 => ['showitem' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto']
+        0 => ['showitem' => 'recipient_address,recipient_name,subject,status,send_date,sender_name,sender_address,sender_replyto,job_type,conversation_id,record_table,record_uid']
     ],
     'columns' => [
 
@@ -102,7 +102,38 @@ return [
                 'eval' => 'trim',
             ],
         ],
-
+        'job_type' => [
+            'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.job_type',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
+        'conversation_id' => [
+            'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.conversation_id',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
+        'record_table' => [
+            'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.record_table',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
+        'record_uid' => [
+            'label' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_maillog.record_uid',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
     ]
 ];
 

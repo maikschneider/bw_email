@@ -81,6 +81,18 @@
 			<trans-unit id="tx_bwemail_domain_model_maillog.body">
 				<source>Mail Body</source>
 			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.conversation_id">
+				<source>Conversation ID</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.job_type">
+				<source>Job Type</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.record_table">
+				<source>Record table</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.record_uid">
+				<source>Record UID</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

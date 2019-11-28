@@ -234,4 +234,12 @@ class WizardConf
 
         $this->translateFields();
     }
+
+    /**
+     * @param string $jobType
+     */
+    public function setJobType(string $jobType)
+    {
+        $this->settings['jobType'] = $jobType;
+    }
 }

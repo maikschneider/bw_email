@@ -46,6 +46,90 @@ class MailLog extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $senderName;
 
     /**
+     * @var string
+     */
+    protected $jobType;
+
+    /**
+     * @return string
+     */
+    public function getJobType(): string
+    {
+        return $this->jobType;
+    }
+
+    /**
+     * @param string $jobType
+     */
+    public function setJobType(string $jobType): void
+    {
+        $this->jobType = $jobType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConversationId(): string
+    {
+        return $this->conversationId;
+    }
+
+    /**
+     * @param string $conversationId
+     */
+    public function setConversationId(string $conversationId): void
+    {
+        $this->conversationId = $conversationId;
+    }
+
+    /**
+     * @var string
+     */
+    protected $conversationId;
+
+    /**
+     * @var string
+     */
+    protected $recordTable;
+
+    /**
+     * @return string
+     */
+    public function getRecordTable(): string
+    {
+        return $this->recordTable;
+    }
+
+    /**
+     * @param string $recordTable
+     */
+    public function setRecordTable(string $recordTable): void
+    {
+        $this->recordTable = $recordTable;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRecordUid(): int
+    {
+        return $this->recordUid;
+    }
+
+    /**
+     * @param int $recordUid
+     */
+    public function setRecordUid(int $recordUid): void
+    {
+        $this->recordUid = $recordUid;
+    }
+
+    /**
+     * @var int
+     */
+    protected $recordUid;
+
+    /**
      * @return string
      */
     public function getSenderAddress(): string

@@ -32,6 +32,7 @@ class SendMailButtonElement extends AbstractFormElement
             $this->data['vanillaUid'],
             $this->data['effectivePid']
         );
+        $wizardConfig->setJobType('BE-TCA-BUTTON');
 
         $this->settings = $wizardConfig->settings;
         $wizardUri = $wizardConfig->getWizardUri();
