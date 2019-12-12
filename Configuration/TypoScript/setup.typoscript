@@ -125,8 +125,8 @@ plugin.tx_bwemail {
 						render = 1
 						table = tt_content
 						select {
-							pidInList = FIELD:pid
-							where = colPos=0
+							pidInList = FIELD:uid
+							where = colPos=0 AND hidden=0
 							orderBy = sorting
 						}
 					}
