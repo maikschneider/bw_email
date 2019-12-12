@@ -34,11 +34,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected $emailView;
 
     /**
-     * @var \Blueways\BwEmail\Utility\SenderUtility
-     */
-    protected $senderUtility;
-
-    /**
      * @var StandaloneView
      */
     private $templateView;
@@ -66,10 +61,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $this->templateView = $templateView;
         $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
         $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
-        $this->senderUtility = GeneralUtility::makeInstance(
-            'Blueways\BwEmail\Utility\SenderUtility',
-            $this->typoscript
-        );
     }
 
     /**
@@ -203,7 +194,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 'file' => '',
                 'name' => 'Saved HTML',
                 'previewUri' => $previewUri
-                ]
+            ]
         ];
 
         $formActionUri = $this->getAjaxUri('ajax_email_resend');
@@ -399,12 +390,4 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         return $response;
     }
 
-    /**
-     * @TODO: implement and connect with hook to use wizard as dynamic TCA element
-     * @return array
-     */
-    protected function getViewData()
-    {
-        return [];
-    }
 }

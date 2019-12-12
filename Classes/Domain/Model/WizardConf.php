@@ -198,43 +198,6 @@ class WizardConf
     }
 
     /**
-     * Used in custom FormElement
-     *
-     * @param array $tcaConfig
-     */
-    public function setTcaConfig(array $tcaConfig)
-    {
-        if (!$tcaConfig || !is_array($tcaConfig)) {
-            return;
-        }
-
-        // merge with TCA (TCA can unset settings)
-        ArrayUtility::mergeRecursiveWithOverrule($this->settings, $tcaConfig['parameterArray']['fieldConf']['config']);
-
-        // set fixed values (even if record was not saved before)
-        $this->settings['databaseTable'] = $tcaConfig['tableName'];
-        $this->settings['databaseUid'] = $tcaConfig['vanillaUid'];
-        $this->settings['databasePid'] = $tcaConfig['effectivePid'];
-
-        /**
-         * Alter config fields
-         *
-         * @param string $item
-         * @param $key
-         * @param $tcaConfig
-         */
-        $editFields = function (&$item, $key, $tcaConfig) {
-            if (substr($item, 0, 6) === 'FIELD:' && $savedData = $tcaConfig['databaseRow'][substr($item, 6)]) {
-                $item = $savedData;
-            }
-        };
-        // insert data from record
-        array_walk_recursive($this->settings, $editFields, $tcaConfig);
-
-        $this->translateFields();
-    }
-
-    /**
      * @param string $jobType
      */
     public function setJobType(string $jobType)
