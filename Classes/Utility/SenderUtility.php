@@ -3,9 +3,11 @@
 namespace Blueways\BwEmail\Utility;
 
 use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\Dto\EmailSettings;
 use Blueways\BwEmail\Domain\Model\MailLog;
 use Blueways\BwEmail\Domain\Repository\MailLogRepository;
 use Blueways\BwEmail\View\EmailView;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -25,6 +27,16 @@ class SenderUtility
     protected $settings;
 
     /**
+     * @var object|\TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
+
+    /**
+     * @var \Blueways\BwEmail\Domain\Model\Dto\EmailSettings
+     */
+    protected $emailSettings;
+
+    /**
      * @var \Blueways\BwEmail\Domain\Model\Contact[]
      */
     protected $recipients;
@@ -40,13 +52,31 @@ class SenderUtility
     protected $persistenceManager;
 
     /**
+     * @var \Blueways\BwEmail\View\EmailView|object
+     */
+    public $emailView;
+
+    /**
      * SenderUtility constructor.
      */
-    public function __construct()
+    public function __construct($emailSettings = null)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->mailLogRepository = $objectManager->get(MailLogRepository::class);
-        $this->persistenceManager = $objectManager->get(PersistenceManager::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->mailLogRepository = $this->objectManager->get(MailLogRepository::class);
+        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $this->emailSettings = $emailSettings ?? $this->objectManager->get(EmailSettings::class);
+        $this->emailView = $this->objectManager->get(EmailView::class);
+        $this->emailView->setPid($this->emailSettings->pid);
+        $this->emailView->setTemplate($this->emailSettings->template);
+
+        if($this->emailSettings->table && $this->emailSettings->uid && $this->emailSettings->pid) {
+            $this->injectRecord();
+        }
+
+        // inject records from typoscript (or tca override
+        if (is_array($this->emailSettings->typoscriptSelects)) {
+            $this->injectTypoScriptSelects();
+        }
     }
 
     /**
@@ -54,7 +84,7 @@ class SenderUtility
      */
     public function setRecipients(array $recipients): void
     {
-        $this->recipients = $recipients;
+        $this->emailSettings->contacts = $recipients;
     }
 
     /**
@@ -246,6 +276,36 @@ class SenderUtility
     public function setSettings($settings)
     {
         $this->settings = $settings;
+    }
+
+    public function setWizardParams(?array $params)
+    {
+        $this->emailSettings->override($params);
+    }
+
+    private function injectRecord()
+    {
+        // inject current record
+        $record = BackendUtility::getRecord(
+            $this->emailSettings->table,
+            $this->emailSettings->uid
+        );
+        // the record is just an array, we need to query the repository to access all properties with fluid
+        if (isset($record['record_type'])) {
+            $recordTypeParts = explode("\\", $record['record_type']);
+            $recordTypeParts[3] = 'Repository';
+            $recordTypeParts[4] .= 'Repository';
+            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
+            $record = $repository->findByUid($this->emailSettings->uid);
+        }
+        $this->emailView->assign('record', $record);
+    }
+
+    private function injectTypoScriptSelects()
+    {
+        foreach ($this->emailSettings->typoscriptSelects as $markerName => $typoscript) {
+            $this->emailView->injectTyposcriptSelect($markerName, $typoscript);
+        }
     }
 
 }

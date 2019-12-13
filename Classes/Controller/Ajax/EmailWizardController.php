@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use Blueways\BwEmail\Domain\Model\Dto\EmailSettings;
 use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -60,7 +61,6 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $this->templateView = $templateView;
         $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
-        $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
     }
 
     /**
@@ -78,25 +78,16 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
+        $emailSettings = GeneralUtility::makeInstance(EmailSettings::class);
+        $emailSettings->override($this->queryParams);
+
+        $providers = $emailSettings->getProviderConfiguration();
         $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
-
-        $defaults = $this->queryParams;
-
         $templates = $this->getTemplates();
-
-        $providers = [];
-        if (isset($defaults['provider.'])) {
-            foreach ($defaults['provider.'] as $providerClass => $providerSettings) {
-                /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
-                $provider = GeneralUtility::makeInstance(substr($providerClass, 0, -1));
-                $provider->applySettings($providerSettings);
-                $providers[] = $provider->getModalConfiguration();
-            }
-        }
 
         $this->templateView->assignMultiple([
             'formActionUri' => $formActionUri,
-            'defaults' => $defaults,
+            'defaults' => $emailSettings,
             'templates' => $templates,
             'providers' => $providers,
         ]);
@@ -158,7 +149,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 'name' => $this->getLanguageService()->sL($template['title']),
                 'previewUri' => $this->getAjaxUri(
                     'ajax_wizard_modal_preview',
-                    $this->queryParams
+                    array_merge($this->queryParams, ['template' => $template['title']])
                 )
             );
         }
@@ -230,44 +221,23 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
-        // init email template
-        $this->emailView->setTemplate($queryParams['template']);
-        $this->emailView->setPid($queryParams['pid']);
+        $emailSettings = GeneralUtility::makeInstance(EmailSettings::class);
+        $emailSettings->override($queryParams);
 
-        // inject current record
-        $record = BackendUtility::getRecord(
-            $queryParams['table'],
-            $queryParams['uid']
-        );
-        // the record is just an array, we need to query the repository to access all properties with fluid
-        if (isset($record['record_type'])) {
-            $recordTypeParts = explode("\\", $record['record_type']);
-            $recordTypeParts[3] = 'Repository';
-            $recordTypeParts[4] .= 'Repository';
-            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['uid']);
-        }
-        $this->emailView->assign('record', $record);
-
-        // inject records from typoscript (or tca override
-        if (is_array($queryParams['typoscriptSelects.'])) {
-            foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
-            }
-        }
+        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $emailSettings);
 
         if ($request->getMethod() === 'POST') {
             $params = $request->getParsedBody();
 
             // check for incoming marker overrides
-            if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-                $this->emailView->overrideMarker($params['markerOverrides']);
+            if (isset($params['markerOverrides']) && count($params['markerOverrides'])) {
+                $senderUtility->emailView->overrideMarker($params['markerOverrides']);
             }
 
             // check for provider settings in post data
+            /*
             if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
                 $providerSettings = $params['provider'];
-                /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
                 $provider = GeneralUtility::makeInstance($providerSettings['id']);
                 $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
                 $contacts = $provider->getContacts();
@@ -279,12 +249,17 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
                 $contact = $contacts[$selectedContactIndex];
                 $this->emailView->insertContact($contact);
             }
+            */
         }
 
+        $contacts = [];
+        $selectedContactIndex = 0;
+        $marker = $senderUtility->emailView->getMarker();
+
         // check for internal links
-        $hasInternalLinks = sizeof($this->emailView->getInternalLinks()) ? true : false;
-        $marker = $this->emailView->getMarker();
-        $html = $this->emailView->render();
+        $hasInternalLinks = count($senderUtility->emailView->getInternalLinks()) ? true : false;
+        //$marker = $senderUtility->emailView->getMarker();
+        $html = $senderUtility->emailView->render();
         $src = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
         // build and encode response
@@ -330,21 +305,22 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             return $response->withStatus(403);
         }
 
+        // bauen sich ja schon vorher -> unnötig?
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
         $params = $request->getParsedBody();
 
         /** @var SenderUtility $senderUtility */
         $senderUtility = GeneralUtility::makeInstance(SenderUtility::class);
-        $senderUtility->setSettings($queryParams);
-        $senderUtility->mergeMailSettings($params);
+        $senderUtility->setWizardParams($params);
 
         // check that all params are collected and valid
         // @TODO: return error if any required data is missing
 
         // init email template
-        $this->emailView->setTemplate($params['template']);
-        $this->emailView->setPid($queryParams['pid']);
+        // sollte durch wizardParamas gesetzt sein
+        //$this->emailView->setTemplate($params['template']);
+        $senderUtility->emailView->setPid($queryParams['pid']);
 
         // inject current record
         $record = BackendUtility::getRecord(

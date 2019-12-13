@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
+use Blueways\BwEmail\Domain\Model\Dto\EmailSettings;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -186,7 +187,11 @@ class WizardConf
     public function getWizardUri($routeName = 'ajax_wizard_modal_page')
     {
         $uriArguments = [];
-        $uriArguments['arguments'] = json_encode($this->settings);
+        $uriArguments['arguments'] = json_encode([
+            'uid' => $this->uid,
+            'pid' => $this->uid,
+            'table' => $this->table
+        ]);
         $uriArguments['signature'] = GeneralUtility::hmac(
             $uriArguments['arguments'],
             $routeName
