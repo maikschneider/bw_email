@@ -11,7 +11,9 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Core\Mail\MailMessage;
 
 /**
  * Class SenderUtility
@@ -58,6 +60,9 @@ class SenderUtility
 
     /**
      * SenderUtility constructor.
+     *
+     * @param null $emailSettings
+     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
      */
     public function __construct($emailSettings = null)
     {
@@ -69,7 +74,7 @@ class SenderUtility
         $this->emailView->setPid($this->emailSettings->pid);
         $this->emailView->setTemplate($this->emailSettings->template);
 
-        if($this->emailSettings->table && $this->emailSettings->uid && $this->emailSettings->pid) {
+        if ($this->emailSettings->table && $this->emailSettings->uid && $this->emailSettings->pid) {
             $this->injectRecord();
         }
 
@@ -90,14 +95,41 @@ class SenderUtility
     /**
      * @param $settings
      */
-    public function mergeMailSettings($settings)
+    public function mergeMailSettings($settings): void
     {
         ArrayUtility::mergeRecursiveWithOverrule($this->settings, $settings, true, false);
     }
 
     /**
+     * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function send(): int
+    {
+        $mailsSend = 0;
+
+        if (!$this->hasValidSettings()) {
+            return $mailsSend;
+        }
+
+        $contacts = $this->emailSettings->getContacts();
+
+        foreach ($contacts as $contact) {
+            $mailsSend += $this->sendEmailToContact($contact);
+        }
+
+        return $mailsSend;
+    }
+
+    public function hasValidSettings(): bool
+    {
+        return true;
+    }
+
+    /**
      * @param \Blueways\BwEmail\View\EmailView $emailView
      * @return array
+     * @deprecated
      * @TODO: use language service for translations
      */
     public function sendEmailView(EmailView $emailView)
@@ -118,7 +150,7 @@ class SenderUtility
             foreach ($this->recipients as $recipient) {
                 $success = $this->sendEmailViewToContact($emailView, $recipient);
                 if ($success) {
-                    $mailsSend = $mailsSend + $success;
+                    $mailsSend += $success;
                 }
             }
         }
@@ -128,7 +160,7 @@ class SenderUtility
             $contact->setName($this->settings['recipientName']);
             $success = $this->sendEmailViewToContact($emailView, $contact);
             if ($success) {
-                $mailsSend = $mailsSend + $success;
+                $mailsSend += $success;
             }
         }
 
@@ -152,34 +184,43 @@ class SenderUtility
     }
 
     /**
-     * @param \Blueways\BwEmail\View\EmailView $emailView
      * @param \Blueways\BwEmail\Domain\Model\Contact $contact
      * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    protected function sendEmailViewToContact(EmailView $emailView, Contact $contact)
+    protected function sendEmailToContact(Contact $contact): int
     {
-        $emailView->insertContact($contact);
-        $html = $emailView->render();
+        $this->emailView->insertContact($contact);
+        $html = $this->emailView->render();
 
         return $this->sendMail(
-            $this->getSenderArray(),
             $contact->getRecipientArray(),
-            $this->settings['subject'],
-            $html,
-            $this->settings['replytoAddress']
+            $html
         );
     }
 
     /**
+     * Send html mail to recipient, mail gets logged
+     *
      * @param array $from
      * @param $to
      * @param $subject
      * @param $body
      * @param $replyTo
      * @return int
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    private function sendMail($from, $to, $subject, $body, $replyTo)
+    private function sendMail($to, $body): int
     {
+        $from = [$this->emailSettings->senderAddress];
+
+        if ($this->emailSettings->senderName) {
+            $from = [$this->emailSettings->senderAddress => $this->emailSettings->senderName];
+        }
+
+        $subject = $this->emailSettings->subject;
+        $replyTo = $this->emailSettings->replytoAddress;
+
         $log = new MailLog();
         $log->setSenderAddress(\array_keys($from)[0]);
         if (isset($from[\array_keys($from)[0]])) {
@@ -195,12 +236,12 @@ class SenderUtility
             $log->setSenderReplyto($replyTo);
         }
         $log->setSendDate(new \DateTime());
-        $log->setJobType($this->settings['jobType']);
-        $log->setRecordTable($this->settings['table'] ?? '');
-        $log->setRecordUid($this->settings['uid'] ?? 0);
+        $log->setJobType($this->emailSettings->jobType);
+        $log->setRecordTable($this->emailSettings->table ?? '');
+        $log->setRecordUid($this->emailSettings->uid ?? 0);
 
         /** @var \TYPO3\CMS\Core\Mail\MailMessage $mailMessage */
-        $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+        $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
         $mailMessage->setTo($to)
             ->setFrom($from)
             ->setSubject($subject)
@@ -224,50 +265,16 @@ class SenderUtility
     }
 
     /**
-     * Returns array in form array(senderMail => 'Sender Name')
-     *
-     * @return array
+     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
+     * @return int
      */
-    private function getSenderArray()
-    {
-        if ($this->settings['senderName']) {
-            return [$this->settings['senderAddress'] => $this->settings['senderName']];
-        }
-
-        return [$this->settings['senderAddress']];
-    }
-
-    public function sendEmailLog(MailLog $log)
+    public function sendEmailFromLog(MailLog $log): int
     {
         $html = $log->getBody();
         $contact = new Contact($this->settings['recipientAddress']);
         $contact->setName($this->settings['recipientName']);
 
-        $mailsSend = $this->sendMail(
-            $this->getSenderArray(),
-            $contact->getRecipientArray(),
-            $this->settings['subject'],
-            $html,
-            $this->settings['replytoAddress']
-        );
-
-        if ($mailsSend) {
-            return [
-                'status' => 'OK',
-                'message' => [
-                    'headline' => 'Success',
-                    'text' => $mailsSend === 1 ? 'Mail successfully send.' : $mailsSend . ' mails have been successfully send.'
-                ]
-            ];
-        }
-
-        return [
-            'status' => 'ERROR',
-            'message' => [
-                'headline' => 'Unknown error',
-                'text' => 'No mails have been send.'
-            ]
-        ];
+        $this->sendEmailToContact($contact);
     }
 
     /**
@@ -276,11 +283,6 @@ class SenderUtility
     public function setSettings($settings)
     {
         $this->settings = $settings;
-    }
-
-    public function setWizardParams(?array $params)
-    {
-        $this->emailSettings->override($params);
     }
 
     private function injectRecord()
@@ -307,5 +309,4 @@ class SenderUtility
             $this->emailView->injectTyposcriptSelect($markerName, $typoscript);
         }
     }
-
 }

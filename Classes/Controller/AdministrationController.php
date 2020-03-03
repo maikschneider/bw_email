@@ -217,9 +217,28 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $senderUtility->setSettings($queryParams);
         $senderUtility->mergeMailSettings($params);
 
+        /** @var \Blueways\BwEmail\Domain\Model\MailLog $log */
         $log = $this->mailLogRepository->findByUid($queryParams['mailLog']);
 
-        $status = $senderUtility->sendEmailLog($log);
+        $success = $senderUtility->sendEmailFromLog($log);
+
+        $status = [
+            'status' => 'ERROR',
+            'message' => [
+                'headline' => 'Unknown error',
+                'text' => 'No mails have been send.'
+            ]
+        ];
+
+        if ($success) {
+            return [
+                'status' => 'OK',
+                'message' => [
+                    'headline' => 'Success',
+                    'text' => 'Mail successfully send.'
+                ]
+            ];
+        }
 
         $response->getBody()->write(json_encode($status));
         return $response;

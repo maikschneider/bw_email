@@ -141,11 +141,11 @@ plugin.tx_bwemail {
 		}
 
 		provider {
-			#Blueways\BwEmail\Service\ContactSourceContactProvider {
-			#}
+			Blueways\BwEmail\Service\ContactSourceContactProvider {
+			}
 
-			#Blueways\BwEmail\Service\ExampleContactProvider {
-			#}
+			Blueways\BwEmail\Service\ExampleContactProvider {
+			}
 		}
 
 		modalTitle = {$plugin.tx_bwemail.settings.modalTitle}

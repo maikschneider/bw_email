@@ -221,18 +221,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
 
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
+        /** @var EmailSettings $emailSettings */
         $emailSettings = GeneralUtility::makeInstance(EmailSettings::class);
         $emailSettings->override($queryParams);
 
-        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $emailSettings);
-
         if ($request->getMethod() === 'POST') {
-            $params = $request->getParsedBody();
 
-            // check for incoming marker overrides
-            if (isset($params['markerOverrides']) && count($params['markerOverrides'])) {
-                $senderUtility->emailView->overrideMarker($params['markerOverrides']);
-            }
+            $params = $request->getParsedBody();
+            $emailSettings->override($params);
 
             // check for provider settings in post data
             /*
@@ -252,13 +248,14 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             */
         }
 
-        $contacts = [];
-        $selectedContactIndex = 0;
+        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $emailSettings);
+
+        $contacts = $emailSettings->getContacts();
+        $selectedContactIndex = $emailSettings->selectedContact;
         $marker = $senderUtility->emailView->getMarker();
 
         // check for internal links
         $hasInternalLinks = count($senderUtility->emailView->getInternalLinks()) ? true : false;
-        //$marker = $senderUtility->emailView->getMarker();
         $html = $senderUtility->emailView->render();
         $src = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
@@ -267,7 +264,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             'src' => $src,
             'marker' => $marker,
             'hasInternalLinks' => $hasInternalLinks,
-            'contacts' => $contacts ?? [],
+            'contacts' => $contacts,
             'selectedContact' => $selectedContactIndex ?? 0,
         ));
 
@@ -293,6 +290,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function sendAction(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -305,62 +303,44 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             return $response->withStatus(403);
         }
 
-        // bauen sich ja schon vorher -> unnötig?
+        // create email settings from GET and POST params
         $queryParams = json_decode($request->getQueryParams()['arguments'], true);
-
-        $params = $request->getParsedBody();
+        $postParams = $request->getParsedBody();
+        $emailSettings = GeneralUtility::makeInstance(EmailSettings::class);
+        $emailSettings->override($queryParams);
+        $emailSettings->override($postParams);
 
         /** @var SenderUtility $senderUtility */
-        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class);
-        $senderUtility->setWizardParams($params);
+        $senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $emailSettings);
 
-        // check that all params are collected and valid
-        // @TODO: return error if any required data is missing
 
-        // init email template
-        // sollte durch wizardParamas gesetzt sein
-        //$this->emailView->setTemplate($params['template']);
+        if (isset($postParams['markerOverrides']) && count($postParams['markerOverrides'])) {
+            $senderUtility->emailView->overrideMarker($postParams['markerOverrides']);
+        }
+
+        // @TODO: is this line needed?
         $senderUtility->emailView->setPid($queryParams['pid']);
 
-        // inject current record
-        $record = BackendUtility::getRecord(
-            $queryParams['table'],
-            $queryParams['uid']
-        );
-        // the record is just an array, we need to query the repository to access all properties with fluid
-        if (isset($record['record_type'])) {
-            $recordTypeParts = explode("\\", $record['record_type']);
-            $recordTypeParts[3] = 'Repository';
-            $recordTypeParts[4] .= 'Repository';
-            $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
-            $record = $repository->findByUid($queryParams['uid']);
-        }
-        $this->emailView->assign('record', $record);
-
-        // inject records from typoscript (or tca override
-        if (is_array($queryParams['typoscriptSelects.'])) {
-            foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
-            }
-        }
-
-        // check for overrides
-        if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-            $this->emailView->overrideMarker($params['markerOverrides']);
-        }
-
         // check for provider settings and possible list of recipients
-        if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
-            $providerSettings = $params['provider'];
-            /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
-            $provider = GeneralUtility::makeInstance($providerSettings['id']);
-            $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
-            $contacts = $provider->getContacts();
+        $mailsSend = $senderUtility->send();
 
-            $senderUtility->setRecipients($contacts);
+        $status = [
+            'status' => 'ERROR',
+            'message' => [
+                'headline' => 'Unknown error',
+                'text' => 'No mails have been send.'
+            ]
+        ];
+
+        if ($mailsSend) {
+            $status = [
+                'status' => 'OK',
+                'message' => [
+                    'headline' => 'Success',
+                    'text' => ($mailsSend === 1 ? 'Mail' : $mailsSend . ' mails') . 'successfully send.'
+                ]
+            ];
         }
-
-        $status = $senderUtility->sendEmailView($this->emailView);
 
         $response->getBody()->write(json_encode($status));
         return $response;

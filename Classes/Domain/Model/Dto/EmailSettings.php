@@ -2,11 +2,14 @@
 
 namespace Blueways\BwEmail\Domain\Model\Dto;
 
+use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\MailLog;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 
 /**
  * Class EmailSettings
@@ -49,6 +52,16 @@ class EmailSettings
     /**
      * @var \Blueways\BwEmail\Service\ContactProvider[]
      */
+    public $contactProviders;
+
+    /**
+     * @var boolean
+     */
+    public $useContactProvider;
+
+    /**
+     * @var \Blueways\BwEmail\Service\ContactProvider
+     */
     public $contactProvider;
 
     /**
@@ -77,15 +90,37 @@ class EmailSettings
     public $typoscriptSelects;
 
     /**
+     * @var string
+     */
+    public $recipientAddress;
+
+    /**
+     * @var string
+     */
+    public $recipientName;
+
+    /**
      * @var array
      */
     protected $typoScriptSettings;
+
+    /**
+     * @var string
+     */
+    public $jobType;
+
+    /**
+     * @var array
+     */
+    public $markerOverrides;
+
+    public $selectedContact;
 
     public function __construct($typoscript = null)
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (!$typoscript) {
-            $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+            $configurationManager = $objectManager->get(ConfigurationManager::class);
             $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
         }
         $tsService = $objectManager->get(TypoScriptService::class);
@@ -98,11 +133,15 @@ class EmailSettings
         $this->template = $this->typoScriptSettings['template'];
         $this->typoscriptSelects = $this->typoScriptSettings['typoscriptSelects'];
         $this->showUid = (int)$this->typoScriptSettings['template'];
-        $this->contactProvider = [];
+        $this->contactProviders = [];
+        $this->useContactProvider = false;
+        $this->jobType = 'UNKNOWN';
+        $this->markerOverrides = [];
         foreach ($this->typoScriptSettings['provider'] as $className => $options) {
             /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
             $provider = GeneralUtility::makeInstance($className);
             $provider->applySettings($options);
+            $this->contactProviders[] = $provider;
         }
 
         $this->setTableOverrides();
@@ -122,8 +161,20 @@ class EmailSettings
     public function override($settings)
     {
         foreach ($settings as $settingName => $settingValue) {
-            if (property_exists(self::class, $settingName)) {
+            if (property_exists(self::class, $settingName) && $settingValue) {
                 $this->$settingName = $settingValue;
+            }
+
+            if ($settingName === 'markerOverrides' && count($settingValue)) {
+                $this->markerOverrides = $settingValue;
+            }
+
+            if ($settingName === 'provider' && isset($settingValue['use'], $settingValue['id'])) {
+                $provider = GeneralUtility::makeInstance($settingValue['id']);
+                $provider->applyConfiguration($settingValue[$settingValue['id']]['optionsConfiguration']);
+                $this->contactProvider = $provider;
+                $this->selectedContact = $settingValue[$settingValue['id']]['selectedContact'];
+                $this->useContactProvider = true;
             }
 
             if ($settingName === 'table') {
@@ -157,11 +208,10 @@ class EmailSettings
     public function getProviderConfiguration()
     {
         $providers = [];
-        if (isset($this->contactProvider)) {
-            foreach ($this->contactProvider as $contactProvider) {
-                $providers[] = $contactProvider->getModalConfiguration();
-            }
+        foreach ($this->contactProviders as $contactProvider) {
+            $providers[] = $contactProvider->getModalConfiguration();
         }
+
         return $providers;
     }
 
@@ -237,4 +287,23 @@ class EmailSettings
             $property = str_replace($llStatement, $translation, $property);
         }
     }
+
+    /**
+     * @return Contact[]
+     */
+    public function getContacts(): array
+    {
+        $contacts = [];
+
+        if ($this->useContactProvider) {
+            return $this->contactProvider->getContacts();
+        }
+
+        $contact = new Contact($this->recipientAddress);
+        $contact->setName($this->recipientName);
+        $contacts[] = $contact;
+
+        return $contacts;
+    }
+
 }
