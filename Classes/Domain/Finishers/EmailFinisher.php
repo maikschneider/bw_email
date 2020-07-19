@@ -28,7 +28,7 @@ class EmailFinisher extends \TYPO3\CMS\Form\Domain\Finishers\EmailFinisher
         $format = $this->parseOption('format');
 
         if ($format !== self::FORMAT_BWEMAIL) {
-            parent::initializeStandaloneView($formRuntime);
+            return parent::initializeStandaloneView($formRuntime);
         }
 
         $template = $this->parseOption('template');
