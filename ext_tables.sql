@@ -46,3 +46,26 @@ CREATE TABLE tx_bwemail_domain_model_contactsource_fe_groups_mm (
 	KEY             uid_local (uid_local),
 	KEY             uid_foreign (uid_foreign)
 );
+
+CREATE TABLE tx_bwemail_domain_model_maillog (
+	uid               int(11) NOT NULL auto_increment,
+	pid               int(11) DEFAULT '0' NOT NULL,
+
+	status int(11)  unsigned DEFAULT '0' NOT NULL,
+	send_date int(11) DEFAULT '0' NOT NULL,
+	recipient_address varchar(255) DEFAULT '' NOT NULL,
+	recipient_name varchar(255) DEFAULT '' NOT NULL,
+	subject varchar(255) DEFAULT '' NOT NULL,
+	body text,
+	sender_address varchar(255) DEFAULT '' NOT NULL,
+	sender_name varchar(255) DEFAULT '' NOT NULL,
+	sender_replyto varchar(255) DEFAULT '' NOT NULL,
+	job_type varchar(255) DEFAULT '' NOT NULL,
+	conversation_id varchar(255) DEFAULT '' NOT NULL,
+	record_table varchar(255) DEFAULT '' NOT NULL,
+	record_uid               int(11) DEFAULT '0' NOT NULL,
+
+	crdate            int(11) unsigned DEFAULT '0' NOT NULL,
+	PRIMARY KEY (uid),
+	KEY               parent (pid)
+);

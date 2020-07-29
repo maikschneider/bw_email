@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>module-permission</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="module-permission">
+            <polygon id="Path" fill="#1581FF" points="0 0 64 0 64 64 0 64"></polygon>
+            <path d="M32.7609863,34.8926905 C32.0473831,35.5644872 31.5350059,35.5242658 30.8709761,34.8648276 C30.1279697,34.1249121 29.3044808,33.4670641 28.5119406,32.7751369 C27.8153771,32.1730045 27.1188135,31.5863266 26.3943525,30.9640637 C21.7350088,35.9126846 17.1485788,40.7440095 12.4460416,45.7746583 L51.2155221,45.7746583 C46.4820759,40.7440095 41.8984198,35.8897009 37.2438313,30.9549495 C35.6835178,32.3217643 34.1789199,33.5601083 32.761224,34.8928835 L32.7609863,34.8926905 Z" id="Path" fill="#FFFFFF"></path>
+            <path d="M50.5479655,17.756783 L13.1083674,17.756783 C19.4241201,23.2518604 25.5988007,28.669665 31.828959,34.1167937 C38.0547584,28.6760053 44.231024,23.329133 50.5479655,17.756783 Z" id="Path" fill="#FFFFFF"></path>
+            <polygon id="Path" fill="#FFFFFF" points="51.627009 18.3761532 37.902987 30.3664936 51.627009 44.917135"></polygon>
+            <polygon id="Path" fill="#FFFFFF" points="12 18.3511882 12 44.9476478 25.7470057 30.3660973"></polygon>
+        </g>
+    </g>
+</svg>

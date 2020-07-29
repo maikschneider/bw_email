@@ -38,6 +38,22 @@ call_user_func(
             'options.pageTree.doktypesToShowInNewPageDragArea := addToList(' . $emailDoktype . ')'
         );
 
+        // Register backend module
+        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+            'Blueways.BwEmail',
+            'tools',
+            'tx_email',
+            'top',
+            array(
+                'Administration' => 'index, errorLog, contactList, preview, showLog',
+            ),
+            array(
+                'access' => 'admin',
+                'icon' => 'EXT:bw_email/Resources/Public/Icons/module-email.svg',
+                'labels' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:module.name',
+            )
+        );
+
 
     },
     'bw_email'

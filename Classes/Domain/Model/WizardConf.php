@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
+use Blueways\BwEmail\Domain\Model\Dto\EmailSettings;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -179,15 +180,18 @@ class WizardConf
     }
 
     /**
+     * @param string $routeName
      * @return string
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    public function getWizardUri()
+    public function getWizardUri($routeName = 'ajax_wizard_modal_page')
     {
-        $routeName = 'ajax_wizard_modal_page';
-
         $uriArguments = [];
-        $uriArguments['arguments'] = json_encode($this->settings);
+        $uriArguments['arguments'] = json_encode([
+            'uid' => $this->uid,
+            'pid' => $this->uid,
+            'table' => $this->table
+        ]);
         $uriArguments['signature'] = GeneralUtility::hmac(
             $uriArguments['arguments'],
             $routeName
@@ -199,39 +203,25 @@ class WizardConf
     }
 
     /**
-     * Used in custom FormElement
-     *
-     * @param array $tcaConfig
+     * @param string $jobType
      */
-    public function setTcaConfig(array $tcaConfig)
+    public function setJobType(string $jobType)
     {
-        if (!$tcaConfig || !is_array($tcaConfig)) {
-            return;
-        }
+        $this->settings['jobType'] = $jobType;
+    }
 
-        // merge with TCA (TCA can unset settings)
-        ArrayUtility::mergeRecursiveWithOverrule($this->settings, $tcaConfig['parameterArray']['fieldConf']['config']);
-
-        // set fixed values (even if record was not saved before)
-        $this->settings['databaseTable'] = $tcaConfig['tableName'];
-        $this->settings['databaseUid'] = $tcaConfig['vanillaUid'];
-        $this->settings['databasePid'] = $tcaConfig['effectivePid'];
-
-        /**
-         * Alter config fields
-         *
-         * @param string $item
-         * @param $key
-         * @param $tcaConfig
-         */
-        $editFields = function (&$item, $key, $tcaConfig) {
-            if (substr($item, 0, 6) === 'FIELD:' && $savedData = $tcaConfig['databaseRow'][substr($item, 6)]) {
-                $item = $savedData;
-            }
-        };
-        // insert data from record
-        array_walk_recursive($this->settings, $editFields, $tcaConfig);
-
-        $this->translateFields();
+    /**
+     * @param \Blueways\BwEmail\Domain\Model\MailLog $log
+     */
+    public function createFromMailLog(MailLog $log)
+    {
+        $this->settings = [];
+        $this->settings['recipientAddress'] = $log->getRecipientAddress();
+        $this->settings['recipientName'] = $log->getRecipientName();
+        $this->settings['subject'] = $log->getSubject();
+        $this->settings['senderName'] = $log->getSenderName();
+        $this->settings['senderAddress'] = $log->getSenderAddress();
+        $this->settings['senderReplyto'] = $log->getSenderReplyto();
+        $this->settings['mailLog'] = $log->getUid();
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="84px" height="76px" viewBox="0 0 84 76" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>tx_bwemail_domain_model_maillog</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="tx_bwemail_domain_model_maillog" fill-rule="nonzero">
+            <path d="M4.5,25.5 L4.5,71.332 C4.5,72.4375 4.9375,73.5 5.7188,74.2812 C6.5001,75.0624 7.5626,75.5 8.668,75.5 L75.332,75.5 C76.4375,75.5 77.5,75.0625 78.2812,74.2812 C79.0624,73.4999 79.5,72.4374 79.5,71.332 L79.5,25.5 L4.5,25.5 Z" id="Path" fill="#252F3C"></path>
+            <path d="M79.5,0.5 L4.5,0.5 C2.1992,0.5 0.332,2.3672 0.332,4.668 L0.332,17.168 L83.668,17.168 L83.668,4.668 C83.668,3.5625 83.22659,2.5 82.4453,1.7188 C81.66401,0.9376 80.6055,0.5 79.5,0.5 Z" id="Path" fill="#1581FF"></path>
+            <path d="M50.332,42.168 L33.668,42.168 C31.3672,42.168 29.5,40.3008 29.5,38 C29.5,35.6992 31.3672,33.832 33.668,33.832 L50.336,33.832 L50.332093,33.832 C52.632893,33.832 54.500093,35.6992 54.500093,38 C54.500093,40.3008 52.632893,42.168 50.332093,42.168 L50.332,42.168 Z" id="Path" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

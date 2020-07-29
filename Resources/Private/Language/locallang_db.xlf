@@ -42,6 +42,57 @@
 			<trans-unit id="tx_bwemail_domain_model_contactsource.fe_pid">
 				<source>Storage folder</source>
 			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog">
+				<source>Mail Log</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.recipient_address">
+				<source>Recipient address</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.recipient_name">
+				<source>Recipient name</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.subject">
+				<source>Mail subject</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.status">
+				<source>Mail Status</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.status.1">
+				<source>Successfully send</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.status.0">
+				<source>Error</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.status.2">
+				<source>Rejected</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.send_date">
+				<source>Send date</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.sender_name">
+				<source>Sender Name</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.sender_address">
+				<source>Sender Address</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.sender_replyto">
+				<source>Sender ReplyTo Address</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.body">
+				<source>Mail Body</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.conversation_id">
+				<source>Conversation ID</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.job_type">
+				<source>Job Type</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.record_table">
+				<source>Record table</source>
+			</trans-unit>
+			<trans-unit id="tx_bwemail_domain_model_maillog.record_uid">
+				<source>Record UID</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

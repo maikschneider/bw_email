@@ -125,8 +125,8 @@ plugin.tx_bwemail {
 						render = 1
 						table = tt_content
 						select {
-							pidInList = FIELD:pid
-							where = colPos=0
+							pidInList = FIELD:uid
+							where = colPos=0 AND hidden=0
 							orderBy = sorting
 						}
 					}
@@ -141,17 +141,18 @@ plugin.tx_bwemail {
 		}
 
 		provider {
-			#Blueways\BwEmail\Service\ContactSourceContactProvider {
-			#}
+			Blueways\BwEmail\Service\ContactSourceContactProvider {
+			}
 
-			#Blueways\BwEmail\Service\ExampleContactProvider {
-			#}
+			Blueways\BwEmail\Service\ExampleContactProvider {
+			}
 		}
 
 		modalTitle = {$plugin.tx_bwemail.settings.modalTitle}
 		modalSendButton = {$plugin.tx_bwemail.settings.modalSendButton}
 		modalCancelButton = {$plugin.tx_bwemail.settings.modalCancelButton}
 		buttonText = {$plugin.tx_bwemail.settings.buttonText}
+		jobType = unknown
 	}
 
 	persistence {

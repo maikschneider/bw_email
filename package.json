@@ -1,19 +1,22 @@
 {
   "name": "bw_email",
-  "version": "1.0.3",
-  "description": "Generic email wizard for TYPO3 CMS",
+  "version": "3.0.0",
+  "description": "Email Extension for TYPO3",
   "repository": "https://bitbucket.org/blueways/bw_email",
   "main": "Gruntfile.js",
-  "dependencies": {
-    "@types/jqueryui": "^1.12.3",
-    "grunt": "^1.0.3",
-    "grunt-ts": "^6.0.0-beta.21",
+  "devDependencies": {
+    "@types/bootstrap": "^4.3.1",
+    "@types/jquery": "^3.3.31",
+    "@types/jqueryui": "^1.12.9",
+    "gulp": "^4.0.0",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-typescript": "^5.0.1",
     "jquery": "^3.3.1",
     "jquery-ui-dist": "^1.12.1",
-    "typescript": "^3.0.1"
-  },
-  "devDependencies": {
-    "@types/jquery": "^3.3.6"
+    "typescript": "^3.7.2",
+    "@types/imagesloaded": "^4.1.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

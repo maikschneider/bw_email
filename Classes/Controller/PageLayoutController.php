@@ -33,6 +33,7 @@ class PageLayoutController extends \TYPO3\CMS\Backend\Controller\PageLayoutContr
                 $this->pageinfo['uid'],
                 $this->pageinfo['pid']
             );
+            $config->setJobType('BE-PAGE-VIEW-BUTTON');
 
             $emailPageButton = $this->buttonBar->makeLinkButton()
                 ->setClasses('viewmodule_email_button')

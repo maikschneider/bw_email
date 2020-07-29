@@ -2,8 +2,12 @@
 
 namespace Blueways\BwEmail\View;
 
+use Blueways\BwEmail\Domain\Model\Dto\EmailSettings;
+use Blueways\BwEmail\Utility\SenderUtility;
 use Blueways\BwEmail\Utility\TemplateParserUtility;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
@@ -34,6 +38,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
         $this->setLayoutRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
         $this->setPartialRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
         $this->setTemplateRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
+        $this->setTemplate($typoscript['plugin.']['tx_bwemail.']['settings.']['template']);
 
         $this->templateParser = $this->objectManager->get('Blueways\\BwEmail\\Utility\\TemplateParserUtility');
     }
@@ -145,15 +150,17 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
         $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 
         if (isset($typoscript['render']) && $typoscript['render'] === '1') {
-            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
+            $tsService = $this->objectManager->get(TypoScriptService::class);
+            $ts = $tsService->convertPlainArrayToTypoScriptArray($typoscript);
+            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($ts);
         } else {
             $tableName = $cObjRenderer->stdWrapValue('table', $typoscript);
             // fix: to make typoScript query work, we need to enter a pid
-            if (!isset($typoscript['select.']['pidInList'])) {
+            if (!isset($typoscript['select']['pidInList'])) {
                 $typoscript['select.']['pidInList'] = 'root,-1';
                 $typoscript['select.']['recursive'] = '9';
             }
-            $contentElements = $cObjRenderer->getRecords($tableName, $typoscript['select.']);
+            $contentElements = $cObjRenderer->getRecords($tableName, $typoscript['select']);
         }
 
         $this->assign($markerName, $contentElements);
