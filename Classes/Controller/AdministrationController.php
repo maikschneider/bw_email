@@ -256,4 +256,8 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
         $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
         return $token === $request->getQueryParams()['signature'];
     }
+
+    public function inboxAction() {
+
+    }
 }

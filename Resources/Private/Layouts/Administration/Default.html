@@ -8,6 +8,10 @@
     <f:flashMessages/>
     <div class="container-navigation">
         <ul class="list-group">
+            <f:link.action action="index" class="list-group-item {f:if(condition: '{action}==\'inbox\'}', then:'active')}">
+                <i class="fa fa-inbox" aria-hidden="true"></i> Inbox
+                <span class="badge badge-primary badge-pill">?</span>
+            </f:link.action>
             <f:link.action action="index" class="list-group-item {f:if(condition: '{action}==\'index\'}', then:'active')}"><i class="fa fa-list" aria-hidden="true"></i>
                 Mail Log
                 <span class="badge badge-primary badge-pill">{successfullMails}</span>
