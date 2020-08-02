@@ -50,9 +50,9 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
             });
         };
         EmailModule.prototype.loadInbox = function () {
-            console.log('start loading inbox');
+            var self = this;
             $.get(this.$inbox.attr('data-uri'), function (response) {
-                console.log(response);
+                self.$inbox.html(response.html);
             });
         };
         return EmailModule;

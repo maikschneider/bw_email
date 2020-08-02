@@ -1,0 +1,13 @@
+# cat=IMAP; type=string; label=Server: The IMAP server address, <server:port>
+server =
+
+# cat=IMAP; type=string; label=Username: In most cases the email address
+username =
+
+# cat=IMAP; type=string; label=Password: Password of the email account
+password =
+
+# cat=IMAP; type=string; label=Inbox folder: The folder messages are read from
+inbox = INBOX
+
+

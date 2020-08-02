@@ -12,7 +12,7 @@ The templates are parsed with [Zurb Foundation Inky](https://foundation.zurb.com
 
 * Require via composer ````composer require blueways/bw-email````
 * Activate in Extension Manager
-* Include static TypoScript template 
+* Include static TypoScript template
 
 ## Templates
 
@@ -25,7 +25,7 @@ plugin.tx_bwemail {
 		partialRootPath =
 		layoutRootPath =
     }
-}		
+}
 ```
 
 To register new templates, use PageTS:
@@ -173,6 +173,19 @@ plugin.tx_bwemail {
 ```
 
 With the ```typoscriptSelects``` setting you can insert records to the email template. In the example above, you can display the latest news records with ```<f:for each="{latestNews}" as="news">{news.title}</f:for>```.
+
+
+# IMAP
+
+To use the built-in email client, you need to configure the IMAP server via extension configuration. This can be done in the backend in **[Admin Tools]** > **[Settings]** > **[Extension configuration]** > **[bw_email]** or by setting the following globals:
+```
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['bw_email']['transport_imap_server'] = 'host:port';
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['bw_email']['transport_imap_username'] = 'name@domain.com';
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['bw_email']['transport_imap_password'] = 'password';
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['bw_email']['transport_imap_inbox'] = 'INBOX';
+```
+
+If you are using a Google Mail account, make sure you have enabled "Access through less secure apps" in your [settings](https://myaccount.google.com/u/0/lesssecureapps).
 
 # Todo
 

@@ -1,0 +1,9 @@
+<f:for each="{messages}" as="message">
+    <div class="message-item">
+        <time>{message.date->f:format.date(format: 'd.m.Y')}</time>
+        <h4>{f:if(condition: message.from.name, then:message.from.name, else:message.from.address)}</h4>
+        <p>
+            <strong>{message.subject->f:format.crop(maxCharacters: 40, respectWordBoundaries:false)}</strong><br/>
+            {message.bodyText->f:format.crop(maxCharacters: 150, respectWordBoundaries:false)}</p>
+    </div>
+</f:for>

@@ -7,10 +7,23 @@
   margin-left: 300px;
 }
 
+.no-gutter.row,
+.no-gutter.container,
+.no-gutter.container-fluid {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.no-gutter > [class^="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .email-administration #inbox, .email-administration #message {
     border: 1px solid #CCC;
-    min-height: calc(100vh - 200px);
+    height: calc(100vh - 200px);
     background: #f7f7f7;
+    overflow-y: scroll;
 }
 
 .email-administration #message {
@@ -22,4 +35,18 @@
     left: 50%;
     font-size: 3rem;
     top: 25vh;
+}
+
+.email-administration .message-item {
+    border-bottom: 1px solid #CCC;
+    padding: 5px 5px 0 25px;
+    position: relative;
+    overflow: hidden;
+    background: #FFF;
+}
+
+.email-administration .message-item time {
+    position: absolute;
+    right: 12px;
+    top:12px;
 }

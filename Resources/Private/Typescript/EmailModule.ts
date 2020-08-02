@@ -69,10 +69,10 @@ class EmailModule {
 	}
 
 	private loadInbox() {
-		console.log('start loading inbox');
+		const self = this;
 
 		$.get(this.$inbox.attr('data-uri'), function(response) {
-			console.log(response);
+			self.$inbox.html(response.html)
 		});
 
 	}

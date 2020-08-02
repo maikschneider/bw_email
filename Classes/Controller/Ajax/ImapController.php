@@ -2,6 +2,8 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use Blueways\BwEmail\Utility\ImapUtility;
+use Ddeboer\Imap\Server;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -17,6 +19,11 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
  */
 class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
+
+    /**
+     * @var \Blueways\BwEmail\Utility\ImapUtility
+     */
+    protected $imapUtil;
 
     /**
      * @var array
@@ -40,14 +47,16 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurationManager = $this->objectManager->get(ConfigurationManager::class);
+        $this->imapUtil = $this->objectManager->get(ImapUtility::class);
         $this->typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
         if (!$templateView) {
             /** @var StandaloneView $templateView */
             $templateView = $this->objectManager->get(StandaloneView::class);
-            $templateView->setLayoutRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
-            $templateView->setPartialRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
-            $templateView->setTemplateRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
+            $l = $this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.'];
+            $templateView->setLayoutRootPaths(['EXT:bw_email/Resources/Private/Layouts']);
+            $templateView->setPartialRootPaths(['EXT:bw_email/Resources/Private/Partials']);
+            $templateView->setTemplateRootPaths(['EXT:bw_email/Resources/Private/Templates']);
         }
 
         $this->templateView = $templateView;
@@ -61,8 +70,15 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     public function inboxAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response): \Psr\Http\Message\ResponseInterface
     {
+        $messages = $this->imapUtil->getInboxMessages();
+
+        $this->templateView->assign('messages', $messages);
+
+        $this->templateView->setTemplate('Administration/InboxList');
+        $html = $this->templateView->render();
+
         $content = json_encode(array(
-            'message' => 'hello'
+            'html' => $html
         ));
 
         $response->getBody()->write($content);
