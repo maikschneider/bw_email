@@ -1,6 +1,7 @@
 <?php
 
 use Blueways\BwEmail\Controller\AdministrationController;
+use Blueways\BwEmail\Controller\Ajax\ImapController;
 
 return [
     'wizard_modal_page' => [
@@ -23,8 +24,12 @@ return [
         'path' => '/email/preview',
         'target' => AdministrationController::class . '::previewAction'
     ],
-        'email_resend' => [
+    'email_resend' => [
         'path' => '/email/resend',
         'target' => AdministrationController::class . '::resendAction'
+    ],
+    'email_inbox' => [
+        'path' => '/email/inbox',
+        'target' => ImapController::class . '::inboxAction'
     ]
 ];

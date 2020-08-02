@@ -14,9 +14,13 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
         };
         EmailModule.prototype.cacheDom = function () {
             this.$previewButtons = $('.btn.preview');
+            this.$inbox = $('#inbox');
         };
         EmailModule.prototype.bindEvents = function () {
             this.$previewButtons.on('click', this.onPreviewButtonClick.bind(this));
+            if (this.$inbox.length) {
+                this.loadInbox();
+            }
         };
         EmailModule.prototype.onPreviewButtonClick = function (e) {
             e.preventDefault();
@@ -43,6 +47,12 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
             });
             $.get(link, function (response) {
                 self.$modal.find('.t3js-modal-body').html('<iframe frameborder="0" width="100%" height="97%" src="' + response.src + '"></iframe>');
+            });
+        };
+        EmailModule.prototype.loadInbox = function () {
+            console.log('start loading inbox');
+            $.get(this.$inbox.attr('data-uri'), function (response) {
+                console.log(response);
             });
         };
         return EmailModule;

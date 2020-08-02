@@ -259,5 +259,9 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
 
     public function inboxAction() {
 
+        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        $inboxUri = (string)$uriBuilder->buildUriFromRoute('ajax_email_inbox', []);
+
+        $this->view->assign('inboxUri', $inboxUri);
     }
 }
