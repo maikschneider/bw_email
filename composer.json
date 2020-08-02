@@ -5,7 +5,8 @@
   "require": {
     "tijsverkoyen/css-to-inline-styles": "^2.2",
     "maikschneider/inky": "1.3.6.*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ddeboer/imap": "^1.10"
   },
   "require-dev": {
     "typo3/cms-base-distribution": "9.5.*",
