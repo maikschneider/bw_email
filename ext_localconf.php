@@ -25,6 +25,11 @@ call_user_func(
             'priority' => '70',
             'class' => \Blueways\BwEmail\Form\Element\SendMailButtonElement::class,
         ];
+
+        // register caching frontend
+        if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['bwemail_mail'])) {
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['bwemail_mail'] = array();
+        }
     },
     'bw_email'
 );

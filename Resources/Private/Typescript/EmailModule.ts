@@ -19,6 +19,7 @@ class EmailModule {
 	private $previewButtons: JQuery;
 	private $modal: JQuery;
 	private $inbox: JQuery;
+	private $message: JQuery;
 
 	init() {
 		this.cacheDom();
@@ -28,6 +29,7 @@ class EmailModule {
 	private cacheDom() {
 		this.$previewButtons = $('.btn.preview');
 		this.$inbox = $('#inbox');
+		this.$message = $('#message');
 	}
 
 	private bindEvents() {
@@ -71,8 +73,26 @@ class EmailModule {
 	private loadInbox() {
 		const self = this;
 
-		$.get(this.$inbox.attr('data-uri'), function(response) {
-			self.$inbox.html(response.html)
+		$.get(this.$inbox.attr('data-uri'), function (response) {
+			self.$inbox.html(response.html);
+			$('.message-item', self.$inbox).off('click').on('click', self.onMessageItemClick.bind(self));
+		});
+
+	}
+
+	private onMessageItemClick(e) {
+		const self = this;
+		const $item = $(e.currentTarget);
+		const postData = {
+			messageNumber: $item.attr('data-mail-number'),
+			messageMailbox: $item.attr('data-mail-mailbox')
+		};
+
+		$('.message-item', self.$inbox).removeClass('active');
+		$item.addClass('active');
+
+		$.post(TYPO3.settings.ajaxUrls['email_show'], postData, function (response) {
+			self.$message.html(response.html);
 		});
 
 	}

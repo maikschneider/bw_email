@@ -3,14 +3,13 @@
 namespace Blueways\BwEmail\Controller\Ajax;
 
 use Blueways\BwEmail\Utility\ImapUtility;
-use Ddeboer\Imap\Server;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class EmailWizardController
@@ -68,13 +67,34 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function inboxAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response): \Psr\Http\Message\ResponseInterface
-    {
+    public function inboxAction(
+        \TYPO3\CMS\Core\Http\ServerRequest $request,
+        ResponseInterface $response
+    ): \Psr\Http\Message\ResponseInterface {
         $messages = $this->imapUtil->getInboxMessages();
 
         $this->templateView->assign('messages', $messages);
-
         $this->templateView->setTemplate('Administration/InboxList');
+        $html = $this->templateView->render();
+
+        $content = json_encode(array(
+            'html' => $html
+        ));
+
+        $response->getBody()->write($content);
+
+        return $response;
+    }
+
+    public function showMailAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
+    {
+
+        $postData = $request->getParsedBody();
+
+        $mail = $this->imapUtil->loadMail($postData['messageMailbox'], $postData['messageNumber'], true);
+
+        $this->templateView->assign('mail', $mail);
+        $this->templateView->setTemplate('Administration/FullEmail');
         $html = $this->templateView->render();
 
         $content = json_encode(array(

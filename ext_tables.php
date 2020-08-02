@@ -46,7 +46,7 @@ call_user_func(
             'top',
             array(
                 'Administration' => 'inbox, index, errorLog, contactList, preview, showLog',
-                'Imap' => 'inbox'
+                'Imap' => 'inbox, showMail'
             ),
             array(
                 'access' => 'admin',

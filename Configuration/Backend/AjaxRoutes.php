@@ -31,5 +31,9 @@ return [
     'email_inbox' => [
         'path' => '/email/inbox',
         'target' => ImapController::class . '::inboxAction'
+    ],
+    'email_show' => [
+        'path' => '/email/show',
+        'target' => ImapController::class . '::showMailAction'
     ]
 ];

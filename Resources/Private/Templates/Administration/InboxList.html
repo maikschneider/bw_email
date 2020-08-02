@@ -1,5 +1,5 @@
 <f:for each="{messages}" as="message">
-    <div class="message-item">
+    <div class="message-item {f:if(condition: message.isSeen, else: 'unseen')}" data-mail-number="{message.number}" data-mail-mailbox="{message.mailbox}">
         <time>{message.date->f:format.date(format: 'd.m.Y')}</time>
         <h4>{f:if(condition: message.from.name, then:message.from.name, else:message.from.address)}</h4>
         <p>

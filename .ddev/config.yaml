@@ -13,6 +13,7 @@ mariadb_version: "10.2"
 nfs_mount_enabled: false
 provider: default
 omit_containers: [dba]
+webimage_extra_packages: [php7.4-imap]
 use_dns_when_possible: true
 timezone: ""
 
@@ -126,7 +127,7 @@ timezone: ""
 # mailhog_port: "1001"
 # The MailHog port can be changed from the default 8025
 
-webimage_extra_packages: [php7.4-imap]
+# webimage_extra_packages: [php-yaml, php7.3-ldap]
 # Extra Debian packages that are needed in the webimage can be added here
 
 # dbimage_extra_packages: [telnet,netcat]

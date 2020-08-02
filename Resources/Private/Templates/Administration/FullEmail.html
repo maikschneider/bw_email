@@ -1,0 +1,21 @@
+{namespace bwmail=Blueways\BwEmail\ViewHelpers}
+<div class="message-header">
+    <h4>
+        <f:if condition="{mail.from.name}">
+            <f:then>
+                {mail.from.name} <{mail.from.address}>
+            </f:then>
+            <f:else>{mail.from.address}</f:else>
+        </f:if>
+    </h4>
+    <p>{mail.subject}</p>
+    <p>To:
+        <f:for each="{mail.to}" as="to" iteration="i">
+            {to.address}{f:if(condition: i.isLast, else:', ')}
+        </f:for>
+    </p>
+</div>
+
+<div class="message-body">
+    <iframe frameborder="0" width="100%" src="{mail.bodyHtml->bwmail:iframe()->f:format.raw()}"></iframe>
+</div>

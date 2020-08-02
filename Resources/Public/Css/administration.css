@@ -28,6 +28,8 @@
 
 .email-administration #message {
     border-left: 0;
+    display: grid;
+    grid-template-rows: min-content auto;
 }
 
 .email-administration #inbox .fa-spinner {
@@ -45,8 +47,35 @@
     background: #FFF;
 }
 
+.email-administration .message-item.active {
+    background: #0078e6;
+    color: #FFF;
+}
+
+.email-administration .message-item.unseen:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #0078e6;
+    border-radius: 100%;
+    position: absolute;
+    left: 8px;
+    top: 16.5px;
+}
+
 .email-administration .message-item time {
     position: absolute;
     right: 12px;
     top:12px;
+}
+
+.email-administration .message-header {
+    background: #FFF;
+    padding: 10px;
+    border-bottom: 1px solid #CCC;
+}
+
+.email-administration .message-body {
+    display: grid;
+    align-items: stretch;
 }
