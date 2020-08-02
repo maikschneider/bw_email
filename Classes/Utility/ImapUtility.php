@@ -4,6 +4,7 @@ namespace Blueways\BwEmail\Utility;
 
 use Ddeboer\Imap\Connection;
 use Ddeboer\Imap\MailboxInterface;
+use Ddeboer\Imap\MessageInterface;
 use Ddeboer\Imap\Server;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Exception;
@@ -85,7 +86,7 @@ class ImapUtility
         $messages = [];
         $cacheIdentifier = 'folder-' . $this->extConf['inbox'];
 
-        if (($messageIds = $this->cache->get($cacheIdentifier)) === false) {
+        if ($messageIds = $this->cache->get($cacheIdentifier)) {
             $mailbox = $this->connection->getMailbox($this->extConf['inbox']);
             $messageIds = (array)$mailbox->getMessages();
             $this->cache->set($cacheIdentifier, $messageIds, [], 2700);
@@ -112,36 +113,61 @@ class ImapUtility
 
     private function loadMailPreview(MailboxInterface $mailbox, int $uid)
     {
-        $cacheIdentifier = md5($mailbox->getFullEncodedName()) . '-' . (string)$uid;
-        $cacheTags = [md5($mailbox->getFullEncodedName())];
+        $cacheIdentifier = 'mail-' . (string)$uid;
+        $cacheTags = [];
 
         if (($mail = $this->cache->get($cacheIdentifier)) === false) {
             $imapMail = $mailbox->getMessage($uid);
-
-            $mail = [];
-            $mail['date'] = $imapMail->getDate() ? $imapMail->getDate()->getTimestamp() : '';
-            $mail['from'] = [];
-            $mail['from']['name'] = $imapMail->getFrom() ? $imapMail->getFrom()->getName() : '';
-            $mail['from']['address'] = $imapMail->getFrom() ? $imapMail->getFrom()->getAddress() : '';
-            $mail['subject'] = $imapMail->getSubject();
-            $mail['bodyText'] = $imapMail->getBodyText();
-            $mail['isSeen'] = $imapMail->isSeen();
-            $mail['number'] = $imapMail->getNumber();
-            $mail['mailbox'] = $mailbox->getName();
-
+            $mail = self::serializeImapMail($imapMail, $mailbox->getName());
             $this->cache->set($cacheIdentifier, $mail, $cacheTags, 2592000);
         }
 
         return $mail;
     }
 
-    public function loadMail(string $mailboxName, int $messageNumber, $markAsSeen = false) {
+    public static function serializeImapMail(MessageInterface $imapMail, string $mailboxName)
+    {
+        $mail = [];
+        $mail['date'] = $imapMail->getDate() ? $imapMail->getDate()->getTimestamp() : '';
+        $mail['from'] = [];
+        $mail['from']['name'] = $imapMail->getFrom() ? $imapMail->getFrom()->getName() : '';
+        $mail['from']['address'] = $imapMail->getFrom() ? $imapMail->getFrom()->getAddress() : '';
+        $mail['subject'] = $imapMail->getSubject();
+        $mail['bodyText'] = $imapMail->getBodyText();
+        $mail['isSeen'] = $imapMail->isSeen();
+        $mail['number'] = $imapMail->getNumber();
+        $mail['mailbox'] = $mailboxName;
+        $mail['bodyHtml'] = '';
+        $mail['to'] = [];
+        foreach ($imapMail->getTo() as $to) {
+            $mail['to'][] = [
+                'name' => $to->getName(),
+                'address' => $to->getAddress()
+            ];
+        }
+        return $mail;
+    }
+
+    public function loadMail(string $mailboxName, int $messageNumber, $markAsSeen = false)
+    {
+
+        $cacheIdentifier = 'mail-' . (string)$messageNumber;
+        $cacheTags = [];
+
+        if (($message = $this->cache->get($cacheIdentifier)) && $message['bodyHtml'] !== '') {
+            return $message;
+        }
 
         $mailbox = $this->connection->getMailbox($mailboxName);
-        $message = $mailbox->getMessage($messageNumber);
+        $imapMail = $mailbox->getMessage($messageNumber);
+
         if ($markAsSeen) {
-            $message->markAsSeen();
+            $imapMail->markAsSeen();
         }
+
+        $message = self::serializeImapMail($imapMail, $mailboxName);
+        $message['bodyHtml'] = $imapMail->getBodyHtml();
+        $this->cache->set($cacheIdentifier, $message, $cacheTags, 2592000);
 
         return $message;
     }
