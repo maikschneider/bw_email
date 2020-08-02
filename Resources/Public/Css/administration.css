@@ -6,3 +6,20 @@
 .email-administration .container-content {
   margin-left: 300px;
 }
+
+.email-administration #inbox, .email-administration #message {
+    border: 1px solid #CCC;
+    min-height: calc(100vh - 200px);
+    background: #f7f7f7;
+}
+
+.email-administration #message {
+    border-left: 0;
+}
+
+.email-administration #inbox .fa-spinner {
+    position: absolute;
+    left: 50%;
+    font-size: 3rem;
+    top: 25vh;
+}
