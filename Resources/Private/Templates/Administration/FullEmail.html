@@ -3,7 +3,7 @@
     <h4>
         <f:if condition="{mail.from.name}">
             <f:then>
-                {mail.from.name} <{mail.from.address}>
+                {mail.from.name} &lt;{mail.from.address}&gt;
             </f:then>
             <f:else>{mail.from.address}</f:else>
         </f:if>
@@ -11,7 +11,13 @@
     <p>{mail.subject}</p>
     <p>To:
         <f:for each="{mail.to}" as="to" iteration="i">
-            {to.address}{f:if(condition: i.isLast, else:', ')}
+            <f:if condition="{to.name}">
+                <f:then>
+                    {to.name} &lt;{to.address}&gt;
+                </f:then>
+                <f:else>{to.address}</f:else>
+            </f:if>
+            {f:if(condition: i.isLast, else:', ')}
         </f:for>
     </p>
 </div>
