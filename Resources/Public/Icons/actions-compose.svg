@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>actions-compose</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="actions-compose" fill="#000000">
+            <path d="M4,90 L74,90 C76.2109,90 78,88.2109 78,86 L78,38.871 L70,46.871 L70,82 L8,82 L8,20 L43.129,20 L51.129,12 L4,12 C1.7891,12 0,13.7891 0,16 L0,86 C0,88.2109 1.7891,90 4,90 Z" id="Path"></path>
+            <path d="M87.363,2.6367 C83.8474,-0.8789 78.1521,-0.8789 74.636,2.6367 L72.8548,4.4179 L85.5818,17.1449 L87.363,15.3637 C90.8786,11.8481 90.8786,6.1528 87.363,2.6367 Z" id="Path"></path>
+            <path d="M70.309,6.965 L34.34,42.934 C33.43375,43.84025 32.7111,44.9145 32.2189,46.0942 L25.6642,61.7192 C25.3517,62.46529 25.51967,63.3325 26.09389,63.9067 C26.66811,64.4809 27.53529,64.64889 28.28139,64.33639 L43.90639,57.78169 C45.08609,57.2895 46.16029,56.56689 47.06659,55.66059 L83.03559,19.69159 L70.309,6.965 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

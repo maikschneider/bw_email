@@ -16,22 +16,27 @@ call_user_func(
         );
 
         // Provide icon for page tree, list view, ... :
-        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class)
-            ->registerIcon(
-                'apps-pagetree-page-email',
+        $iconNames = [
+            'actions-see',
+            'actions-unsee',
+            'actions-delete',
+            'actions-replyall',
+            'actions-forward',
+            'actions-reply',
+            'actions-compose',
+            'apps-pagetree-page-email',
+            'actions-email'
+        ];
+        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+        foreach ($iconNames as $iconName) {
+            $iconRegistry->registerIcon(
+                $iconName,
                 TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
                 [
-                    'source' => 'EXT:' . $extKey . '/Resources/Public/Icons/apps-pagetree-page-email.svg',
+                    'source' => 'EXT:' . $extKey . '/Resources/Public/Icons/' . $iconName . '.svg',
                 ]
             );
-        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class)
-            ->registerIcon(
-                'actions-email',
-                TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-                [
-                    'source' => 'EXT:' . $extKey . '/Resources/Public/Icons/actions-email.svg',
-                ]
-            );
+        }
 
         // Allow backend users to drag and drop the new page type:
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addUserTSConfig(
@@ -54,8 +59,6 @@ call_user_func(
                 'labels' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:module.name',
             )
         );
-
-
     },
     'bw_email'
 );
