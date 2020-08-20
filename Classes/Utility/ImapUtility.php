@@ -86,7 +86,7 @@ class ImapUtility
         $messages = [];
         $cacheIdentifier = 'folder-' . $this->extConf['inbox'];
 
-        if ($messageIds = $this->cache->get($cacheIdentifier)) {
+        if (($messageIds = $this->cache->get($cacheIdentifier)) === false) {
             $mailbox = $this->connection->getMailbox($this->extConf['inbox']);
             $messageIds = (array)$mailbox->getMessages();
             $this->cache->set($cacheIdentifier, $messageIds, [], 2700);
@@ -154,7 +154,7 @@ class ImapUtility
         $cacheIdentifier = 'mail-' . (string)$messageNumber;
         $cacheTags = [];
 
-        if (($message = $this->cache->get($cacheIdentifier)) && $message['bodyHtml'] !== '') {
+        if (($message = $this->cache->get($cacheIdentifier)) && ($message['bodyHtml'] !== '' || $message['bodyText'] !== '')) {
             return $message;
         }
 

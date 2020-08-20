@@ -1,0 +1,77 @@
+{namespace core=TYPO3\CMS\Core\ViewHelpers}{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+
+<f:be.pageRenderer includeCssFiles="{
+	0: 'EXT:bw_email/Resources/Public/Css/administration.css'
+	}" includeRequireJsModules="{0: 'TYPO3/CMS/Backend/ContextMenu', 1: 'TYPO3/CMS/BwEmail/EmailModule'}"/>
+
+<div class="module-loading-indicator"></div>
+<div class="module-docheader">
+    <div class="module-docheader-bar">
+        <div class="module-docheader-bar-column-left">
+            <div class="form-inline">
+                <div class="form-group form-group-sm">
+
+                    <f:be.menus.actionMenu additionalAttributes="{class: 'form-control'}">
+                        <f:be.menus.actionMenuItem label="Inbox" controller="Administration" action="inbox"/>
+                        <f:be.menus.actionMenuItem label="Index" controller="Administration" action="index"/>
+                    </f:be.menus.actionMenu>
+                </div>
+            </div>
+        </div>
+        <div class="module-docheader-bar-column-right">
+
+        </div>
+    </div>
+    <div class="module-docheader-bar">
+        <div class="module-docheader-bar-column-left">
+            <div class="btn-toolbar">
+
+                    <a class="btn btn-default btn-sm"
+                       title="Get new messages"
+                       href="#">
+                        <core:icon identifier="actions-mail"/>
+                    </a>
+                    <a class="btn btn-default btn-sm"
+                       title="Compose new message"
+                       href="#">
+                        <core:icon identifier="actions-compose"/>
+                    </a>
+
+                <div class="btn-group">
+                    <a class="btn btn-default btn-sm" title="Delete selected message" href="#">
+                        <core:icon identifier="actions-delete"/>
+                    </a>
+                    <a class="btn btn-default btn-sm" title="Mark as unread" href="#">
+                        <core:icon identifier="actions-unsee"/>
+                    </a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn btn-default btn-sm" title="Reply to sender of selected message" href="#">
+                        <core:icon identifier="actions-reply"/>
+                    </a>
+                    <a class="btn btn-default btn-sm" title="Reply to all recipients of selected message" href="#">
+                        <core:icon identifier="actions-replyall"/>
+                    </a>
+                    <a class="btn btn-default btn-sm" title="Forward selected message" href="#">
+                        <core:icon identifier="actions-forward"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="module-body">
+
+    <f:flashMessages/>
+
+    <f:render section="main"/>
+</div>
+
+<script type="text/javascript">
+    function jumpToUrl(URL) {
+        window.location.href = URL;
+        return false;
+    }
+</script>

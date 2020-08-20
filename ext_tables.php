@@ -19,8 +19,8 @@ call_user_func(
         $iconNames = [
             'actions-see',
             'actions-unsee',
-            'actions-delete',
             'actions-replyall',
+            'actions-mail',
             'actions-forward',
             'actions-reply',
             'actions-compose',

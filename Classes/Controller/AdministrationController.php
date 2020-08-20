@@ -147,30 +147,6 @@ class AdministrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionC
      */
     protected function makeButtons(): void
     {
-        $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailModule');
-
-        $config = GeneralUtility::makeInstance(
-            WizardConf::class,
-            '',
-            $this->pageinfo['uid'],
-            $this->pageinfo['pid']
-        );
-
-        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-
-        if($this->request->getControllerActionName() !== 'showLog') {
-
-            $emailPageButton = $buttonBar->makeLinkButton()
-                ->setClasses('viewmodule_email_button')
-                ->setHref('#')
-                ->setTitle($this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
-                ->setIcon($iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
-                ->setDataAttributes($config->getDataAttributesForButton());
-            $buttonBar->addButton($emailPageButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
-        }
     }
 
     /**

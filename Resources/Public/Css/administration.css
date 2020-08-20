@@ -19,11 +19,23 @@
     padding-right: 0;
 }
 
+.module-body {
+    padding: 32px 0 0 0 !important;
+    display: grid;
+}
+
+.email-administration {
+    display: grid;
+    grid-template-columns: 25% auto;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+
 .email-administration #inbox, .email-administration #message {
     border: 1px solid #CCC;
-    height: calc(100vh - 200px);
     background: #f7f7f7;
     overflow-y: scroll;
+    position: relative;
 }
 
 .email-administration #message {
@@ -32,7 +44,18 @@
     grid-template-rows: min-content auto;
 }
 
-.email-administration #inbox .fa-spinner {
+.email-administration .buttonbar {
+    background: #e8e7e7;
+    padding: 10px;
+    border: 1px solid #CCC;
+    border-bottom: 0;
+}
+
+.email-administration .buttonbar i {
+    min-width: 24px;
+}
+
+.email-administration .fa-spinner {
     position: absolute;
     left: 50%;
     font-size: 3rem;
@@ -45,11 +68,13 @@
     position: relative;
     overflow: hidden;
     background: #FFF;
+    cursor: pointer;
 }
 
 .email-administration .message-item.active {
     background: #0078e6;
     color: #FFF;
+    cursor: auto;
 }
 
 .email-administration .message-item.unseen:after {
@@ -78,4 +103,8 @@
 .email-administration .message-body {
     display: grid;
     align-items: stretch;
+}
+
+.email-administration .message-body--plaintext {
+    padding: 2rem;
 }

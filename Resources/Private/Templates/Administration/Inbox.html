@@ -1,18 +1,17 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-{namespace be = TYPO3\CMS\Backend\ViewHelpers} {namespace bu = TPO3\CMS\Beuser\ViewHelpers} {namespace core
-=TYPO3\CMS\Core\ViewHelpers}
+<f:layout name="Administration/MailClient"/>
 
-<f:layout name="Administration/Default"/>
+<f:section name="main">
 
-<f:section name="content">
+    <f:flashMessages/>
 
-    <h1>Inbox</h1>
+    <div class="email-administration">
 
-    <div class="row no-gutter">
-        <div class="col-md-4" id="inbox" data-uri="{inboxUri}">
+        <div id="inbox" data-uri="{inboxUri}">
             <i class="fa fa-spinner fa-spin"></i>
         </div>
-        <div class="col-md-8" id="message"></div>
-    </div>
+        <div id="message">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
 
+    </div>
 </f:section>

@@ -76,6 +76,7 @@ class EmailModule {
 		$.get(this.$inbox.attr('data-uri'), function (response) {
 			self.$inbox.html(response.html);
 			$('.message-item', self.$inbox).off('click').on('click', self.onMessageItemClick.bind(self));
+			$('.message-item', self.$inbox).first().trigger('click');
 		});
 
 	}
@@ -90,6 +91,9 @@ class EmailModule {
 
 		$('.message-item', self.$inbox).removeClass('active');
 		$item.addClass('active');
+
+		// show spinner
+		self.$message.html('<i class="fa fa-spinner fa-spin"></i>');
 
 		$.post(TYPO3.settings.ajaxUrls['email_show'], postData, function (response) {
 			self.$message.html(response.html);

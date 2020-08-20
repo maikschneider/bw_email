@@ -22,6 +22,14 @@
     </p>
 </div>
 
-<div class="message-body">
-    <iframe frameborder="0" width="100%" src="{mail.bodyHtml->bwmail:iframe()->f:format.raw()}"></iframe>
+<div class="message-body {f:if(condition: mail.bodyHtml, else: 'message-body--plaintext')}">
+    <f:if condition="{mail.bodyHtml}">
+        <f:then>
+            <iframe frameborder="0" width="100%" src="{mail.bodyHtml->bwmail:iframe()->f:format.raw()}"></iframe>
+        </f:then>
+        <f:else>
+            <f:format.nl2br>{mail.bodyText}</f:format.nl2br>
+        </f:else>
+    </f:if>
+
 </div>
