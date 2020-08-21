@@ -95,6 +95,11 @@
     cursor: auto;
 }
 
+.email-administration .message-item.active time {
+    background-color: #0078e6;
+    box-shadow: 0 0 10px 10px #0078e6;
+}
+
 .email-administration .message-item.unseen:after {
     content: '';
     width: 10px;
@@ -110,6 +115,8 @@
     position: absolute;
     right: 12px;
     top: 12px;
+    box-shadow: 0 0 10px 10px #FFF;
+    background-color: #FFF;
 }
 
 .email-administration .message-header {
