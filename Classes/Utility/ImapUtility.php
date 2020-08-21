@@ -77,17 +77,17 @@ class ImapUtility
         }
     }
 
-    public function getInboxMessages($offset = 0)
+    public function getMailboxMessages($mailboxName, $offset = 0)
     {
-        if (!$this->hasConnection()) {
+        if (!$mailboxName || !$this->hasConnection()) {
             return [];
         }
 
         $messages = [];
-        $cacheIdentifier = 'folder-' . $this->extConf['inbox'];
+        $cacheIdentifier = 'folder-' . $mailboxName;
 
         if (($messageIds = $this->cache->get($cacheIdentifier)) === false) {
-            $mailbox = $this->connection->getMailbox($this->extConf['inbox']);
+            $mailbox = $this->connection->getMailbox($mailboxName);
             $messageIds = (array)$mailbox->getMessages();
             $this->cache->set($cacheIdentifier, $messageIds, [], 2700);
         }
@@ -96,8 +96,8 @@ class ImapUtility
 
         for ($i = count($messageIds) - 1; $i >= count($messageIds) - $step; $i--) {
 
-            $mailbox = $mailbox ?? $this->connection->getMailbox($this->extConf['inbox']);
-            $messages[] = $this->loadMailPreview($mailbox, $messageIds[$i]);
+            $mailbox = $mailbox ?? $this->connection->getMailbox($mailboxName);
+            $messages[] = $this->loadMail($mailboxName, $messageIds[$i], false);
         }
 
         return $messages;
@@ -109,20 +109,6 @@ class ImapUtility
     public function hasConnection(): bool
     {
         return $this->connection instanceof Connection;
-    }
-
-    private function loadMailPreview(MailboxInterface $mailbox, int $uid)
-    {
-        $cacheIdentifier = 'mail-' . (string)$uid;
-        $cacheTags = [];
-
-        if (($mail = $this->cache->get($cacheIdentifier)) === false) {
-            $imapMail = $mailbox->getMessage($uid);
-            $mail = self::serializeImapMail($imapMail, $mailbox->getName());
-            $this->cache->set($cacheIdentifier, $mail, $cacheTags, 2592000);
-        }
-
-        return $mail;
     }
 
     public static function serializeImapMail(MessageInterface $imapMail, string $mailboxName)
@@ -137,7 +123,7 @@ class ImapUtility
         $mail['isSeen'] = $imapMail->isSeen();
         $mail['number'] = $imapMail->getNumber();
         $mail['mailbox'] = $mailboxName;
-        $mail['bodyHtml'] = '';
+        $mail['bodyHtml'] = $imapMail->getBodyHtml();
         $mail['to'] = [];
         foreach ($imapMail->getTo() as $to) {
             $mail['to'][] = [
@@ -148,6 +134,12 @@ class ImapUtility
         return $mail;
     }
 
+    /**
+     * @param string $mailboxName
+     * @param int $messageNumber
+     * @param bool $markAsSeen
+     * @return array|mixed
+     */
     public function loadMail(string $mailboxName, int $messageNumber, $markAsSeen = false)
     {
 
@@ -166,7 +158,12 @@ class ImapUtility
         }
 
         $message = self::serializeImapMail($imapMail, $mailboxName);
-        $message['bodyHtml'] = $imapMail->getBodyHtml();
+
+        $attachments = $imapMail->getAttachments();
+        foreach ($attachments as $attachment) {
+            $isEmbeddedMessage = $attachment->isEmbeddedMessage();
+        }
+
         $this->cache->set($cacheIdentifier, $message, $cacheTags, 2592000);
 
         return $message;

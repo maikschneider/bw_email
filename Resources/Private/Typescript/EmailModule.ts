@@ -21,7 +21,11 @@ class EmailModule {
 	private $inbox: JQuery;
 	private $message: JQuery;
 
+	private currentMailbox: string;
+	private currentMessage: number;
+
 	init() {
+		this.currentMailbox = 'INBOX';
 		this.cacheDom();
 		this.bindEvents();
 	}
@@ -35,7 +39,7 @@ class EmailModule {
 	private bindEvents() {
 		this.$previewButtons.on('click', this.onPreviewButtonClick.bind(this));
 		if (this.$inbox.length) {
-			this.loadInbox();
+			this.loadMailbox();
 		}
 	}
 
@@ -70,11 +74,28 @@ class EmailModule {
 		});
 	}
 
-	private loadInbox() {
+	private setLoading($container, isLoading) {
+		if (!isLoading) {
+			$container.removeClass('loading');
+			return;
+		}
+
+		// add spinner if removed through .html()
+		if (!$('.fa-spinner', $container).length) {
+			$container.append('<i class="fa fa-spinner fa-spin"></i>');
+		}
+
+		$container.addClass('loading');
+	}
+
+	private loadMailbox() {
 		const self = this;
 
-		$.get(this.$inbox.attr('data-uri'), function (response) {
-			self.$inbox.html(response.html);
+		self.setLoading(self.$inbox, true);
+
+		$.post(this.$inbox.attr('data-uri'), {mailboxName: self.currentMailbox}, function (response) {
+			self.$inbox.append(response.html);
+			self.setLoading(self.$inbox, false);
 			$('.message-item', self.$inbox).off('click').on('click', self.onMessageItemClick.bind(self));
 			$('.message-item', self.$inbox).first().trigger('click');
 		});
@@ -89,14 +110,18 @@ class EmailModule {
 			messageMailbox: $item.attr('data-mail-mailbox')
 		};
 
+		// save clicked message number
+		this.currentMessage = parseInt(postData.messageNumber);
+
 		$('.message-item', self.$inbox).removeClass('active');
 		$item.addClass('active');
 
 		// show spinner
-		self.$message.html('<i class="fa fa-spinner fa-spin"></i>');
+		self.setLoading(this.$message, true);
 
 		$.post(TYPO3.settings.ajaxUrls['email_show'], postData, function (response) {
 			self.$message.html(response.html);
+			self.setLoading(self.$message, false);
 		});
 
 	}

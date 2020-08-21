@@ -63,6 +63,8 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
+     * @TODO: rename to getMailboxAction
+     *
      * @param \TYPO3\CMS\Core\Http\ServerRequest $request
      * @param \Psr\Http\Message\ResponseInterface $response
      * @return \Psr\Http\Message\ResponseInterface
@@ -71,7 +73,12 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         \TYPO3\CMS\Core\Http\ServerRequest $request,
         ResponseInterface $response
     ): \Psr\Http\Message\ResponseInterface {
-        $messages = $this->imapUtil->getInboxMessages();
+
+        $postData = $request->getParsedBody();
+        $mailboxName = $postData['mailboxName'];
+        // $loadingTypes: 'onload', 'refresh', 'more'
+
+        $messages = $this->imapUtil->getMailboxMessages($mailboxName);
 
         $this->templateView->assign('messages', $messages);
         $this->templateView->setTemplate('Administration/InboxList');

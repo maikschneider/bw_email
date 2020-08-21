@@ -9,6 +9,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
         function EmailModule() {
         }
         EmailModule.prototype.init = function () {
+            this.currentMailbox = 'INBOX';
             this.cacheDom();
             this.bindEvents();
         };
@@ -20,7 +21,7 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
         EmailModule.prototype.bindEvents = function () {
             this.$previewButtons.on('click', this.onPreviewButtonClick.bind(this));
             if (this.$inbox.length) {
-                this.loadInbox();
+                this.loadMailbox();
             }
         };
         EmailModule.prototype.onPreviewButtonClick = function (e) {
@@ -50,10 +51,23 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
                 self.$modal.find('.t3js-modal-body').html('<iframe frameborder="0" width="100%" height="97%" src="' + response.src + '"></iframe>');
             });
         };
-        EmailModule.prototype.loadInbox = function () {
+        EmailModule.prototype.setLoading = function ($container, isLoading) {
+            if (!isLoading) {
+                $container.removeClass('loading');
+                return;
+            }
+            // add spinner if removed through .html()
+            if (!$('.fa-spinner', $container).length) {
+                $container.append('<i class="fa fa-spinner fa-spin"></i>');
+            }
+            $container.addClass('loading');
+        };
+        EmailModule.prototype.loadMailbox = function () {
             var self = this;
-            $.get(this.$inbox.attr('data-uri'), function (response) {
-                self.$inbox.html(response.html);
+            self.setLoading(self.$inbox, true);
+            $.post(this.$inbox.attr('data-uri'), { mailboxName: self.currentMailbox }, function (response) {
+                self.$inbox.append(response.html);
+                self.setLoading(self.$inbox, false);
                 $('.message-item', self.$inbox).off('click').on('click', self.onMessageItemClick.bind(self));
                 $('.message-item', self.$inbox).first().trigger('click');
             });
@@ -65,12 +79,15 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
                 messageNumber: $item.attr('data-mail-number'),
                 messageMailbox: $item.attr('data-mail-mailbox')
             };
+            // save clicked message number
+            this.currentMessage = parseInt(postData.messageNumber);
             $('.message-item', self.$inbox).removeClass('active');
             $item.addClass('active');
             // show spinner
-            self.$message.html('<i class="fa fa-spinner fa-spin"></i>');
+            self.setLoading(this.$message, true);
             $.post(TYPO3.settings.ajaxUrls['email_show'], postData, function (response) {
                 self.$message.html(response.html);
+                self.setLoading(self.$message, false);
             });
         };
         return EmailModule;
