@@ -31,17 +31,24 @@
     overflow-y: scroll;
 }
 
-.email-administration #inbox, .email-administration #message {
+.email-administration #inbox,
+.email-administration #message {
     border: 1px solid #ccc;
     background: #f7f7f7;
     overflow-y: scroll;
     position: relative;
+    grid-row: 1 / 2;
+}
+
+.email-administration #inbox {
+    grid-column: 1 / 2;
 }
 
 .email-administration #message {
     border-left: 0;
     display: grid;
     grid-template-rows: min-content auto;
+    grid-column: 2 / 3;
 }
 
 .email-administration .buttonbar {
@@ -55,29 +62,48 @@
     min-width: 24px;
 }
 
+.email-administration .overlay {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    align-self: stretch;
+    justify-self: stretch;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    display: none;
+    width: calc(100% - 1px);
+}
+
 .email-administration .fa-spinner {
-    position: absolute;
-    left: 50%;
-    font-size: 3rem;
-    top: 25vh;
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    align-self: center;
+    justify-self: center;
+    font-size: 2.5rem;
     display: none;
     z-index: 2;
 }
 
-.email-administration .loading:after {
-    content: '';
-    display: block;
-    background: rgba(255, 255, 255, 0.8);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+.email-administration .fa-spinner--message, .email-administration .overlay--message {
+    grid-column: 2 / 3;
 }
 
-.email-administration .loading .fa-spinner {
-    display: inline-block;
+.email-administration #inbox[data-loading] ~ .loading-inbox,
+.email-administration #message[data-loading] ~ .loading-message {
+    display: block;
+}
+
+.email-administration #inbox[data-loading="bottom"] ~ .overlay--inbox {
+    height: 58px;
+    align-self: end;
+    background-color: #eee;
+    opacity: 0.95;
+    border-top: 1px solid #ccc;
+    box-shadow: 0 -10px 10px -10px rgba(0, 0, 0, 0.4);
+}
+
+.email-administration #inbox[data-loading="bottom"] ~ .fa-spinner--inbox {
+    align-self: end;
+    margin-bottom: 16px;
 }
 
 .email-administration .message-item {
@@ -115,8 +141,8 @@
     position: absolute;
     right: 12px;
     top: 12px;
-    box-shadow: 0 0 10px 10px #FFF;
-    background-color: #FFF;
+    box-shadow: 0 0 10px 10px #fff;
+    background-color: #fff;
 }
 
 .email-administration .message-header {

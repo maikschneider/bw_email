@@ -76,9 +76,11 @@ class ImapController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         $postData = $request->getParsedBody();
         $mailboxName = $postData['mailboxName'];
+        $mailboxIds = $postData['messageIds'] ?: [];
+        $mailboxIds = array_map('intval', $mailboxIds);
         // $loadingTypes: 'onload', 'refresh', 'more'
 
-        $messages = $this->imapUtil->getMailboxMessages($mailboxName);
+        $messages = $this->imapUtil->getMailboxMessages($mailboxName, $mailboxIds);
 
         $this->templateView->assign('messages', $messages);
         $this->templateView->setTemplate('Administration/InboxList');

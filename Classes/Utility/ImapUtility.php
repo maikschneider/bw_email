@@ -3,7 +3,6 @@
 namespace Blueways\BwEmail\Utility;
 
 use Ddeboer\Imap\Connection;
-use Ddeboer\Imap\MailboxInterface;
 use Ddeboer\Imap\MessageInterface;
 use Ddeboer\Imap\Server;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -77,7 +76,7 @@ class ImapUtility
         }
     }
 
-    public function getMailboxMessages($mailboxName, $offset = 0)
+    public function getMailboxMessages($mailboxName, $messagesToIgnore)
     {
         if (!$mailboxName || !$this->hasConnection()) {
             return [];
@@ -85,19 +84,26 @@ class ImapUtility
 
         $messages = [];
         $cacheIdentifier = 'folder-' . $mailboxName;
+        $mailbox = $this->connection->getMailbox($mailboxName);
 
         if (($messageIds = $this->cache->get($cacheIdentifier)) === false) {
-            $mailbox = $this->connection->getMailbox($mailboxName);
             $messageIds = (array)$mailbox->getMessages();
+            $messageIds = array_reverse($messageIds);
             $this->cache->set($cacheIdentifier, $messageIds, [], 2700);
         }
 
-        $step = 10;
+        $pos = 0;
 
-        for ($i = count($messageIds) - 1; $i >= count($messageIds) - $step; $i--) {
+        while (count($messages) !== 10 || $pos === count($messageIds) - 1) {
 
-            $mailbox = $mailbox ?? $this->connection->getMailbox($mailboxName);
-            $messages[] = $this->loadMail($mailboxName, $messageIds[$i], false);
+            $messageId = $messageIds[$pos];
+            $pos++;
+
+            if (in_array($messageId, $messagesToIgnore, true)) {
+                continue;
+            }
+
+            $messages[] = $this->loadMail($mailboxName, $messageId, false);
         }
 
         return $messages;
@@ -109,29 +115,6 @@ class ImapUtility
     public function hasConnection(): bool
     {
         return $this->connection instanceof Connection;
-    }
-
-    public static function serializeImapMail(MessageInterface $imapMail, string $mailboxName)
-    {
-        $mail = [];
-        $mail['date'] = $imapMail->getDate() ? $imapMail->getDate()->getTimestamp() : '';
-        $mail['from'] = [];
-        $mail['from']['name'] = $imapMail->getFrom() ? $imapMail->getFrom()->getName() : '';
-        $mail['from']['address'] = $imapMail->getFrom() ? $imapMail->getFrom()->getAddress() : '';
-        $mail['subject'] = $imapMail->getSubject();
-        $mail['bodyText'] = $imapMail->getBodyText();
-        $mail['isSeen'] = $imapMail->isSeen();
-        $mail['number'] = $imapMail->getNumber();
-        $mail['mailbox'] = $mailboxName;
-        $mail['bodyHtml'] = $imapMail->getBodyHtml();
-        $mail['to'] = [];
-        foreach ($imapMail->getTo() as $to) {
-            $mail['to'][] = [
-                'name' => $to->getName(),
-                'address' => $to->getAddress()
-            ];
-        }
-        return $mail;
     }
 
     /**
@@ -167,6 +150,29 @@ class ImapUtility
         $this->cache->set($cacheIdentifier, $message, $cacheTags, 2592000);
 
         return $message;
+    }
+
+    public static function serializeImapMail(MessageInterface $imapMail, string $mailboxName)
+    {
+        $mail = [];
+        $mail['date'] = $imapMail->getDate() ? $imapMail->getDate()->getTimestamp() : '';
+        $mail['from'] = [];
+        $mail['from']['name'] = $imapMail->getFrom() ? $imapMail->getFrom()->getName() : '';
+        $mail['from']['address'] = $imapMail->getFrom() ? $imapMail->getFrom()->getAddress() : '';
+        $mail['subject'] = $imapMail->getSubject();
+        $mail['bodyText'] = $imapMail->getBodyText();
+        $mail['isSeen'] = $imapMail->isSeen();
+        $mail['number'] = $imapMail->getNumber();
+        $mail['mailbox'] = $mailboxName;
+        $mail['bodyHtml'] = $imapMail->getBodyHtml();
+        $mail['to'] = [];
+        foreach ($imapMail->getTo() as $to) {
+            $mail['to'][] = [
+                'name' => $to->getName(),
+                'address' => $to->getAddress()
+            ];
+        }
+        return $mail;
     }
 
 }

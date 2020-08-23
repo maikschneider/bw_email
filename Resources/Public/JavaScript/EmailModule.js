@@ -24,6 +24,16 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
                 this.loadMailbox();
             }
         };
+        EmailModule.prototype.bindLoadMoreOnScrollEvent = function () {
+            var self = this;
+            function onScrollEvent() {
+                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 70) {
+                    self.$inbox.off('scroll', onScrollEvent);
+                    self.loadMailbox();
+                }
+            }
+            this.$inbox.on('scroll', onScrollEvent);
+        };
         EmailModule.prototype.onPreviewButtonClick = function (e) {
             e.preventDefault();
             var self = this;
@@ -51,25 +61,35 @@ define(["require", "exports", "TYPO3/CMS/Backend/Modal", "jquery"], function (re
                 self.$modal.find('.t3js-modal-body').html('<iframe frameborder="0" width="100%" height="97%" src="' + response.src + '"></iframe>');
             });
         };
-        EmailModule.prototype.setLoading = function ($container, isLoading) {
+        EmailModule.prototype.setLoading = function ($container, isLoading, loadingType) {
+            if (loadingType === void 0) { loadingType = 'default'; }
             if (!isLoading) {
-                $container.removeClass('loading');
+                $container.removeAttr('data-loading');
                 return;
             }
-            // add spinner if removed through .html()
-            if (!$('.fa-spinner', $container).length) {
-                $container.append('<i class="fa fa-spinner fa-spin"></i>');
-            }
-            $container.addClass('loading');
+            $container.attr('data-loading', loadingType);
         };
         EmailModule.prototype.loadMailbox = function () {
             var self = this;
-            self.setLoading(self.$inbox, true);
-            $.post(this.$inbox.attr('data-uri'), { mailboxName: self.currentMailbox }, function (response) {
+            // gather message ids in current inbox
+            var messageIds = [];
+            $('.message-item', self.$inbox).each(function () {
+                messageIds.push(parseInt($(this).attr('data-mail-number')));
+            });
+            var postData = {
+                mailboxName: self.currentMailbox,
+                messageIds: messageIds
+            };
+            self.setLoading(self.$inbox, true, postData.messageIds.length ? 'bottom' : '');
+            $.post(this.$inbox.attr('data-uri'), postData, function (response) {
+                // @TODO: sort emails in correct order
                 self.$inbox.append(response.html);
                 self.setLoading(self.$inbox, false);
+                self.bindLoadMoreOnScrollEvent();
                 $('.message-item', self.$inbox).off('click').on('click', self.onMessageItemClick.bind(self));
-                $('.message-item', self.$inbox).first().trigger('click');
+                if (!$('.message-item.active').length) {
+                    $('.message-item', self.$inbox).first().trigger('click');
+                }
             });
         };
         EmailModule.prototype.onMessageItemClick = function (e) {

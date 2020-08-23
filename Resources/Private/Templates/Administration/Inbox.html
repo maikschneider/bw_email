@@ -6,12 +6,18 @@
 
     <div class="email-administration">
 
-        <div id="inbox" class="loading" data-uri="{inboxUri}">
-            <i class="fa fa-spinner fa-spin"></i>
+        <div id="inbox" data-uri="{inboxUri}">
+
         </div>
-        <div id="message" class="loading">
-            <i class="fa fa-spinner fa-spin"></i>
+        <div id="message">
+
         </div>
+
+        <div class="overlay overlay--inbox loading-inbox"></div>
+        <div class="overlay overlay--message loading-message"></div>
+
+        <i class="fa fa-spinner fa-spinner--inbox fa-spin loading-inbox"></i>
+        <i class="fa fa-spinner fa-spinner--message fa-spin loading-message"></i>
 
     </div>
 </f:section>
