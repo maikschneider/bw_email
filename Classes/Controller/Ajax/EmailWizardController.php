@@ -167,12 +167,16 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             return $selection;
         }
         foreach ($templates as $template) {
+            // use current query params but override template setting
+            $params = $this->queryParams;
+            $params['template'] = $template['title'];
+
             $selection[] = array(
                 'file' => $template['title'],
                 'name' => $this->getLanguageService()->sL($template['title']),
                 'previewUri' => $this->getAjaxUri(
                     'ajax_wizard_modal_preview',
-                    $this->queryParams
+                    $params
                 )
             );
         }
