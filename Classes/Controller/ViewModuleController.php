@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleController
 {
+
     /**
      * @var array|null
      */
@@ -32,8 +33,11 @@ class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleCont
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/BwEmail/EmailWizard');
 
-        $config = GeneralUtility::makeInstance(WizardConf::class);
-        $config->preparePageRendering($pageId);
+        $config = GeneralUtility::makeInstance(WizardConf::class,
+            'pages',
+            $pageId,
+            $pageId
+        );
 
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
         $emailPageButton = $buttonBar->makeLinkButton()
