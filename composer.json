@@ -12,6 +12,13 @@
     "bk2k/bootstrap-package": "9.1.*"
   },
   "license": "MIT",
+  "extra": {
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "web-dir": "public",
+      "extension-key": "bw_email"
+    }
+  },
   "authors": [
     {
       "name": "Maik Schneider",
