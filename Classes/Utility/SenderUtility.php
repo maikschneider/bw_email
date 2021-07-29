@@ -113,7 +113,8 @@ class SenderUtility
             $contact->getRecipientArray(),
             $this->settings['subject'],
             $html,
-            $this->settings['replytoAddress']
+            $this->settings['replytoAddress'],
+            $this->settings['bccAddress']
         );
     }
 
@@ -125,7 +126,7 @@ class SenderUtility
      * @param $replyTo
      * @return int
      */
-    private function sendMail($from, $to, $subject, $body, $replyTo)
+    private function sendMail($from, $to, $subject, $body, $replyTo, $bcc)
     {
         $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
         $mailMessage->setTo($to)
@@ -135,6 +136,10 @@ class SenderUtility
 
         if (!empty($replyTo)) {
             $mailMessage->setReplyTo($replyTo);
+        }
+
+        if (!empty($bcc)) {
+            $mailMessage->setBcc($bcc);
         }
 
         return $mailMessage->send();

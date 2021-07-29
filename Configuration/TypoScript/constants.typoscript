@@ -16,6 +16,7 @@ plugin.tx_bwemail {
 		recipientAddress =
 		recipientCount =
 		recipientName =
+		bccAddress = 
 		modalTitle = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalTitle
 		modalSendButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton
 		modalCancelButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton

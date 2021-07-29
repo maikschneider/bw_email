@@ -114,6 +114,7 @@ plugin.tx_bwemail {
 		recipientName = {$plugin.tx_bwemail.settings.recipientName}
 		recipientAddress = {$plugin.tx_bwemail.settings.recipientAddress}
 		recipientCount = {$plugin.tx_bwemail.settings.recipientCount}
+		bccAddress = {$plugin.tx_bwemail.settings.bccAddress}
 		typoscriptSelects {
 
 		}
