@@ -1,7 +1,7 @@
 mod {
 	web_layout {
 		EmailLayouts {
-			bw_email_default {
+			defaultMail {
 				title = DefaultMail
 				config {
 					backend_layout {
@@ -23,45 +23,45 @@ mod {
 				icon = EXT:bw_email/Resources/Public/Icons/Basic.svg
 			}
 
-			bw_email_drip < .bw_email_default
-			bw_email_drip.title = Drip
-			bw_email_drip.icon = EXT:bw_email/Resources/Public/Icons/Drill.svg
+			drip < .bw_email_default
+			drip.title = Drip
+			drip.icon = EXT:bw_email/Resources/Public/Icons/Drill.svg
 
-			bw_email_hero < .bw_email_default
-			bw_email_hero.title = Hero
-			bw_email_hero.icon = EXT:bw_email/Resources/Public/Icons/Hero.svg
+			hero < .bw_email_default
+			hero.title = Hero
+			hero.icon = EXT:bw_email/Resources/Public/Icons/Hero.svg
 
-			bw_email_marketing < .bw_email_default
-			bw_email_marketing.title = Marketing
-			bw_email_marketing.icon = EXT:bw_email/Resources/Public/Icons/Marketing.svg
+			marketing < .bw_email_default
+			marketing.title = Marketing
+			marketing.icon = EXT:bw_email/Resources/Public/Icons/Marketing.svg
 
-			bw_email_newsletter < .bw_email_default
-			bw_email_newsletter.title = Newsletter
-			bw_email_newsletter.icon = EXT:bw_email/Resources/Public/Icons/Newsletter.svg
+			newsletter < .bw_email_default
+			newsletter.title = Newsletter
+			newsletter.icon = EXT:bw_email/Resources/Public/Icons/Newsletter.svg
 
-			bw_email_newsletter2 < .bw_email_default
-			bw_email_newsletter2.title = Newsletter 2
-			bw_email_newsletter2.icon = EXT:bw_email/Resources/Public/Icons/Newsletter2.svg
+			newsletter-2 < .bw_email_default
+			newsletter-2.title = Newsletter 2
+			newsletter-2.icon = EXT:bw_email/Resources/Public/Icons/Newsletter2.svg
 
-			bw_email_order < .bw_email_default
-			bw_email_order.title = Order
-			bw_email_order.icon = EXT:bw_email/Resources/Public/Icons/Order.svg
+			order < .bw_email_default
+			order.title = Order
+			order.icon = EXT:bw_email/Resources/Public/Icons/Order.svg
 
-			bw_email_password < .bw_email_default
-			bw_email_password.title = Password
-			bw_email_password.icon = EXT:bw_email/Resources/Public/Icons/Password.svg
+			password < .bw_email_default
+			password.title = Password
+			password.icon = EXT:bw_email/Resources/Public/Icons/Password.svg
 
-			bw_email_sidebar < .bw_email_default
-			bw_email_sidebar.title = Sidebar
-			bw_email_sidebar.icon = EXT:bw_email/Resources/Public/Icons/Sidebar.svg
+			sidebar < .bw_email_default
+			sidebar.title = Sidebar
+			sidebar.icon = EXT:bw_email/Resources/Public/Icons/Sidebar.svg
 
-			bw_email_sidebarHero < .bw_email_default
-			bw_email_sidebarHero.title = Sidebar Hero
-			bw_email_sidebarHero.icon = EXT:bw_email/Resources/Public/Icons/SidebarHero.svg
+			sidebarHero < .bw_email_default
+			sidebarHero.title = Sidebar Hero
+			sidebarHero.icon = EXT:bw_email/Resources/Public/Icons/SidebarHero.svg
 
-			bw_email_welcome < .bw_email_default
-			bw_email_welcome.title = Welcome
-			bw_email_welcome.icon = EXT:bw_email/Resources/Public/Icons/Welcome.svg
+			welcome < .bw_email_default
+			welcome.title = Welcome
+			welcome.icon = EXT:bw_email/Resources/Public/Icons/Welcome.svg
 		}
 	}
 }
