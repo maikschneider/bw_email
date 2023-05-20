@@ -2,6 +2,9 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Model\ContactProviderOption;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use Blueways\BwEmail\Domain\Model\Contact;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
@@ -23,7 +26,7 @@ abstract class ContactProvider
     protected $description;
 
     /**
-     * @var \Blueways\BwEmail\Domain\Model\ContactProviderOption[]
+     * @var ContactProviderOption[]
      */
     protected $options;
 
@@ -33,7 +36,7 @@ abstract class ContactProvider
     protected $settings;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 
@@ -81,7 +84,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return mixed|\TYPO3\CMS\Lang\LanguageService
+     * @return mixed|LanguageService
      */
     private function getLanguageService()
     {
@@ -97,7 +100,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\ContactProviderOption[]
+     * @return ContactProviderOption[]
      */
     public function getOptions()
     {
@@ -105,7 +108,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return Contact[]
      */
     abstract public function getContacts();
 

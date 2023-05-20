@@ -2,6 +2,15 @@
 
 namespace Blueways\BwEmail\View;
 
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use Blueways\BwEmail\Domain\Model\Contact;
+use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
+use TYPO3\CMS\Core\TimeTracker\TimeTracker;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use Blueways\BwEmail\Utility\TemplateParserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -11,7 +20,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  *
  * @package Blueways\BwEmails\View
  */
-class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
+class EmailView extends StandaloneView
 {
 
     /**
@@ -24,7 +33,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
      */
     protected $templateParser;
 
-    public function __construct(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject = null)
+    public function __construct(ContentObjectRenderer $contentObject = null)
     {
         parent::__construct($contentObject);
 
@@ -51,8 +60,8 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
         $this->templateParser->inkyHtml();
 
         if ($this->pid) {
-            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($this->pid);
-            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+            $rootline = BackendUtility::BEgetRootLine($this->pid);
+            $host = BackendUtility::firstDomainRecord($rootline);
         }
         $host = isset($host) ? $host : GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
         $this->templateParser->makeAbsoluteUrls($host);
@@ -105,7 +114,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     }
 
     /**
-     * @param \Blueways\BwEmail\Domain\Model\Contact $contact
+     * @param Contact $contact
      */
     public function insertContact($contact)
     {
@@ -114,7 +123,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
 
     /**
      * @param $pid
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @throws ServiceUnavailableException
      */
     public function setPid($pid)
     {
@@ -124,7 +133,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     /**
      * @param string $markerName
      * @param array $typoscript
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @throws ServiceUnavailableException
      */
     public function injectTyposcriptSelect(string $markerName, array $typoscript)
     {
@@ -133,7 +142,7 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
         }
 
         // check pid if FE Context can be created (not possible if sys_folder) or go page level upwards
-        $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($pid);
+        $rootline = BackendUtility::BEgetRootLine($pid);
         for ($i = sizeof($rootline); $i > 0; $i--) {
             $pid = $rootline[$i]['doktype'];
             if ($pid === 1) {
@@ -162,35 +171,32 @@ class EmailView extends \TYPO3\CMS\Fluid\View\StandaloneView
     /**
      * @param int $id
      * @param int $typeNum
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @throws ServiceUnavailableException
      */
     protected function initTSFE($id = 1, $typeNum = 0)
     {
-        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
         if (!is_object($GLOBALS['TT'])) {
-            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\TimeTracker(false);
-            $GLOBALS['TT']->start();
+            $GLOBALS['TT'] = new TimeTracker(false);
+            GeneralUtility::makeInstance(TimeTracker::class)->start();
         }
 
-        $GLOBALS['TSFE'] = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+        $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
             'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
             $GLOBALS['TYPO3_CONF_VARS'],
             $id,
             $typeNum
         );
-        $GLOBALS['TSFE']->sys_page = $this->objectManager->get('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $GLOBALS['TSFE']->sys_page = $this->objectManager->get(PageRepository::class);
         $GLOBALS['TSFE']->sys_page->init(true);
         $GLOBALS['TSFE']->connectToDB();
-        $GLOBALS['TSFE']->initFEuser();
         $GLOBALS['TSFE']->determineId();
-        $GLOBALS['TSFE']->initTemplate();
-        $GLOBALS['TSFE']->rootLine = $GLOBALS['TSFE']->sys_page->getRootLine($id, '');
+        $GLOBALS['TSFE']->rootLine = GeneralUtility::makeInstance(RootlineUtility::class, $id, '')->get();
         $GLOBALS['TSFE']->getConfigArray();
 
         // @TODO: check new condition for TYPO3 v9 url handling
-        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('realurl')) {
-            $rootline = \TYPO3\CMS\Backend\Utility\BackendUtility::BEgetRootLine($id);
-            $host = \TYPO3\CMS\Backend\Utility\BackendUtility::firstDomainRecord($rootline);
+        if (ExtensionManagementUtility::isLoaded('realurl')) {
+            $rootline = BackendUtility::BEgetRootLine($id);
+            $host = BackendUtility::firstDomainRecord($rootline);
             $_SERVER['HTTP_HOST'] = $host;
         }
     }

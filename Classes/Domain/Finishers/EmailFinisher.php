@@ -21,7 +21,7 @@ class EmailFinisher extends \TYPO3\CMS\Form\Domain\Finishers\EmailFinisher
     /**
      * @param FormRuntime $formRuntime
      * @return StandaloneView
-     * @throws \TYPO3\CMS\Form\Domain\Finishers\Exception\FinisherException
+     * @throws FinisherException
      */
     protected function initializeStandaloneView(FormRuntime $formRuntime): StandaloneView
     {

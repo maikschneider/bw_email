@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Hooks;
 
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use Blueways\BwEmail\Utility\TemplateParserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -18,7 +19,7 @@ class ContentPostProcessorHook
      */
     public function noCache(&$parameters)
     {
-        /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $pobj */
+        /** @var TypoScriptFrontendController $pobj */
         $pobj = $parameters['pObj'];
         $page = $pobj->page;
         if ($page['doktype'] !== 117) {

@@ -2,9 +2,12 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
+class FeUserContactSource extends ContactSource
 {
 
     const RECIPIENT_TYPE_FOLDER = 0;
@@ -12,12 +15,12 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     const RECIPIENT_TYPE_GROUPS = 2;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FrontendUser>
+     * @var ObjectStorage<FrontendUser>
      */
     protected $feUsers;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup>
+     * @var ObjectStorage<FrontendUserGroup>
      */
     protected $feUserGroups;
 
@@ -34,7 +37,7 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     protected $feRecipientType = self::RECIPIENT_TYPE_FOLDER;
 
     /**
-     * @return array|\Blueways\BwEmail\Domain\Model\Contact[]
+     * @return array|Contact[]
      */
     public function getContacts()
     {
@@ -64,7 +67,7 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FrontendUser[]
+     * @return FrontendUser[]
      */
     public function getSelectedFeUsers()
     {

@@ -2,6 +2,8 @@
 
 namespace Blueways\BwEmail\Controller;
 
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use Blueways\BwEmail\Domain\Model\WizardConf;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -19,12 +21,18 @@ class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleCont
      * @var array|null
      */
     protected $pageRecord;
+    private IconFactory $iconFactory;
+    public function __construct(IconFactory $iconFactory)
+    {
+        $this->iconFactory = $iconFactory;
+        parent::__construct();
+    }
 
     /**
      * @param int $pageId
      * @param int $languageId
      * @param string $targetUrl
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     * @throws RouteNotFoundException
      */
     protected function registerDocHeader(int $pageId, int $languageId, string $targetUrl)
     {
@@ -44,7 +52,7 @@ class ViewModuleController extends \TYPO3\CMS\Viewpage\Controller\ViewModuleCont
             ->setClasses('viewmodule_email_button')
             ->setHref('#')
             ->setTitle($this->getLanguageService()->sL('LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:sendPage'))
-            ->setIcon($this->moduleTemplate->getIconFactory()->getIcon('actions-email', Icon::SIZE_SMALL))
+            ->setIcon($this->iconFactory->getIcon('actions-email', Icon::SIZE_SMALL))
             ->setDataAttributes($config->getDataAttributesForButton());
         $buttonBar->addButton($emailPageButton);
     }

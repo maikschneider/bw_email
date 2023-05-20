@@ -2,6 +2,13 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
+use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -39,7 +46,7 @@ class WizardConf
     /**
      * WizardConf constructor.
      *
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     * @throws InvalidConfigurationTypeException
      */
     public function __construct($table, $uid, $pid)
     {
@@ -52,12 +59,12 @@ class WizardConf
     /**
      * Init $settings with values from TypoScript
      *
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     * @throws InvalidConfigurationTypeException
      */
     public function createFromTypoScript()
     {
         $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager */
+        /** @var ConfigurationManager $configurationManager */
         $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
         $typoScript = $configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
@@ -95,7 +102,7 @@ class WizardConf
 
             if (sizeof($fieldStatements[0])) {
 
-                $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
+                $reflectionService = new ReflectionService();
 
                 $record = BackendUtility::getRecord(
                     $this->settings['table'],
@@ -126,7 +133,7 @@ class WizardConf
 
                             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
                             $dataMapper = $objectManager->get(
-                                \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class
+                                DataMapper::class
                             );
                             $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
 
@@ -157,7 +164,7 @@ class WizardConf
     }
 
     /**
-     * @return mixed|\TYPO3\CMS\Lang\LanguageService
+     * @return mixed|LanguageService
      */
     protected function getLanguageService()
     {
@@ -166,7 +173,7 @@ class WizardConf
 
     /**
      * @return array
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     * @throws RouteNotFoundException
      */
     public function getDataAttributesForButton()
     {
@@ -180,7 +187,7 @@ class WizardConf
 
     /**
      * @return string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     * @throws RouteNotFoundException
      */
     public function getWizardUri()
     {
@@ -193,7 +200,7 @@ class WizardConf
             $routeName
         );
 
-        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
 
         return (string)$uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }

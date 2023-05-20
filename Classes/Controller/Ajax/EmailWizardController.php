@@ -2,6 +2,15 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use Blueways\BwEmail\View\EmailView;
+use Blueways\BwEmail\Service\ContactProvider;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\Repository;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
+use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,7 +27,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  *
  * @package Blueways\BwEmail\Controller\Ajax
  */
-class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class EmailWizardController extends ActionController
 {
 
     /**
@@ -32,12 +41,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     protected $typoscript;
 
     /**
-     * @var \Blueways\BwEmail\View\EmailView
+     * @var EmailView
      */
     protected $emailView;
 
     /**
-     * @var \Blueways\BwEmail\Utility\SenderUtility
+     * @var SenderUtility
      */
     protected $senderUtility;
 
@@ -49,7 +58,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     /**
      * SendmailWizard constructor.
      *
-     * @param \TYPO3\CMS\Fluid\View\StandaloneView|null $templateView
+     * @param StandaloneView|null $templateView
      */
     public function __construct(StandaloneView $templateView = null)
     {
@@ -76,9 +85,9 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
     public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -98,7 +107,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         $providers = [];
         if (isset($defaults['provider.'])) {
             foreach ($defaults['provider.'] as $providerClass => $providerSettings) {
-                /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
+                /** @var ContactProvider $provider */
                 $provider = GeneralUtility::makeInstance(substr($providerClass, 0, -1));
                 $provider->applySettings($providerSettings);
                 $providers[] = $provider->getModalConfiguration();
@@ -193,12 +202,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
      * This action is currently limited to preview emails by requests that send a page uid.
      * This needs to be shifted to the child class PageEmailWizard
      *
-     * @param \TYPO3\CMS\Core\Http\ServerRequest $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
+     * @param ServerRequest $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     * @throws ServiceUnavailableException
      */
-    public function previewAction(\TYPO3\CMS\Core\Http\ServerRequest $request, ResponseInterface $response)
+    public function previewAction(ServerRequest $request, ResponseInterface $response)
     {
         // security: check signature
         if (!$this->isSignatureValid($request, 'ajax_wizard_modal_preview')) {
@@ -233,7 +242,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             // check for provider settings in post data
             if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
                 $providerSettings = $params['provider'];
-                /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
+                /** @var ContactProvider $provider */
                 $provider = GeneralUtility::makeInstance($providerSettings['id']);
                 $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
                 $contacts = $provider->getContacts();
@@ -294,12 +303,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $recordTypeParts[4] .= 'Repository';
 
             // use custom query to ignore hidden and pid field
-            /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $querySettings */
+            /** @var Typo3QuerySettings $querySettings */
             $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
             $querySettings->setIgnoreEnableFields(true);
             $querySettings->setRespectStoragePage(false);
             $querySettings->setIncludeDeleted(true);
-            /** @var \TYPO3\CMS\Extbase\Persistence\Repository $repository */
+            /** @var Repository $repository */
             $repository = $this->objectManager->get(implode('\\', $recordTypeParts));
             $repository->setDefaultQuerySettings($querySettings);
             $query = $repository->createQuery();
@@ -311,7 +320,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
             $properties = ObjectAccess::getGettableProperties($record);
             foreach ($properties as $propertyName => $property) {
                 if ($property instanceof LazyLoadingProxy) {
-                    \TYPO3\CMS\Extbase\Reflection\ObjectAccess::setProperty(
+                    ObjectAccess::setProperty(
                         $record,
                         $propertyName,
                         $property->_loadRealInstance()
@@ -334,12 +343,12 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \TYPO3\CMS\Core\Error\Http\ServiceUnavailableException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     * @throws ServiceUnavailableException
+     * @throws StopActionException
+     * @throws UnsupportedRequestTypeException
      */
     public function sendAction(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -387,7 +396,7 @@ class EmailWizardController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCont
         // check for provider settings and possible list of recipients
         if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
             $providerSettings = $params['provider'];
-            /** @var \Blueways\BwEmail\Service\ContactProvider $provider */
+            /** @var ContactProvider $provider */
             $provider = GeneralUtility::makeInstance($providerSettings['id']);
             $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
             $contacts = $provider->getContacts();

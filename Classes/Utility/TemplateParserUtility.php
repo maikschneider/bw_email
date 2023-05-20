@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Utility;
 
+use PHPHtmlParser\Exceptions\CircularException;
 use Hampe\Inky\Inky;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -168,7 +169,7 @@ class TemplateParserUtility
 
         try {
             $this->html = $inky->releaseTheKraken($this->html);
-        } catch (\PHPHtmlParser\Exceptions\CircularException $e) {
+        } catch (CircularException $e) {
         }
     }
 

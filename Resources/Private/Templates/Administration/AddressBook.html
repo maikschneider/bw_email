@@ -1,0 +1,18 @@
+<f:debug>{_all}</f:debug>
+<div class="row">
+    <div class="col-md-3">
+        <h1>
+            <f:image width="25" src="EXT:bw_email/Resources/Public/Icons/tx_bwemail_domain_model_contactsource.svg"/>
+            Contact Provider
+        </h1>
+        <div class="list-group">
+            <f:for each="{providers}" as="provider" iteration="i">
+                <a href="#" class="list-group-item {f:if(condition: i.isFirst, then: 'active')}">
+                    {provider.name}
+                </a>
+            </f:for>
+        </div>
+    </div>
+    <div class="col-md-3">.col-md-6</div>
+    <div class="col-md-6">.col-md-6</div>
+</div>

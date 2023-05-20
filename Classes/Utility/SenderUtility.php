@@ -21,12 +21,12 @@ class SenderUtility
     protected $settings;
 
     /**
-     * @var \Blueways\BwEmail\Domain\Model\Contact[]
+     * @var Contact[]
      */
     protected $recipients;
 
     /**
-     * @param \Blueways\BwEmail\Domain\Model\Contact[] $recipients
+     * @param Contact[] $recipients
      */
     public function setRecipients(array $recipients): void
     {
@@ -42,7 +42,7 @@ class SenderUtility
     }
 
     /**
-     * @param \Blueways\BwEmail\View\EmailView $emailView
+     * @param EmailView $emailView
      * @return array
      * @TODO: use language service for translations
      */
@@ -99,8 +99,8 @@ class SenderUtility
     }
 
     /**
-     * @param \Blueways\BwEmail\View\EmailView $emailView
-     * @param \Blueways\BwEmail\Domain\Model\Contact $contact
+     * @param EmailView $emailView
+     * @param Contact $contact
      * @return int
      */
     protected function sendEmailViewToContact(EmailView $emailView, Contact $contact)

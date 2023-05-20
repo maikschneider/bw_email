@@ -2,6 +2,8 @@
 
 namespace Blueways\BwEmail\Form\Element;
 
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use Blueways\BwEmail\Domain\Model\WizardConf;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -21,8 +23,8 @@ class SendMailButtonElement extends AbstractFormElement
 
     /**
      * @return array|string
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     * @throws RouteNotFoundException
+     * @throws InvalidConfigurationTypeException
      */
     public function render()
     {

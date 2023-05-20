@@ -2,6 +2,10 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Repository\ContactSourceRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Blueways\BwEmail\Domain\Model\ContactProviderOption;
+use Blueways\BwEmail\Domain\Model\Contact;
 /**
  * Class ContactSourceContactProvider
  *
@@ -15,7 +19,7 @@ class ContactSourceContactProvider extends ContactProvider
     protected $description = 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:contactSourceProvider.description';
 
     /**
-     * @var \Blueways\BwEmail\Domain\Repository\ContactSourceRepository
+     * @var ContactSourceRepository
      */
     protected $contactSourceRepository;
 
@@ -26,7 +30,7 @@ class ContactSourceContactProvider extends ContactProvider
     {
         parent::__construct();
 
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $this->contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
     }
 
@@ -35,7 +39,7 @@ class ContactSourceContactProvider extends ContactProvider
      */
     protected function createOptions()
     {
-        $this->options[] = new \Blueways\BwEmail\Domain\Model\ContactProviderOption(
+        $this->options[] = new ContactProviderOption(
             'Contact source',
             'source',
             'select',
@@ -49,7 +53,7 @@ class ContactSourceContactProvider extends ContactProvider
     private function getSourceOptions()
     {
         // TODO: objectManager from constructor is empty, why?
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
 
         $sourceLabels = [];
@@ -60,11 +64,11 @@ class ContactSourceContactProvider extends ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return Contact[]
      */
     public function getContacts()
     {
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
         $contactSourceRepository = $objectManager->get('Blueways\\BwEmail\\Domain\\Repository\\ContactSourceRepository');
 
         $sources = $contactSourceRepository->findAllDataSources();

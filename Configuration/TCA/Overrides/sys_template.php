@@ -1,12 +1,13 @@
 <?php
-defined('TYPO3_MODE') || die();
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+defined('TYPO3') || die();
 
 call_user_func(function () {
 
     /**
      * TypoScript Tempalte
      */
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+    ExtensionManagementUtility::addStaticFile(
         'bw_email',
         'Configuration/TypoScript',
         'blueways Email: Typoscript templates'

@@ -19,10 +19,8 @@ mod {
 						}
 					}
 				}
-
 				icon = EXT:bw_email/Resources/Public/Icons/Basic.svg
 			}
-
 			drip < .bw_email_default
 			drip.title = Drip
 			drip.icon = EXT:bw_email/Resources/Public/Icons/Drill.svg

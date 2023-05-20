@@ -1,12 +1,13 @@
 <?php
-defined('TYPO3_MODE') || die('Access denied');
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+defined('TYPO3') || die('Access denied');
 
 call_user_func(
     function ($extKey, $table) {
         $emailDoktype = 117;
 
         // Add new page type as possible select item:
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTcaSelectItem(
+        ExtensionManagementUtility::addTcaSelectItem(
             $table,
             'doktype',
             [

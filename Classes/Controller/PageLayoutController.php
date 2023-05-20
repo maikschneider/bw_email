@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\Controller;
 
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use Blueways\BwEmail\Domain\Model\WizardConf;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -17,8 +18,8 @@ class PageLayoutController extends \TYPO3\CMS\Backend\Controller\PageLayoutContr
 {
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     * @param ServerRequestInterface $request
+     * @throws RouteNotFoundException
      */
     protected function makeButtons(ServerRequestInterface $request): void
     {
