@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-06-23T11:36:30Z">
+		<body>
+			<trans-unit id="bwemail_modalCancelButton">
+				<source>Cancel</source>
+			</trans-unit>
+			<trans-unit id="bwemail_modalTitle">
+				<source>Send Email from record</source>
+			</trans-unit>
+			<trans-unit id="bwemail_modalSendButton">
+				<source>Send</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

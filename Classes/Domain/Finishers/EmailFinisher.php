@@ -23,12 +23,10 @@ class EmailFinisher extends \TYPO3\CMS\Form\Domain\Finishers\EmailFinisher
      * @return StandaloneView
      * @throws FinisherException
      */
-    protected function initializeStandaloneView(FormRuntime $formRuntime): StandaloneView
+    protected function initializeStandaloneView(FormRuntime $formRuntime, string $format): StandaloneView
     {
-        $format = $this->parseOption('format');
-
         if ($format !== self::FORMAT_BWEMAIL) {
-            return parent::initializeStandaloneView($formRuntime);
+            return parent::initializeStandaloneView($formRuntime, $format);
         }
 
         $template = $this->parseOption('template');

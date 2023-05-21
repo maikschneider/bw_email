@@ -2,6 +2,9 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Blueways\BwEmail\View\EmailView;
 use Blueways\BwEmail\Service\ContactProvider;
@@ -10,7 +13,6 @@ use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use Blueways\BwEmail\Utility\SenderUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,58 +32,32 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 class EmailWizardController extends ActionController
 {
 
-    /**
-     * @var array
-     */
-    protected $queryParams = null;
+    protected ?array $queryParams = null;
 
-    /**
-     * @var array
-     */
-    protected $typoscript;
+    protected array $typoscript = [];
 
-    /**
-     * @var EmailView
-     */
-    protected $emailView;
+    protected EmailView $emailView;
 
-    /**
-     * @var SenderUtility
-     */
-    protected $senderUtility;
+    protected SenderUtility $senderUtility;
 
-    /**
-     * @var StandaloneView
-     */
-    private $templateView;
+    protected StandaloneView $templateView;
 
-    /**
-     * SendmailWizard constructor.
-     *
-     * @param StandaloneView|null $templateView
-     */
+
     public function __construct(StandaloneView $templateView = null)
     {
-        parent::__construct();
-
-        $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        $configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $this->typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
         if (!$templateView) {
             $templateView = GeneralUtility::makeInstance(StandaloneView::class);
-            $templateView->setLayoutRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
-            $templateView->setPartialRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
-            $templateView->setTemplateRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
+            $templateView->setLayoutRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.'] ?? []);
+            $templateView->setPartialRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.'] ?? []);
+            $templateView->setTemplateRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.'] ?? []);
         }
 
         $this->templateView = $templateView;
-        $this->uriBuilder = $this->objectManager->get('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
-        $this->emailView = $this->objectManager->get('Blueways\\BwEmail\\View\\EmailView');
-        $this->senderUtility = GeneralUtility::makeInstance(
-            'Blueways\BwEmail\Utility\SenderUtility',
-            $this->typoscript
-        );
+        $this->emailView = GeneralUtility::makeInstance(EmailView::class);
+        $this->senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $this->typoscript);
     }
 
     /**
@@ -89,12 +65,11 @@ class EmailWizardController extends ActionController
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function modalAction(ServerRequestInterface $request, ResponseInterface $response)
+    public function modalAction(ServerRequestInterface $request)
     {
-        // security: check signature
-        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_page')) {
-            return $response->withStatus(403);
-        }
+        $response = new Response();
+
+        $params = $request->getQueryParams();
 
         $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
 
@@ -121,7 +96,7 @@ class EmailWizardController extends ActionController
             'providers' => $providers,
         ]);
 
-        $this->templateView->setTemplate('Administration/EmailWizard');
+        $this->templateView->setTemplatePathAndFilename('EXT:bw_email/Resources/Private/Templates/Email/Administration/EmailWizard.html');
         $content = $this->templateView->render();
         $response->getBody()->write($content);
 
@@ -159,6 +134,7 @@ class EmailWizardController extends ActionController
             $routeName
         );
 
+        return '';
         return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
     }
 
@@ -227,7 +203,7 @@ class EmailWizardController extends ActionController
         // inject records from typoscript (or tca override
         if (is_array($queryParams['typoscriptSelects.'])) {
             foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
+                $this->emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
             }
         }
 
@@ -384,7 +360,7 @@ class EmailWizardController extends ActionController
         // inject records from typoscript (or tca override
         if (is_array($queryParams['typoscriptSelects.'])) {
             foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->injectTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
+                $this->emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
             }
         }
 

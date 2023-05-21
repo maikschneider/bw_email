@@ -15,37 +15,32 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-/**
- * Class WizardConf
- *
- * @package Blueways\BwEmail\Domain\Model
- */
 class WizardConf
 {
 
-    /**
-     * @var array
-     */
-    public $settings = [];
+    public array $settings = [];
+
+    protected string $table;
+
+    protected string $uid;
+
+    protected string $pid;
+
+    protected ReflectionService $reflectionService;
+
+    protected ConfigurationManager $configurationManager;
+
+    public function injectConfigurationManager(ConfigurationManager $configurationManager): void
+    {
+        $this->configurationManager = $configurationManager;
+    }
+
+    public function injectReflectionService(ReflectionService $reflectionService): void
+    {
+        $this->reflectionService = $reflectionService;
+    }
 
     /**
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * @var string
-     */
-    protected $uid;
-
-    /**
-     * @var string
-     */
-    protected $pid;
-
-    /**
-     * WizardConf constructor.
-     *
      * @throws InvalidConfigurationTypeException
      */
     public function __construct($table, $uid, $pid)
@@ -57,22 +52,17 @@ class WizardConf
     }
 
     /**
-     * Init $settings with values from TypoScript
-     *
      * @throws InvalidConfigurationTypeException
      */
     public function createFromTypoScript()
     {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /** @var ConfigurationManager $configurationManager */
-        $configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
-        $typoScript = $configurationManager->getConfiguration(
+        $typoScript = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
         );
 
         ArrayUtility::mergeRecursiveWithOverrule(
             $this->settings,
-            $typoScript['plugin.']['tx_bwemail.']['settings.'],
+            $typoScript['plugin.']['tx_bwemail.']['settings.'] ?? [],
             true,
             false
         );
@@ -100,17 +90,15 @@ class WizardConf
             // check for FIELDS
             preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $item, $fieldStatements);
 
-            if (sizeof($fieldStatements[0])) {
-
-                $reflectionService = new ReflectionService();
+            if (count($fieldStatements[0])) {
 
                 $record = BackendUtility::getRecord(
                     $this->settings['table'],
                     $this->settings['uid']
                 );
 
-                foreach ($fieldStatements[0] as $key => $fieldStatement) {
-                    $propertyName = $fieldStatements[2][$key];
+                foreach ($fieldStatements[0] as $key2 => $fieldStatement) {
+                    $propertyName = $fieldStatements[2][$key2];
                     $replaceWith = '';
 
                     if (isset($record[$propertyName])) {
@@ -126,8 +114,8 @@ class WizardConf
                         }
 
                         // check if foreign property should be accessed FIELD:calendar.name
-                        if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key]) && $fieldStatements[4][$key] !== "") {
-                            $schema = $reflectionService->getClassSchema($record['record_type']);
+                        if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key2]) && $fieldStatements[4][$key2] !== "") {
+                            $schema = $this->reflectionService->getClassSchema($record['record_type']);
                             $properties = $schema->getProperties();
                             $foreignPropertyType = $properties[$propertyName]['type'];
 
@@ -143,8 +131,8 @@ class WizardConf
                                 $replaceWith
                             );
 
-                            if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key]])) {
-                                $replaceWith = $foreignRecord[$fieldStatements[4][$key]];
+                            if ($foreignRecord && isset($foreignRecord[$fieldStatements[4][$key2]])) {
+                                $replaceWith = $foreignRecord[$fieldStatements[4][$key2]];
                             }
                         }
                     }
@@ -155,7 +143,7 @@ class WizardConf
             // check for LLLs
             preg_match_all('/(LLL:)(EXT\:)?([\w\-\/]+\.\w+\:[\.?\w]+)/', $item, $llStatements);
 
-            foreach ($llStatements[0] as $key => $llStatement) {
+            foreach ($llStatements[0] as $llStatement) {
                 $translation = $self->getLanguageService()->sL($llStatement);
                 $item = str_replace($llStatement, $translation, $item);
             }

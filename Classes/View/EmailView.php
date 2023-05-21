@@ -2,6 +2,7 @@
 
 namespace Blueways\BwEmail\View;
 
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -33,18 +34,24 @@ class EmailView extends StandaloneView
      */
     protected $templateParser;
 
-    public function __construct(ContentObjectRenderer $contentObject = null)
-    {
-        parent::__construct($contentObject);
+    protected ContentObjectRenderer $contentObjectRenderer;
 
-        $configurationManager = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+    protected PageRepository $pageRepository;
+
+    public function __construct(PageRepository $pageRepository, ContentObjectRenderer $contentObjectRenderer = null)
+    {
+        parent::__construct($contentObjectRenderer);
+        $this->contentObjectRenderer = $contentObjectRenderer;
+        $this->pageRepository = $pageRepository;
+
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
         $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 
-        $this->setLayoutRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.']);
-        $this->setPartialRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.']);
-        $this->setTemplateRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.']);
+        $this->setLayoutRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.'] ?? []);
+        $this->setPartialRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.'] ?? []);
+        $this->setTemplateRootPaths($typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.'] ?? []);
 
-        $this->templateParser = $this->objectManager->get('Blueways\\BwEmail\\Utility\\TemplateParserUtility');
+        $this->templateParser = GeneralUtility::makeInstance(TemplateParserUtility::class);
     }
 
     /**
@@ -135,7 +142,7 @@ class EmailView extends StandaloneView
      * @param array $typoscript
      * @throws ServiceUnavailableException
      */
-    public function injectTyposcriptSelect(string $markerName, array $typoscript)
+    public function addTyposcriptSelect(string $markerName, array $typoscript)
     {
         if (!$pid = $this->pid) {
             return;
@@ -151,18 +158,17 @@ class EmailView extends StandaloneView
         }
 
         $this->initTSFE($pid);
-        $cObjRenderer = $this->objectManager->get('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 
         if (isset($typoscript['render']) && $typoscript['render'] === '1') {
-            $contentElements = $cObjRenderer->getContentObject('CONTENT')->render($typoscript);
+            $contentElements = $this->contentObjectRenderer->getContentObject('CONTENT')->render($typoscript);
         } else {
-            $tableName = $cObjRenderer->stdWrapValue('table', $typoscript);
+            $tableName = $this->contentObjectRenderer->stdWrapValue('table', $typoscript);
             // fix: to make typoScript query work, we need to enter a pid
             if (!isset($typoscript['select.']['pidInList'])) {
                 $typoscript['select.']['pidInList'] = 'root,-1';
                 $typoscript['select.']['recursive'] = '9';
             }
-            $contentElements = $cObjRenderer->getRecords($tableName, $typoscript['select.']);
+            $contentElements = $this->contentObjectRenderer->getRecords($tableName, $typoscript['select.']);
         }
 
         $this->assign($markerName, $contentElements);

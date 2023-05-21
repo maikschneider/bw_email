@@ -1,59 +1,51 @@
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import $ = require('jquery');
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import Modal from '@typo3/backend/modal.js'
+import $ from 'jquery'
+import Icons from '@typo3/backend/icons.js'
 
-
-declare global {
-	interface Window {
-		TYPO3: any;
-	}
-}
-
-
-/**
- * Module: TYPO3/CMS/BwEmail/EmailWizard
- *
- * @exports TYPO3/CMS/BwEmail/EmailWizard
- */
 class EmailWizard {
 
-	private $viewModuleButton: JQuery;
+	private typo3version: number;
+	private tableName: string;
+	private uid: number;
+	private pid: number;
+
+	private viewModuleButton: JQuery|null = null;
 	private currentModal: JQuery;
 	private confirmModal: JQuery;
-	private $loaderTarget: JQuery;
+	private loaderTarget: JQuery;
 
-	public init() {
-		this.cacheElements();
+	constructor(typo3version: number, tableName: string, uid: number, pid: number) {
+		this.typo3version = typo3version;
+		this.tableName = tableName;
+		this.uid = uid;
+		this.pid = pid;
+
+		this.viewModuleButton = $('.viewmodule_email_button');
 		this.initEvents();
 	}
 
-	private cacheElements() {
-		// @TODO: change the class name of the button element
-		this.$viewModuleButton = $('.viewmodule_email_button');
-	}
-
 	private initEvents() {
-		this.$viewModuleButton.on('click', this.onButtonClick.bind(this));
+		this.viewModuleButton.on('click', this.onButtonClick.bind(this));
 	}
 
 	private onButtonClick(e: JQueryEventObject) {
-		e.preventDefault();
-		// collect modal infos
-		const wizardUri = this.$viewModuleButton.data('wizard-uri');
-		const modalTitle = this.$viewModuleButton.data('modal-title');
-		const modalCancelButtonText = this.$viewModuleButton.data('modal-cancel-button-text');
-		const modalSendButtonText = this.$viewModuleButton.data('modal-send-button-text');
+		e.preventDefault()
+
+		let url = TYPO3.settings.ajaxUrls.wizard_email_modal;
+		url += "&tableName=" + encodeURIComponent(this.tableName);
+		url += "&uid=" + encodeURIComponent(this.uid);
+		url += "&pid=" + encodeURIComponent(this.pid);
 
 		this.currentModal = Modal.advanced({
 			type: 'ajax',
-			content: wizardUri,
+			content: url,
 			size: Modal.sizes.large,
-			title: modalTitle,
+			title: TYPO3.lang.bwemail_modalTitle,
 			style: Modal.styles.light,
 			ajaxCallback: this.onModalOpened.bind(this),
 			buttons: [
 				{
-					text: modalCancelButtonText,
+					text: TYPO3.lang.bwemail_modalCancelButton,
 					name: 'dismiss',
 					icon: 'actions-close',
 					btnClass: 'btn-default',
@@ -65,7 +57,7 @@ class EmailWizard {
 					}
 				},
 				{
-					text: modalSendButtonText,
+					text: TYPO3.lang.bwemail_modalSendButton,
 					name: 'save',
 					icon: 'actions-check',
 					active: true,
@@ -82,8 +74,8 @@ class EmailWizard {
 
 	private onModalOpened() {
 
-		this.$loaderTarget = this.currentModal.find('#emailPreview');
-		this.$loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
+		this.loaderTarget = this.currentModal.find('#emailPreview');
+		this.loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
 
 		const templateSelector = this.currentModal.find('select#template');
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
@@ -135,12 +127,12 @@ class EmailWizard {
 
 	private phoneClosingAnimation(e: JQueryEventObject) {
 		e.preventDefault();
-		this.$loaderTarget.toggleClass('closeing');
+		this.loaderTarget.toggleClass('closeing');
 	}
 
 	private loadEmailPreview(uri) {
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
-			this.$loaderTarget.html(icon);
+			this.loaderTarget.html(icon);
 			$.get(
 				uri,
 				this.showEmailPreview.bind(this, true),
@@ -152,7 +144,7 @@ class EmailWizard {
 	private showEmailPreview(createMarkerFieldset, data) {
 		const $showUidInput = this.currentModal.find('#showUid-form-group');
 
-		this.$loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.$loaderTarget.css('height') + '" src="' + data.src + '"></iframe>');
+		this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data.src + '"></iframe>');
 
 		if (data.hasInternalLinks) {
 			$showUidInput.show();
@@ -216,7 +208,7 @@ class EmailWizard {
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
 
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
-			this.$loaderTarget.html(icon);
+			this.loaderTarget.html(icon);
 			$.post(
 				previewUri,
 				this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea, [name^="provider"]').serializeArray(),
@@ -291,7 +283,7 @@ class EmailWizard {
 
 		if (data.status === 'OK') {
 
-			this.$loaderTarget.addClass('closeing');
+			this.loaderTarget.addClass('closeing');
 			setTimeout(function () {
 				this.currentModal.trigger('modal-dismiss');
 				top.TYPO3.Notification.success(data.message.headline, data.message.text);
@@ -308,4 +300,4 @@ class EmailWizard {
 
 }
 
-export = new EmailWizard().init();
+export default EmailWizard

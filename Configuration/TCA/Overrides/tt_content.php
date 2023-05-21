@@ -13,7 +13,7 @@ call_user_func(function () {
     $tempColumns = [
         'mail_button' => [
             'exclude' => false,
-            'label' => 'Insert label here',
+            'label' => 'Send mail',
             'config' => [
                 'type' => 'passthrough',
                 'renderType' => 'sendMailButton'
@@ -21,7 +21,6 @@ call_user_func(function () {
         ]
     ];
 
-    /*
     ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',
@@ -29,5 +28,4 @@ call_user_func(function () {
         '',
         'before:CType'
     );
-    */
 });

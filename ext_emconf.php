@@ -1,12 +1,12 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Bw Emails',
-    'description' => 'TYPO3 extension for creating email templates',
+    'title' => 'Bw Email',
+    'description' => 'Send responsive emails',
     'category' => 'templates',
     'constraints' => [
         'depends' => [
-            'typo3' => '8.7.0-9.5.99',
+            'typo3' => '11.0.0-11.99.99',
         ],
         'conflicts' => [
         ],
@@ -19,7 +19,7 @@ $EM_CONF[$_EXTKEY] = [
     'state' => 'stable',
     'clearCacheOnLoad' => true,
     'author' => 'Maik Schneider',
-    'author_email' => 'm.schneider@blueways.de',
-    'author_company' => 'blueways',
-    'version' => '2.1.7',
+    'author_email' => 'maik.schneider@xima.de',
+    'author_company' => 'XIMA Media',
+    'version' => '3.0.0',
 ];
