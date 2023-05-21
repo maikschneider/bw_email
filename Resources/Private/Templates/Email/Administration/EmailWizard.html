@@ -1,7 +1,14 @@
+<f:debug>{_all}</f:debug>
 <div class="row">
     <div class="col-md-4">
-        <form action="{formActionUri}" method="POST">
+        <f:form name="wizardSettings" object="{wizardSettings}" id="wizardSettingsForm">
+
+            <f:form.hidden property="uid" />
+            <f:form.hidden property="tableName" />
+
             <h2 class="form-section-headline">Settings</h2>
+            <f:form.textfield property="subject" />
+
             <f:if condition="{templates}">
                 <fieldset class="form-section">
                     <div class="form-group">
@@ -195,7 +202,7 @@
 
             </fieldset>
             <fieldset class="form-section" id="markerOverrideFieldset" style="display:none;"></fieldset>
-        </form>
+        </f:form>
     </div>
 
     <div class="col-md-6 col-md-push-1">

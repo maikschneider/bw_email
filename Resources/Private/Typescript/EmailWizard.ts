@@ -1,6 +1,8 @@
 import Modal from '@typo3/backend/modal.js'
 import $ from 'jquery'
 import Icons from '@typo3/backend/icons.js'
+import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
+import AjaxResponse from "@typo3/core/ajax/ajax-response.js";
 
 class EmailWizard {
 
@@ -8,7 +10,7 @@ class EmailWizard {
 	private tableName: string;
 	private uid: number;
 
-	private viewModuleButton: JQuery|null = null;
+	private viewModuleButton: JQuery | null = null;
 	private currentModal: JQuery;
 	private confirmModal: JQuery;
 	private loaderTarget: JQuery;
@@ -130,11 +132,16 @@ class EmailWizard {
 	private loadEmailPreview(uri) {
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.loaderTarget.html(icon);
-			$.get(
-				uri,
-				this.showEmailPreview.bind(this, true),
-				'json'
-			);
+			const form = this.currentModal.find('#wizardSettingsForm').get(0) as HTMLFormElement;
+			const formData = new FormData(form);
+			const formDataObject = Object.fromEntries(formData.entries());
+
+			new AjaxRequest(TYPO3.settings.ajaxUrls.email_preview)
+				.post(formDataObject)
+				.then(async (response: AjaxResponse): Promise<void> => {
+					const data = await response.resolve();
+					this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data + '"></iframe>');
+				});
 		});
 	}
 

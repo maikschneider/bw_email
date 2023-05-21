@@ -36,23 +36,14 @@ class EmailWizardController extends ActionController
 
     protected SenderUtility $senderUtility;
 
-    protected StandaloneView $templateView;
-
     public function __construct(TypoScriptService $typoScriptService, ConfigurationManager $configurationManager)
     {
         $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
         $this->typoscript = $typoScriptService->convertTypoScriptArrayToPlainArray($typoscript['plugin.']['tx_bwemail.']);
-
-        $this->templateView = GeneralUtility::makeInstance(StandaloneView::class);
-        $this->templateView->setLayoutRootPaths($this->typoscript['view']['layoutRootPaths']);
-        $this->templateView->setPartialRootPaths($this->typoscript['view']['partialRootPaths']);
-        $this->templateView->setTemplateRootPaths($this->typoscript['view']['templateRootPaths']);
     }
 
     public function modalAction(ServerRequestInterface $request): ResponseInterface
     {
-        $response = new Response();
-
         $params = $request->getQueryParams();
 
         $wizardSettings = new WizardSettings(
@@ -61,79 +52,15 @@ class EmailWizardController extends ActionController
             $this->typoscript['settings']
         );
 
-        $this->templateView->assignMultiple((array)$wizardSettings);
+        $wizardView = GeneralUtility::makeInstance(StandaloneView::class);
+        $wizardView->assign('wizardSettings', $wizardSettings);
+        $wizardView->setTemplatePathAndFilename('EXT:bw_email/Resources/Private/Templates/Email/Administration/EmailWizard.html');
 
-        $this->templateView->setTemplatePathAndFilename('EXT:bw_email/Resources/Private/Templates/Email/Administration/EmailWizard.html');
-        $content = $this->templateView->render();
+        $response = new Response();
+        $content = $wizardView->render();
         $response->getBody()->write($content);
 
         return $response;
-    }
-
-    /**
-     * Check if hmac signature is correct
-     *
-     * @param ServerRequestInterface $request the request with the GET parameters
-     * @param string $route
-     * @return bool
-     */
-    protected function isSignatureValid(ServerRequestInterface $request, string $route)
-    {
-        $token = GeneralUtility::hmac($request->getQueryParams()['arguments'], $route);
-        return $token === $request->getQueryParams()['signature'];
-    }
-
-    /**
-     * @param $routeName
-     * @param array $params
-     * @return string
-     */
-    protected function getAjaxUri($routeName, $params = [])
-    {
-        $queryParams = $this->queryParams;
-        foreach ($params as $paramName => $paramValue) {
-            $queryParams[$paramName] = $paramValue;
-        }
-
-        $uriArguments['arguments'] = json_encode($queryParams);
-        $uriArguments['signature'] = GeneralUtility::hmac(
-            $uriArguments['arguments'],
-            $routeName
-        );
-
-        return '';
-        return (string)$this->uriBuilder->buildUriFromRoute($routeName, $uriArguments);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTemplates()
-    {
-        $pageUid = $this->queryParams['table'] === 'pages' ? $this->queryParams['uid'] : $this->queryParams['pid'];
-        $pageUid = $pageUid ?? 0;
-        $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
-        $templates = $pageTsConfig['mod.']['web_layout.']['EmailLayouts.'];
-        $selection = [];
-        if (!$templates) {
-            return $selection;
-        }
-        foreach ($templates as $key => $template) {
-            // use current query params but override template setting
-            $params = $this->queryParams;
-            $templateName = substr($key, 0, -1);
-            $params['template'] = $templateName;
-
-            $selection[] = array(
-                'file' => $templateName,
-                'name' => $this->getLanguageService()->sL($template['title']),
-                'previewUri' => $this->getAjaxUri(
-                    'ajax_wizard_modal_preview',
-                    $params
-                )
-            );
-        }
-        return $selection;
     }
 
     protected function getLanguageService()
@@ -141,37 +68,28 @@ class EmailWizardController extends ActionController
         return $GLOBALS['LANG'];
     }
 
-    /**
-     * This action is currently limited to preview emails by requests that send a page uid.
-     * This needs to be shifted to the child class PageEmailWizard
-     *
-     * @param ServerRequest $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     * @throws ServiceUnavailableException
-     */
-    public function previewAction(ServerRequest $request, ResponseInterface $response)
+    public function previewAction(ServerRequest $request): ResponseInterface
     {
-        // security: check signature
-        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_preview')) {
-            return $response->withStatus(403);
-        }
+        $response = new Response();
 
-        $queryParams = json_decode($request->getQueryParams()['arguments'], true);
+        // reconstruct wizard settings
+        $body = $request->getParsedBody();
+        $wizardSettings = WizardSettings::createFromPostData($body['wizardSettings'], $this->typoscript['settings']);
 
         // init email template
-        $this->emailView->setTemplate($queryParams['template']);
-        $this->emailView->setPid($queryParams['pid']);
+        $emailView = GeneralUtility::makeInstance(EmailView::class);
+        $emailView->setLayoutRootPaths($this->typoscript['view']['layoutRootPaths']);
+        $emailView->setPartialRootPaths($this->typoscript['view']['partialRootPaths']);
+        $emailView->setTemplateRootPaths($this->typoscript['view']['templateRootPaths']);
+        $emailView->setTemplate($wizardSettings->template);
 
         // inject current record
-        $record = $this->getRecord($queryParams['uid'], $queryParams['table']);
-        $this->emailView->assign('record', $record);
+        $record = $this->getRecord($wizardSettings->uid, $wizardSettings->tableName);
+        $emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
-        if (is_array($queryParams['typoscriptSelects.'])) {
-            foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
-            }
+        foreach ($wizardSettings->typoscriptSelects ?? [] as $markerName => $typoscript) {
+            $emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
         }
 
         if ($request->getMethod() === 'POST') {
@@ -179,7 +97,7 @@ class EmailWizardController extends ActionController
 
             // check for incoming marker overrides
             if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-                $this->emailView->overrideMarker($params['markerOverrides']);
+                $emailView->overrideMarker($params['markerOverrides']);
             }
 
             // check for provider settings in post data
@@ -195,24 +113,15 @@ class EmailWizardController extends ActionController
                     $selectedContactIndex = $providerSettings[$providerSettings['id']]['selectedContact'];
                 }
                 $contact = $contacts[$selectedContactIndex];
-                $this->emailView->insertContact($contact);
+                $emailView->insertContact($contact);
             }
         }
 
         // check for internal links
-        $hasInternalLinks = sizeof($this->emailView->getInternalLinks()) ? true : false;
-        $marker = $this->emailView->getMarker();
-        $html = $this->emailView->render();
-        $src = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
-
-        // build and encode response
-        $content = json_encode(array(
-            'src' => $src,
-            'marker' => $marker,
-            'hasInternalLinks' => $hasInternalLinks,
-            'contacts' => $contacts ?? [],
-            'selectedContact' => $selectedContactIndex ?? 0,
-        ));
+        $hasInternalLinks = count($emailView->getInternalLinks()) ? true : false;
+        $marker = $emailView->getMarker();
+        $html = $emailView->render();
+        $content = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
         $response->getBody()->write($content);
 
@@ -317,7 +226,7 @@ class EmailWizardController extends ActionController
         // @TODO: return error if any required data is missing
 
         // init email template
-        $this->emailView->setTemplate($params['template']);
+        $emailView->setTemplate($params['template']);
         $this->emailView->setPid($queryParams['pid']);
 
         // inject current record

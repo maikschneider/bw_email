@@ -80,6 +80,14 @@ class WizardSettings
         $this->populateConfig();
     }
 
+    public static function createFromPostData(array $data, array $typoScriptSettings)
+    {
+        $settings = new self($data['tableName'], $data['uid'], $typoScriptSettings);
+        $settings->override($data);
+
+        return $settings;
+    }
+
     public function override($settings)
     {
         foreach ($settings as $settingName => $settingValue) {
