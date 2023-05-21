@@ -7,18 +7,16 @@ class EmailWizard {
 	private typo3version: number;
 	private tableName: string;
 	private uid: number;
-	private pid: number;
 
 	private viewModuleButton: JQuery|null = null;
 	private currentModal: JQuery;
 	private confirmModal: JQuery;
 	private loaderTarget: JQuery;
 
-	constructor(typo3version: number, tableName: string, uid: number, pid: number) {
+	constructor(typo3version: number, tableName: string, uid: number) {
 		this.typo3version = typo3version;
 		this.tableName = tableName;
 		this.uid = uid;
-		this.pid = pid;
 
 		this.viewModuleButton = $('.viewmodule_email_button');
 		this.initEvents();
@@ -34,7 +32,6 @@ class EmailWizard {
 		let url = TYPO3.settings.ajaxUrls.wizard_email_modal;
 		url += "&tableName=" + encodeURIComponent(this.tableName);
 		url += "&uid=" + encodeURIComponent(this.uid);
-		url += "&pid=" + encodeURIComponent(this.pid);
 
 		this.currentModal = Modal.advanced({
 			type: 'ajax',

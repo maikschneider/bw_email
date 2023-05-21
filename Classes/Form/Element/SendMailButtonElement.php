@@ -35,15 +35,14 @@ class SendMailButtonElement extends AbstractFormElement
         $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getNumericTypo3Version());
         $tableName = $this->data['tableName'];
         $uid = $this->data['vanillaUid'];
-        $pid = $this->data['effectivePid'];
 
         if ($version['version_main'] < 12) {
             $resultArray['requireJsModules'][] = [
-                'TYPO3/CMS/BwEmail/EmailWizard' => 'function(EmailWizard){ new EmailWizard(' . $version['version_main'] . ', "' . $tableName . '", ' . $uid . ', ' . $pid . '); }',
+                'TYPO3/CMS/BwEmail/EmailWizard' => 'function(EmailWizard){ new EmailWizard(' . $version['version_main'] . ', "' . $tableName . '", ' . $uid . '); }',
             ];
         } else {
             $resultArray['javaScriptModules'][] = \TYPO3\CMS\Core\Page\JavaScriptModuleInstruction::create('@blueways/bw-focuspoint-images/EmailWizard.js')
-                ->instance($version['version_main'], $tableName, $uid, $pid);
+                ->instance($version['version_main'], $tableName, $uid);
         }
 
         $buttonLabel = $this->data['parameterArray']['fieldConf']['label'] ?? '';

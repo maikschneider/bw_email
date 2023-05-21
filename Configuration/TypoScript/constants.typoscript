@@ -1,43 +1,27 @@
 plugin.tx_bwemail {
 	view {
-		templateRootPath = 
-		partialRootPath = 
-		layoutRootPath = 
+		templateRootPath =
+		partialRootPath =
+		layoutRootPath =
 	}
 	settings {
 		css = EXT:bw_email/Resources/Public/Css/app.css
 		senderAddress = noreply@example.com
 		senderName = Example sender name
-		replytoAddress = 
+		replytoAddress =
 		subject = Example subject
 		template = DefaultMail
 		showUid = 1
-		recipientAddress = 
-		recipientCount = 
-		recipientName = 
-		bccAddress = 
+		recipientAddress =
+		recipientCount =
+		recipientName =
+		bccAddress =
 		modalTitle = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalTitle
 		modalSendButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalSendButton
 		modalCancelButton = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:modalCancelButton
 		buttonText = LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:buttonText
 	}
 	persistence {
-		storagePid = 
+		storagePid =
 	}
 }
-
-[page["doktype"] == "117"]
-# reset the fluid_styled_content template paths
-styles.templates {
-	templateRootPath = EXT:bw_email/Resources/Private/Templates/fluid_styled_content
-	partialRootPath = EXT:bw_email/Resources/Private/Partials/fluid_styled_content
-	layoutRootPaths = EXT:bw_email/Resources/Private/Layouts/fluid_styled_content
-}
-[global]
-[applicationContext == "Development/Local"]
-plugin.tx_bwemail {
-	persistence {
-		storagePid = 17
-	}
-}
-[global]

@@ -2,8 +2,9 @@
 
 namespace Blueways\BwEmail\Controller\Ajax;
 
-use TYPO3\CMS\Backend\Routing\UriBuilder;
+use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Blueways\BwEmail\View\EmailView;
@@ -24,11 +25,6 @@ use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
-/**
- * Class EmailWizardController
- *
- * @package Blueways\BwEmail\Controller\Ajax
- */
 class EmailWizardController extends ActionController
 {
 
@@ -42,59 +38,30 @@ class EmailWizardController extends ActionController
 
     protected StandaloneView $templateView;
 
-
-    public function __construct(StandaloneView $templateView = null)
+    public function __construct(TypoScriptService $typoScriptService, ConfigurationManager $configurationManager)
     {
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-        $this->typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $this->typoscript = $typoScriptService->convertTypoScriptArrayToPlainArray($typoscript['plugin.']['tx_bwemail.']);
 
-        if (!$templateView) {
-            $templateView = GeneralUtility::makeInstance(StandaloneView::class);
-            $templateView->setLayoutRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['layoutRootPaths.'] ?? []);
-            $templateView->setPartialRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['partialRootPaths.'] ?? []);
-            $templateView->setTemplateRootPaths($this->typoscript['plugin.']['tx_bwemail.']['view.']['templateRootPaths.'] ?? []);
-        }
-
-        $this->templateView = $templateView;
-        $this->emailView = GeneralUtility::makeInstance(EmailView::class);
-        $this->senderUtility = GeneralUtility::makeInstance(SenderUtility::class, $this->typoscript);
+        $this->templateView = GeneralUtility::makeInstance(StandaloneView::class);
+        $this->templateView->setLayoutRootPaths($this->typoscript['view']['layoutRootPaths']);
+        $this->templateView->setPartialRootPaths($this->typoscript['view']['partialRootPaths']);
+        $this->templateView->setTemplateRootPaths($this->typoscript['view']['templateRootPaths']);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function modalAction(ServerRequestInterface $request)
+    public function modalAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
 
         $params = $request->getQueryParams();
 
-        $this->queryParams = json_decode($request->getQueryParams()['arguments'], true);
+        $wizardSettings = new WizardSettings(
+            $params['tableName'],
+            $params['uid'],
+            $this->typoscript['settings']
+        );
 
-        $formActionUri = $this->getAjaxUri('ajax_wizard_modal_send');
-
-        $defaults = $this->queryParams;
-
-        $templates = $this->getTemplates();
-
-        $providers = [];
-        if (isset($defaults['provider.'])) {
-            foreach ($defaults['provider.'] as $providerClass => $providerSettings) {
-                /** @var ContactProvider $provider */
-                $provider = GeneralUtility::makeInstance(substr($providerClass, 0, -1));
-                $provider->applySettings($providerSettings);
-                $providers[] = $provider->getModalConfiguration();
-            }
-        }
-
-        $this->templateView->assignMultiple([
-            'formActionUri' => $formActionUri,
-            'defaults' => $defaults,
-            'templates' => $templates,
-            'providers' => $providers,
-        ]);
+        $this->templateView->assignMultiple((array)$wizardSettings);
 
         $this->templateView->setTemplatePathAndFilename('EXT:bw_email/Resources/Private/Templates/Email/Administration/EmailWizard.html');
         $content = $this->templateView->render();
