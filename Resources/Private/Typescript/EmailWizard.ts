@@ -73,22 +73,14 @@ class EmailWizard {
 
 		this.wizardSettingsForm = this.currentModal.find('#wizardSettingsForm');
 
-		const templateSelector = this.currentModal.find('select#template');
-		const previewUri = templateSelector.find('option:selected').data('preview-uri');
 		const $closeButton = this.currentModal.find('#phoneCloseButton');
 
 		// onload first template
-		this.loadEmailPreview(previewUri);
+		this.loadEmailPreview();
 
 		// bind template change event
-		templateSelector.on('change', function (el) {
-			const previewUri = $(el.currentTarget).find('option:selected').data('preview-uri');
-			const $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
-
-			// reset override fields
-			$markerFieldset.html('');
-			// load first preview
-			this.loadEmailPreview(previewUri, true);
+		this.currentModal.find('select#template').on('change', function (el) {
+			this.loadEmailPreview();
 		}.bind(this));
 
 		// bind home button event
@@ -126,7 +118,7 @@ class EmailWizard {
 		this.loaderTarget.toggleClass('closeing');
 	}
 
-	private loadEmailPreview(uri) {
+	private loadEmailPreview() {
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.loaderTarget.html(icon);
 
@@ -261,16 +253,20 @@ class EmailWizard {
 	}
 
 	private doSend() {
-
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.confirmModal.find('.modal-title').html('Sending..');
 			this.confirmModal.find('.modal-body').css('text-align', 'center').html(icon);
-			$.post(
-				this.currentModal.find('form').attr('action'),
-				this.currentModal.find('form').serialize(),
-				this.onSendResponse.bind(this),
-				'json'
-			);
+
+			const form = this.currentModal.find('#wizardSettingsForm').get(0) as HTMLFormElement;
+			const formData = new FormData(form);
+			const formDataObject = Object.fromEntries(formData.entries());
+
+			new AjaxRequest(TYPO3.settings.ajaxUrls.email_send)
+				.post(formDataObject)
+				.then(async (response: AjaxResponse): Promise<void> => {
+					const data = await response.resolve();
+					this.onSendResponse(data);
+				});
 		});
 
 	}

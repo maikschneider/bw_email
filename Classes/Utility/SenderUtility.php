@@ -3,9 +3,11 @@
 namespace Blueways\BwEmail\Utility;
 
 use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
 use Blueways\BwEmail\View\EmailView;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Mail\MailMessage;
 
 /**
  * Class SenderUtility
@@ -15,10 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class SenderUtility
 {
 
-    /**
-     * @var array
-     */
-    protected $settings;
+    protected WizardSettings $settings;
 
     /**
      * @var Contact[]
@@ -34,50 +33,41 @@ class SenderUtility
     }
 
     /**
-     * @param $settings
-     */
-    public function mergeMailSettings($settings)
-    {
-        ArrayUtility::mergeRecursiveWithOverrule($this->settings, $settings, true, false);
-    }
-
-    /**
      * @param EmailView $emailView
      * @return array
      * @TODO: use language service for translations
      */
     public function sendEmailView(EmailView $emailView)
     {
-        if (((int)$this->settings['provider']['use'] === 1 && !$this->recipients) || ((int)$this->settings['provider']['use'] === 0 && empty($this->settings['recipientAddress']))) {
-            return [
-                'status' => 'WARNING',
-                'message' => [
-                    'headline' => 'No recipients',
-                    'text' => 'Please select an option with one or more recipients.'
-                ]
-            ];
-        }
+        //if (((int)$this->settings['provider']['use'] === 1 && !$this->recipients) || ((int)$this->settings['provider']['use'] === 0 && empty($this->settings['recipientAddress']))) {
+        //    return [
+        //        'status' => 'WARNING',
+        //        'message' => [
+        //            'headline' => 'No recipients',
+        //            'text' => 'Please select an option with one or more recipients.'
+        //        ]
+        //    ];
+        //}
 
-        // @TODO: create persistence log
         $mailsSend = 0;
 
-        if ((int)$this->settings['provider']['use'] === 1) {
-            foreach ($this->recipients as $recipient) {
-                $success = $this->sendEmailViewToContact($emailView, $recipient);
-                if ($success) {
-                    $mailsSend = $mailsSend + $success;
-                }
-            }
+        //if ((int)$this->settings['provider']['use'] === 1) {
+        //    foreach ($this->recipients as $recipient) {
+        //        $success = $this->sendEmailViewToContact($emailView, $recipient);
+        //        if ($success) {
+        //            $mailsSend = $mailsSend + $success;
+        //        }
+        //    }
+        //}
+
+
+        $contact = new Contact($this->settings->recipientAddress);
+        $contact->setName($this->settings->recipientName);
+        $success = $this->sendEmailViewToContact($emailView, $contact);
+        if ($success) {
+            $mailsSend = $mailsSend + $success;
         }
 
-        if ((int)$this->settings['provider']['use'] === 0) {
-            $contact = new Contact($this->settings['recipientAddress']);
-            $contact->setName($this->settings['recipientName']);
-            $success = $this->sendEmailViewToContact($emailView, $contact);
-            if ($success) {
-                $mailsSend = $mailsSend + $success;
-            }
-        }
 
         if ($mailsSend) {
             return [
@@ -111,28 +101,20 @@ class SenderUtility
         return $this->sendMail(
             $this->getSenderArray(),
             $contact->getRecipientArray(),
-            $this->settings['subject'],
+            $this->settings->subject,
             $html,
-            $this->settings['replytoAddress'],
-            $this->settings['bccAddress']
+            $this->settings->replytoAddress,
+            $this->settings->bccAddress
         );
     }
 
-    /**
-     * @param $from
-     * @param $to
-     * @param $subject
-     * @param $body
-     * @param $replyTo
-     * @return int
-     */
-    private function sendMail($from, $to, $subject, $body, $replyTo, $bcc)
+    private function sendMail($from, $to, $subject, string $body, $replyTo, $bcc)
     {
-        $mailMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+        $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
         $mailMessage->setTo($to)
             ->setFrom($from)
             ->setSubject($subject)
-            ->setBody($body, 'text/html');
+            ->html($body);
 
         if (!empty($replyTo)) {
             $mailMessage->setReplyTo($replyTo);
@@ -152,17 +134,14 @@ class SenderUtility
      */
     private function getSenderArray()
     {
-        if ($this->settings['senderName']) {
-            return [$this->settings['senderAddress'] => $this->settings['senderName']];
+        if ($this->settings->senderName) {
+            return [$this->settings->senderAddress => $this->settings->senderName];
         }
 
-        return [$this->settings['senderAddress']];
+        return [$this->settings->senderAddress];
     }
 
-    /**
-     * @param $settings
-     */
-    public function setSettings($settings)
+    public function setSettings(WizardSettings $settings)
     {
         $this->settings = $settings;
     }

@@ -202,47 +202,32 @@ class EmailWizardController extends ActionController
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
      */
-    public function sendAction(ServerRequestInterface $request, ResponseInterface $response)
+    public function sendAction(ServerRequestInterface $request): ResponseInterface
     {
-        if ($request->getMethod() !== 'POST') {
-            $this->throwStatus(405, 'Method not allowed');
-        }
+        $response = new Response();
 
-        // security: check signature
-        if (!$this->isSignatureValid($request, 'ajax_wizard_modal_send')) {
-            return $response->withStatus(403);
-        }
-
-        $queryParams = json_decode($request->getQueryParams()['arguments'], true);
-
-        $params = $request->getParsedBody();
+        // reconstruct wizard settings
+        $body = $request->getParsedBody();
+        $wizardSettings = WizardSettings::createFromPostData($body['wizardSettings'], $this->typoscript['settings']);
 
         /** @var SenderUtility $senderUtility */
         $senderUtility = GeneralUtility::makeInstance(SenderUtility::class);
-        $senderUtility->setSettings($queryParams);
-        $senderUtility->mergeMailSettings($params);
-
-        // check that all params are collected and valid
-        // @TODO: return error if any required data is missing
+        $senderUtility->setSettings($wizardSettings);
 
         // init email template
-        $emailView->setTemplate($params['template']);
-        $this->emailView->setPid($queryParams['pid']);
+        $emailView = GeneralUtility::makeInstance(EmailView::class);
+        $emailView->setLayoutRootPaths($this->typoscript['view']['layoutRootPaths']);
+        $emailView->setPartialRootPaths($this->typoscript['view']['partialRootPaths']);
+        $emailView->setTemplateRootPaths($this->typoscript['view']['templateRootPaths']);
+        $emailView->setTemplate($wizardSettings->template);
 
         // inject current record
-        $record = $this->getRecord($queryParams['uid'], $queryParams['table']);
-        $this->emailView->assign('record', $record);
+        $record = $this->getRecord($wizardSettings->uid, $wizardSettings->tableName);
+        $emailView->assign('record', $record);
 
         // inject records from typoscript (or tca override
-        if (is_array($queryParams['typoscriptSelects.'])) {
-            foreach ($queryParams['typoscriptSelects.'] as $markerName => $typoscript) {
-                $this->emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
-            }
-        }
-
-        // check for overrides
-        if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-            $this->emailView->overrideMarker($params['markerOverrides']);
+        foreach ($wizardSettings->typoscriptSelects ?? [] as $markerName => $typoscript) {
+            $emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
         }
 
         // check for provider settings and possible list of recipients
@@ -256,7 +241,7 @@ class EmailWizardController extends ActionController
             $senderUtility->setRecipients($contacts);
         }
 
-        $status = $senderUtility->sendEmailView($this->emailView);
+        $status = $senderUtility->sendEmailView($emailView);
 
         $response->getBody()->write(json_encode($status));
         return $response;

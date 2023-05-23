@@ -41,6 +41,8 @@ class WizardSettings
 
     public string $recipientAddress = '';
 
+    public string $bccAddress = '';
+
     public string $recipientName = '';
 
     public string $jobType = '';
@@ -60,6 +62,7 @@ class WizardSettings
         $this->senderAddress = $typoScriptSettings['senderAddress'];
         $this->senderName = $typoScriptSettings['senderName'];
         $this->replytoAddress = $typoScriptSettings['replytoAddress'];
+        $this->bccAddress = $typoScriptSettings['bccAddress'];
         $this->subject = $typoScriptSettings['subject'];
         $this->template = $typoScriptSettings['template'];
         $this->templates = $typoScriptSettings['templates'];
