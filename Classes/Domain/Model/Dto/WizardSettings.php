@@ -49,6 +49,9 @@ class WizardSettings
 
     public $selectedContact;
 
+    /** @var array<string, string> */
+    public array $templates = [];
+
     public function __construct(string $tableName, int $uid, array $typoScriptSettings)
     {
         $this->tableName = $tableName;
@@ -59,8 +62,9 @@ class WizardSettings
         $this->replytoAddress = $typoScriptSettings['replytoAddress'];
         $this->subject = $typoScriptSettings['subject'];
         $this->template = $typoScriptSettings['template'];
+        $this->templates = $typoScriptSettings['templates'];
         $this->typoscriptSelects = $typoScriptSettings['typoscriptSelects'];
-        $this->showUid = (int)$typoScriptSettings['template'];
+        $this->showUid = (int)$typoScriptSettings['showUid'];
         $this->contactProviders = [];
         $this->useContactProvider = false;
         $this->jobType = 'UNKNOWN';

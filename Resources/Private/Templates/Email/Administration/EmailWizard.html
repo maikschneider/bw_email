@@ -9,17 +9,16 @@
             <h2 class="form-section-headline">Settings</h2>
             <f:form.textfield property="subject" />
 
-            <f:if condition="{templates}">
+            <f:if condition="{wizardSettings.templates}">
                 <fieldset class="form-section">
                     <div class="form-group">
                         <label for="template"> Email-Template </label>
                         <div class="form-control-wrap">
                             <select class="form-control" id="template" name="template">
-                                <f:for each="{templates}" as="template">
-                                    <option value="{template.file}"
-                                            data-preview-uri="{template.previewUri}"
+                                <f:for each="{wizardSettings.templates}" key="name" as="label">
+                                    <option value="{name}"
                                             {f:if(condition:
-                                    '{defaults.template}=={template.file}', then:'selected')}>{template.name}</option>
+                                    '{wizardSettings.template}=={name}', then:'selected')}>{label}</option>
                                 </f:for>
                             </select>
                         </div>

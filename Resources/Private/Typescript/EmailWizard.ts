@@ -10,22 +10,17 @@ class EmailWizard {
 	private tableName: string;
 	private uid: number;
 
-	private viewModuleButton: JQuery | null = null;
 	private currentModal: JQuery;
 	private confirmModal: JQuery;
 	private loaderTarget: JQuery;
+	private wizardSettingsForm: JQuery;
 
 	constructor(typo3version: number, tableName: string, uid: number) {
 		this.typo3version = typo3version;
 		this.tableName = tableName;
 		this.uid = uid;
 
-		this.viewModuleButton = $('.viewmodule_email_button');
-		this.initEvents();
-	}
-
-	private initEvents() {
-		this.viewModuleButton.on('click', this.onButtonClick.bind(this));
+		$('.viewmodule_email_button').on('click', this.onButtonClick.bind(this));
 	}
 
 	private onButtonClick(e: JQueryEventObject) {
@@ -75,6 +70,8 @@ class EmailWizard {
 
 		this.loaderTarget = this.currentModal.find('#emailPreview');
 		this.loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
+
+		this.wizardSettingsForm = this.currentModal.find('#wizardSettingsForm');
 
 		const templateSelector = this.currentModal.find('select#template');
 		const previewUri = templateSelector.find('option:selected').data('preview-uri');
@@ -132,6 +129,7 @@ class EmailWizard {
 	private loadEmailPreview(uri) {
 		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
 			this.loaderTarget.html(icon);
+
 			const form = this.currentModal.find('#wizardSettingsForm').get(0) as HTMLFormElement;
 			const formData = new FormData(form);
 			const formDataObject = Object.fromEntries(formData.entries());
