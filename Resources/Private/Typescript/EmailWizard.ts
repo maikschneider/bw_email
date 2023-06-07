@@ -67,13 +67,14 @@ class EmailWizard {
 	}
 
 	private onModalOpened() {
-
+		// change dom elements
 		this.loaderTarget = this.currentModal.find('#emailPreview');
-		this.loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
-
 		this.wizardSettingsForm = this.currentModal.find('#wizardSettingsForm');
 
-		const $closeButton = this.currentModal.find('#phoneCloseButton');
+		// adjust height of email preview
+		setTimeout(() => {
+			this.loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
+		}, 100)
 
 		// onload first template
 		this.loadEmailPreview();
@@ -84,7 +85,7 @@ class EmailWizard {
 		}.bind(this));
 
 		// bind home button event
-		$closeButton.on('click', this.phoneClosingAnimation.bind(this));
+		this.currentModal.find('#phoneCloseButton').on('click', this.phoneClosingAnimation.bind(this));
 
 		// bind provider radio toggle
 		this.currentModal.find('input[name="provider[use]"]').on('change', this.toggleProviderView.bind(this));
