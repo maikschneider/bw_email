@@ -3,6 +3,7 @@
 namespace Blueways\BwEmail\Controller\Ajax;
 
 use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -68,10 +69,11 @@ class EmailWizardController extends ActionController
         return $GLOBALS['LANG'];
     }
 
+    /**
+     * @throws ServiceUnavailableException
+     */
     public function previewAction(ServerRequest $request): ResponseInterface
     {
-        $response = new Response();
-
         // reconstruct wizard settings
         $body = $request->getParsedBody();
         $wizardSettings = WizardSettings::createFromPostData($body['wizardSettings'], $this->typoscript['settings']);
@@ -87,45 +89,37 @@ class EmailWizardController extends ActionController
         $record = $this->getRecord($wizardSettings->uid, $wizardSettings->tableName);
         $emailView->assign('record', $record);
 
-        // inject records from typoscript (or tca override
+        // inject records from typoscript (or tca override)
         foreach ($wizardSettings->typoscriptSelects ?? [] as $markerName => $typoscript) {
             $emailView->addTyposcriptSelect(substr($markerName, 0, -1), $typoscript);
         }
 
-        if ($request->getMethod() === 'POST') {
-            $params = $request->getParsedBody();
+        // apply marker overrides
+        $emailView->overrideMarker($wizardSettings->markerOverrides);
 
-            // check for incoming marker overrides
-            if (isset($params['markerOverrides']) && sizeof($params['markerOverrides'])) {
-                $emailView->overrideMarker($params['markerOverrides']);
+        // @TODO: check for provider settings in post data
+        if (isset($params['provider']) && count($params['provider']) && (int)$params['provider']['use'] === 1) {
+            $providerSettings = $params['provider'];
+            /** @var ContactProvider $provider */
+            $provider = GeneralUtility::makeInstance($providerSettings['id']);
+            $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
+            $contacts = $provider->getContacts();
+
+            $selectedContactIndex = 0;
+            if (isset($providerSettings[$providerSettings['id']]['selectedContact'])) {
+                $selectedContactIndex = $providerSettings[$providerSettings['id']]['selectedContact'];
             }
-
-            // check for provider settings in post data
-            if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
-                $providerSettings = $params['provider'];
-                /** @var ContactProvider $provider */
-                $provider = GeneralUtility::makeInstance($providerSettings['id']);
-                $provider->applyConfiguration($providerSettings[$providerSettings['id']]['optionsConfiguration']);
-                $contacts = $provider->getContacts();
-
-                $selectedContactIndex = 0;
-                if (isset($providerSettings[$providerSettings['id']]['selectedContact'])) {
-                    $selectedContactIndex = $providerSettings[$providerSettings['id']]['selectedContact'];
-                }
-                $contact = $contacts[$selectedContactIndex];
-                $emailView->insertContact($contact);
-            }
+            $contact = $contacts[$selectedContactIndex];
+            $emailView->insertContact($contact);
         }
 
         // check for internal links
-        $hasInternalLinks = count($emailView->getInternalLinks()) ? true : false;
-        $marker = $emailView->getMarker();
+        $content['hasInternalLinks'] = (bool)count($emailView->getInternalLinks());
+        $content['marker'] = $emailView->getMarker();
         $html = $emailView->render();
-        $content = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
+        $content['iframeSrc'] = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
-        $response->getBody()->write($content);
-
-        return $response;
+        return new JsonResponse($content);
     }
 
     /**
@@ -156,7 +150,7 @@ class EmailWizardController extends ActionController
 
             // use custom query to ignore hidden and pid field
             /** @var Typo3QuerySettings $querySettings */
-            $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+            $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
             $querySettings->setIgnoreEnableFields(true);
             $querySettings->setRespectStoragePage(false);
             $querySettings->setIncludeDeleted(true);
@@ -196,11 +190,8 @@ class EmailWizardController extends ActionController
 
     /**
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      * @throws ServiceUnavailableException
-     * @throws StopActionException
-     * @throws UnsupportedRequestTypeException
      */
     public function sendAction(ServerRequestInterface $request): ResponseInterface
     {

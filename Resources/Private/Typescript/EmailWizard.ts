@@ -131,7 +131,8 @@ class EmailWizard {
 				.post(formDataObject)
 				.then(async (response: AjaxResponse): Promise<void> => {
 					const data = await response.resolve();
-					this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data + '"></iframe>');
+					this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data.iframeSrc + '"></iframe>');
+					this.createMarkerFieldset(data);
 				});
 		});
 	}
@@ -165,6 +166,7 @@ class EmailWizard {
 
 	private createMarkerFieldset(data) {
 		const $markerFieldset = this.currentModal.find('#markerOverrideFieldset');
+		$markerFieldset.html('');
 
 		// template contains no markers
 		if (!data.hasOwnProperty('marker') || !data.marker.length) {
@@ -178,15 +180,15 @@ class EmailWizard {
 			const m = data.marker[i];
 			let $input = (m.content && m.content.length) > 25 ? $('<textarea />') : $('<input />');
 			$input
-				.attr('name', 'markerOverrides[' + m.name + ']')
-				.attr('id', 'markerOverrides[' + m.name + ']')
+				.attr('name', 'wizardSettings[markerOverrides][' + m.name + ']')
+				.attr('id', 'wizardSettings[markerOverrides][' + m.name + ']')
 				.attr('placeholder', m.content)
 				.attr('class', 'form-control')
 				.bind('blur', this.onOverrideMarkerBlur.bind(this));
 
 			$input = $input.wrap('<div class="form-control-wrap"></div>').parent();
 			$input = $input.wrap('<div class="form-group"></div>').parent();
-			$input.prepend('<label for="markerOverrides[' + m.name + ']">' + m.name + ' override</label>');
+			$input.prepend('<label for="wizardSettings[markerOverrides][' + m.name + ']">' + m.name + ' override</label>');
 
 			$markerFieldset.append($input);
 		}
@@ -195,7 +197,7 @@ class EmailWizard {
 	}
 
 	private onOverrideMarkerBlur() {
-		this.refreshEmailPreview();
+		this.loadEmailPreview();
 	}
 
 	private refreshEmailPreview() {

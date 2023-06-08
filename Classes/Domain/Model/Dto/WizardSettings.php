@@ -47,7 +47,7 @@ class WizardSettings
 
     public string $jobType = '';
 
-    public array $markerOverrides;
+    public array $markerOverrides = [];
 
     public $selectedContact;
 

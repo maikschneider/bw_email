@@ -99,7 +99,7 @@ class EmailView extends StandaloneView
     /**
      * @param array $markerOverrides
      */
-    public function overrideMarker($markerOverrides)
+    public function overrideMarker(array $markerOverrides)
     {
         $marker = $this->templateParser->getMarker();
 
