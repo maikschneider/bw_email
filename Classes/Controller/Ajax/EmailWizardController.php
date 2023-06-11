@@ -95,7 +95,7 @@ class EmailWizardController extends ActionController
         }
 
         // apply marker overrides
-        $emailView->overrideMarker($wizardSettings->markerOverrides);
+        $emailView->renderWithMarkerOverrides(null, $wizardSettings->markerOverrides);
 
         // @TODO: check for provider settings in post data
         if (isset($params['provider']) && count($params['provider']) && (int)$params['provider']['use'] === 1) {
@@ -116,7 +116,7 @@ class EmailWizardController extends ActionController
         // check for internal links
         $content['hasInternalLinks'] = (bool)count($emailView->getInternalLinks());
         $content['marker'] = $emailView->getMarker();
-        $html = $emailView->render();
+        $html = $emailView->getHtml();
         $content['iframeSrc'] = 'data:text/html;charset=utf-8,' . self::encodeURIComponent($html);
 
         return new JsonResponse($content);

@@ -170,7 +170,6 @@ class EmailWizard {
 
 		// template contains no markers
 		if (!data.hasOwnProperty('marker') || !data.marker.length) {
-			$markerFieldset.html('');
 			$markerFieldset.hide();
 			return;
 		}
@@ -185,6 +184,10 @@ class EmailWizard {
 				.attr('placeholder', m.content)
 				.attr('class', 'form-control')
 				.bind('blur', this.onOverrideMarkerBlur.bind(this));
+
+			if (m.override) {
+				$input.val(m.override);
+			}
 
 			$input = $input.wrap('<div class="form-control-wrap"></div>').parent();
 			$input = $input.wrap('<div class="form-group"></div>').parent();
