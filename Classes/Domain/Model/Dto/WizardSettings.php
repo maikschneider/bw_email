@@ -122,7 +122,16 @@ class WizardSettings
 
     private function populateConfig()
     {
-        $fields = ['senderAddress', 'senderName', 'replytoAdress', 'subject', 'template', 'showUid'];
+        $fields = [
+            'senderAddress',
+            'senderName',
+            'replytoAdress',
+            'subject',
+            'template',
+            'showUid',
+            'recipientAddress',
+            'recipientName'
+        ];
         $languageService = $this->getLanguageService();
 
         foreach ($fields as $field) {
