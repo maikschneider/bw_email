@@ -99,7 +99,7 @@ class EmailWizard {
 	}
 
 	private onProviderSelectChange() {
-		this.refreshEmailPreview();
+		this.loadEmailPreview()
 	}
 
 	private onProviderSwitch(e: JQueryEventObject) {
@@ -107,7 +107,7 @@ class EmailWizard {
 		const providerId = $('option:selected', e.currentTarget).attr('data-provider-index');
 		this.currentModal.find('.provider--' + providerId).removeClass('hidden-by-provider-selection');
 
-		this.refreshEmailPreview();
+		this.loadEmailPreview();
 	}
 
 	private toggleProviderView(e: JQueryEventObject) {
@@ -203,21 +203,6 @@ class EmailWizard {
 		this.loadEmailPreview();
 	}
 
-	private refreshEmailPreview() {
-		const templateSelector = this.currentModal.find('select#template');
-		const previewUri = templateSelector.find('option:selected').data('preview-uri');
-
-		Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).done((icon: string): void => {
-			this.loaderTarget.html(icon);
-			$.post(
-				previewUri,
-				this.currentModal.find('#markerOverrideFieldset input, #markerOverrideFieldset textarea, [name^="provider"]').serializeArray(),
-				this.showEmailPreview.bind(this, false),
-				'json'
-			);
-		});
-	}
-
 	private trySend(e: JQueryEventObject) {
 
 		let recipientText = this.currentModal.find('#recipientAddress').val();
@@ -285,6 +270,8 @@ class EmailWizard {
 
 		this.confirmModal.trigger('modal-dismiss');
 
+		data = JSON.parse(data);
+
 		if (data.status === 'OK') {
 
 			this.loaderTarget.addClass('closeing');
@@ -298,8 +285,6 @@ class EmailWizard {
 		} else {
 			top.TYPO3.Notification.error(data.message.headline, data.message.text);
 		}
-
-
 	}
 
 }

@@ -60,14 +60,23 @@ class SenderUtility
         //    }
         //}
 
+        $contacts = $this->settings->getContacts();
+        foreach ($contacts as $contact) {
 
-        $contact = new Contact($this->settings->recipientAddress);
-        $contact->setName($this->settings->recipientName);
-        $success = $this->sendEmailViewToContact($emailView, $contact);
-        if ($success) {
-            $mailsSend = $mailsSend + $success;
+            $html = $emailView->renderWithMarkerOverrides(null, $this->settings->markerOverrides, $contact);
+            $success = $this->sendMail(
+                $this->getSenderArray(),
+                $contact->getRecipientArray(),
+                $this->settings->subject,
+                $html,
+                $this->settings->replytoAddress,
+                $this->settings->bccAddress
+            );
+
+            if ($success) {
+                $mailsSend += $success;
+            }
         }
-
 
         if ($mailsSend) {
             return [
@@ -86,26 +95,6 @@ class SenderUtility
                 'text' => 'No mails have been send.'
             ]
         ];
-    }
-
-    /**
-     * @param EmailView $emailView
-     * @param Contact $contact
-     * @return int
-     */
-    protected function sendEmailViewToContact(EmailView $emailView, Contact $contact)
-    {
-        $emailView->insertContact($contact);
-        $html = $emailView->render();
-
-        return $this->sendMail(
-            $this->getSenderArray(),
-            $contact->getRecipientArray(),
-            $this->settings->subject,
-            $html,
-            $this->settings->replytoAddress,
-            $this->settings->bccAddress
-        );
     }
 
     private function sendMail($from, $to, $subject, string $body, $replyTo, $bcc)

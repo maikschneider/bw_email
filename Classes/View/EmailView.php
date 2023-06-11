@@ -56,12 +56,13 @@ class EmailView extends StandaloneView
         return $this->html;
     }
 
-    public function renderWithMarkerOverrides($actionName = null, array $markerOverrides = []): string
+    public function renderWithMarkerOverrides($actionName = null, array $markerOverrides = [], Contact $contact = null): string
     {
         $this->html = parent::render($actionName);
 
         $this->findMarkersInHtml();
         $this->applyMarkerOverrides($markerOverrides);
+        $this->insertContact($contact);
         $this->inkyHtml();
         $this->makeAbsoluteUrls();
         $this->inlineCss();
@@ -356,11 +357,11 @@ class EmailView extends StandaloneView
         }
     }
 
-    public function insertContact(Contact $contact)
+    public function insertContact(?Contact $contact): void
     {
-        // backup html and use this one to keep contact marker
-        $this->html = $this->backupHtml ?? $this->html;
-        $this->backupHtml = $this->html;
+        if (!$contact) {
+            return;
+        }
 
         $attributes = array_keys((array)$contact);
         foreach ($attributes as $attr) {
