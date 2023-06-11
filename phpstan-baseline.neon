@@ -1,0 +1,501 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access offset 'wizardSettings' on array\\|object\\|null\\.$#"
+			count: 2
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Cannot call method fetch\\(\\) on Doctrine\\\\DBAL\\\\Result\\|int\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:getLanguageService\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:getRecord\\(\\) has parameter \\$table with no type specified\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:getRecord\\(\\) has parameter \\$uid with no type specified\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:getViewData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$repository contains generic class TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Repository but does not specify its types\\: TEntityClass$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Parameter \\#1 \\$className of method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\) expects class\\-string\\<object\\>, string given\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of method Psr\\\\Http\\\\Message\\\\StreamInterface\\:\\:write\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:\\$queryParams type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Controller\\\\Ajax\\\\EmailWizardController\\:\\:\\$typoscript type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 4
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method TYPO3\\\\CMS\\\\Extbase\\\\Object\\\\ObjectManagerInterface\\:\\:get\\(\\)$#"
+			count: 1
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method static method TYPO3\\\\CMS\\\\Core\\\\Utility\\\\GeneralUtility\\:\\:makeInstance\\(\\)$#"
+			count: 2
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Undefined variable\\: \\$params$#"
+			count: 6
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Variable \\$params in isset\\(\\) is never defined\\.$#"
+			count: 2
+			path: Classes/Controller/Ajax/EmailWizardController.php
+
+		-
+			message: "#^Parameter \\#1 \\$templateName of method TYPO3\\\\CMS\\\\Fluid\\\\View\\\\AbstractTemplateView\\:\\:setTemplate\\(\\) expects string, array\\|string given\\.$#"
+			count: 1
+			path: Classes/Domain/Finishers/EmailFinisher.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:__construct\\(\\) has parameter \\$email with no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:getAttributes\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:getRecipientArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:\\$email has no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:\\$lastname has no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:\\$name has no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Contact\\:\\:\\$prename has no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Contact.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\ContactProviderOption\\:\\:__construct\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/ContactProviderOption.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\ContactProviderOption\\:\\:getOptions\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/ContactProviderOption.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\ContactProviderOption\\:\\:setOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/ContactProviderOption.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\ContactProviderOption\\:\\:\\$options type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/ContactProviderOption.php
+
+		-
+			message: "#^Access to an undefined property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:\\$replytoAdress\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:applyConfiguration\\(\\)\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:__construct\\(\\) has parameter \\$typoScriptSettings with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:alterConfigurationString\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:alterConfigurationString\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:alterConfigurationString\\(\\) has parameter \\$property with no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:alterConfigurationString\\(\\) has parameter \\$userData with no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:createFromPostData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:createFromPostData\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:createFromPostData\\(\\) has parameter \\$typoScriptSettings with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:getLanguageService\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:getProviderConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:override\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:override\\(\\) has parameter \\$settings with no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:populateConfig\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Parameter \\#1 \\$className of method TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Generic\\\\Mapper\\\\DataMapper\\:\\:getDataMap\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_walk_recursive expects callable\\(\\)\\: mixed, 'self\\:…' given\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:\\$contactProvider \\(Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\) does not accept object\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:\\$markerOverrides type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:\\$selectedContact has no type specified\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\Dto\\\\WizardSettings\\:\\:\\$typoscriptSelects type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method static method TYPO3\\\\CMS\\\\Core\\\\Utility\\\\GeneralUtility\\:\\:makeInstance\\(\\)$#"
+			count: 2
+			path: Classes/Domain/Model/Dto/WizardSettings.php
+
+		-
+			message: "#^Call to an undefined method T of object\\:\\:createQuery\\(\\)\\.$#"
+			count: 2
+			path: Classes/Domain/Model/FeUserContactSource.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Model\\\\FeUserContactSource\\:\\:getSelectedFeUsers\\(\\) should return array\\<TYPO3\\\\CMS\\\\Extbase\\\\Domain\\\\Model\\\\FrontendUser\\> but return statement is missing\\.$#"
+			count: 1
+			path: Classes/Domain/Model/FeUserContactSource.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: Classes/Domain/Model/FeUserContactSource.php
+
+		-
+			message: "#^Variable \\$constraint might not be defined\\.$#"
+			count: 1
+			path: Classes/Domain/Model/FeUserContactSource.php
+
+		-
+			message: "#^Class Blueways\\\\BwEmail\\\\Domain\\\\Repository\\\\ContactSourceRepository extends generic class TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Repository but does not specify its types\\: TEntityClass$#"
+			count: 1
+			path: Classes/Domain/Repository/ContactSourceRepository.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Domain\\\\Repository\\\\ContactSourceRepository\\:\\:findAllDataSources\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Domain/Repository/ContactSourceRepository.php
+
+		-
+			message: "#^Access to an undefined property Blueways\\\\BwEmail\\\\Form\\\\Element\\\\SendMailButtonElement\\:\\:\\$settings\\.$#"
+			count: 3
+			path: Classes/Form/Element/SendMailButtonElement.php
+
+		-
+			message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Core\\\\Page\\\\JavaScriptModuleInstruction\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: Classes/Form/Element/SendMailButtonElement.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Form\\\\Element\\\\SendMailButtonElement\\:\\:render\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Form/Element/SendMailButtonElement.php
+
+		-
+			message: "#^Cannot call method sL\\(\\) on mixed\\.$#"
+			count: 2
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:applyConfiguration\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:applyConfiguration\\(\\) has parameter \\$optionsConfiguration with no type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:applySettings\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:applySettings\\(\\) has parameter \\$providerSettings with no type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:getModalConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactProvider\\:\\:injectConfigurationManager\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactProvider.php
+
+		-
+			message: "#^Call to an undefined method T of object\\:\\:findAllDataSources\\(\\)\\.$#"
+			count: 2
+			path: Classes/Service/ContactSourceContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Service\\\\ContactSourceContactProvider\\:\\:getSourceOptions\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Service/ContactSourceContactProvider.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\Service\\\\ContactSourceContactProvider\\:\\:\\$contactSourceRepository \\(Blueways\\\\BwEmail\\\\Domain\\\\Repository\\\\ContactSourceRepository\\) does not accept T of object\\.$#"
+			count: 1
+			path: Classes/Service/ContactSourceContactProvider.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:getSenderArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendEmailView\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has parameter \\$bcc with no type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has parameter \\$from with no type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has parameter \\$replyTo with no type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has parameter \\$subject with no type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:sendMail\\(\\) has parameter \\$to with no type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:setSettings\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\Utility\\\\SenderUtility\\:\\:validateSettings\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/Utility/SenderUtility.php
+
+		-
+			message: "#^Access to an undefined property Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:\\$objectManager\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Call to an undefined method TYPO3\\\\CMS\\\\Frontend\\\\Controller\\\\TypoScriptFrontendController\\:\\:connectToDB\\(\\)\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Call to an undefined static method TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\:\\:firstDomainRecord\\(\\)\\.$#"
+			count: 2
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Cannot call method render\\(\\) on TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\AbstractContentObject\\|null\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:addTyposcriptSelect\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:addTyposcriptSelect\\(\\) has parameter \\$typoscript with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:applyMarkerOverrides\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:applyMarkerOverrides\\(\\) has parameter \\$markerOverrides with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:cleanHeadTag\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:extractMediaQueries\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:getInternalLinks\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:getMarker\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:initTSFE\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:renderWithMarkerOverrides\\(\\) has parameter \\$actionName with no type specified\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:renderWithMarkerOverrides\\(\\) has parameter \\$markerOverrides with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Parameter \\#1 \\$actionName \\(null\\) of method Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:render\\(\\) should be compatible with parameter \\$templateName \\(string\\) of method TYPO3Fluid\\\\Fluid\\\\View\\\\TemplateAwareViewInterface\\:\\:render\\(\\)$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Parameter \\#1 \\$tableName of method TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer\\:\\:getRecords\\(\\) expects string, bool\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:\\$contentObjectRenderer \\(TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer\\) does not accept TYPO3\\\\CMS\\\\Frontend\\\\ContentObject\\\\ContentObjectRenderer\\|null\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:\\$html \\(string\\) does not accept string\\|null\\.$#"
+			count: 5
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Property Blueways\\\\BwEmail\\\\View\\\\EmailView\\:\\:\\$marker type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
+
+		-
+			message: "#^Right side of && is always true\\.$#"
+			count: 1
+			path: Classes/View/EmailView.php
