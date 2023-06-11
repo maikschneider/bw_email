@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource',
@@ -17,9 +18,6 @@ return [
         'searchFields' => 'name',
         'iconfile' => 'EXT:bw_email/Resources/Public/Icons/tx_bwemail_domain_model_contactsource.svg',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, record_type, name',
-    ],
     'types' => [
         'Blueways\BwEmail\Domain\Model\ContactSource' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, record_type, name'],
         'Blueways\BwEmail\Domain\Model\FeUserContactSource' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, record_type, name, fe_recipient_type, fe_users, fe_user_groups, fe_pid'],
@@ -33,35 +31,23 @@ return [
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type.none',
-                        'Blueways\BwEmail\Domain\Model\ContactSource'
+                        'Blueways\BwEmail\Domain\Model\ContactSource',
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type.feuser',
-                        'Blueways\BwEmail\Domain\Model\FeUserContactSource'
+                        'Blueways\BwEmail\Domain\Model\FeUserContactSource',
                     ],
                 ],
                 'default' => 'Blueways\BwEmail\Domain\Model\ContactSource',
             ],
         ],
         'sys_language_uid' => [
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'special' => 'languages',
-                'items' => [
-                    [
-                        'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
-                        -1,
-                        'flags-multiple',
-                    ],
-                ],
-                'default' => 0,
-            ],
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
+            'config' => ['type' => 'language'],
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -78,12 +64,12 @@ return [
             ],
         ],
         'hidden' => [
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled',
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
                     ],
                 ],
             ],
@@ -106,17 +92,17 @@ return [
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.0',
-                        0
+                        0,
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.1',
-                        1
+                        1,
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.2',
-                        2
-                    ]
-                ]
+                        2,
+                    ],
+                ],
             ],
         ],
         'fe_users' => [
@@ -126,7 +112,6 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'internal_type' => 'db',
                 'allowed' => 'fe_users',
                 'foreign_table' => 'fe_users',
                 'MM' => 'tx_bwemail_domain_model_contactsource_fe_users_mm',
@@ -141,7 +126,6 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'internal_type' => 'db',
                 'allowed' => 'fe_groups',
                 'foreign_table' => 'fe_groups',
                 'MM' => 'tx_bwemail_domain_model_contactsource_fe_groups_mm',
@@ -168,6 +152,5 @@ return [
                 ],
             ],
         ],
-    ]
+    ],
 ];
-

@@ -3,38 +3,40 @@
 namespace Blueways\BwEmail\Domain\Model;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
+use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
+class FeUserContactSource extends ContactSource
 {
-
     const RECIPIENT_TYPE_FOLDER = 0;
     const RECIPIENT_TYPE_USERS = 1;
     const RECIPIENT_TYPE_GROUPS = 2;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FrontendUser>
+     * @var ObjectStorage<FrontendUser>
      */
     protected $feUsers;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup>
+     * @var ObjectStorage<FrontendUserGroup>
      */
     protected $feUserGroups;
 
     /**
      * PID of the storage folder
      *
-     * @var integer
+     * @var int
      */
     protected $fePid;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $feRecipientType = self::RECIPIENT_TYPE_FOLDER;
 
     /**
-     * @return array|\Blueways\BwEmail\Domain\Model\Contact[]
+     * @return array|Contact[]
      */
     public function getContacts()
     {
@@ -42,7 +44,7 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
 
         $feUsers = $this->getSelectedFeUsers();
 
-        if (!$feUsers || !sizeof($feUsers)) {
+        if (!$feUsers || !count($feUsers)) {
             return $contacts;
         }
 
@@ -64,11 +66,10 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FrontendUser[]
+     * @return FrontendUser[]
      */
     public function getSelectedFeUsers()
     {
-
         if ($this->feRecipientType === self::RECIPIENT_TYPE_USERS) {
             return $this->feUsers->toArray();
         }
@@ -99,5 +100,4 @@ class FeUserContactSource extends \Blueways\BwEmail\Domain\Model\ContactSource
             return $users;
         }
     }
-
 }

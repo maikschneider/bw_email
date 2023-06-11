@@ -2,10 +2,11 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\ContactProviderOption;
+
 /**
  * Class ExampleContactProvider
- *
- * @package Blueways\BwEmail\Service
  */
 class ExampleContactProvider extends ContactProvider
 {
@@ -14,7 +15,7 @@ class ExampleContactProvider extends ContactProvider
     protected $description = 'Description';
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return Contact[]
      */
     public function getContacts()
     {
@@ -26,13 +27,13 @@ class ExampleContactProvider extends ContactProvider
      */
     protected function createOptions()
     {
-        $this->options[] = new \Blueways\BwEmail\Domain\Model\ContactProviderOption(
+        $this->options[] = new ContactProviderOption(
             'Example select',
             'examplename1',
             'select',
             ['first option', 'second option', 'third option']
         );
-        $this->options[] = new \Blueways\BwEmail\Domain\Model\ContactProviderOption(
+        $this->options[] = new ContactProviderOption(
             'Example input',
             'examplename2',
             'input',

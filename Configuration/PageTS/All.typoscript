@@ -1,5 +1,0 @@
-[page | doktype = 117]
-	# unset does not work if base templates are included as base templates as well
-	mod.web_layout.BackendLayouts >
-	mod.web_layout.BackendLayouts < mod.web_layout.EmailLayouts
-[GLOBAL]

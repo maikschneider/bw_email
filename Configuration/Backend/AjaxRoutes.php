@@ -1,15 +1,18 @@
 <?php
+
+use Blueways\BwEmail\Controller\Ajax\EmailWizardController;
+
 return [
-    'wizard_modal_page' => [
-        'path' => '/email/modal/page',
-        'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::modalAction'
+    'wizard_email_modal' => [
+        'path' => '/email/wizard',
+        'target' => EmailWizardController::class . '::modalAction',
     ],
-    'wizard_modal_send' => [
-        'path' => '/email/modal/send',
-        'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::sendAction'
+    'email_send' => [
+        'path' => '/email/send',
+        'target' => EmailWizardController::class . '::sendAction',
     ],
-    'wizard_modal_preview' => [
-        'path' => '/email/modal/preview',
-        'target' => \Blueways\BwEmail\Controller\Ajax\EmailWizardController::class . '::previewAction'
+    'email_preview' => [
+        'path' => '/email/preview',
+        'target' => EmailWizardController::class . '::previewAction',
     ],
 ];

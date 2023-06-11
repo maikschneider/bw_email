@@ -2,16 +2,16 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\ContactProviderOption;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class ContactProvider
- *
- * @package Blueways\BwEmail\Service
  */
 abstract class ContactProvider
 {
-
     /**
      * @var string
      */
@@ -23,7 +23,7 @@ abstract class ContactProvider
     protected $description;
 
     /**
-     * @var \Blueways\BwEmail\Domain\Model\ContactProviderOption[]
+     * @var ContactProviderOption[]
      */
     protected $options;
 
@@ -33,7 +33,7 @@ abstract class ContactProvider
     protected $settings;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 
@@ -68,7 +68,7 @@ abstract class ContactProvider
             'name' => $this->getProviderName(),
             'description' => $this->getProviderDescription(),
             'options' => $this->getOptions(),
-            'contacts' => $this->getContacts()
+            'contacts' => $this->getContacts(),
         ];
     }
 
@@ -81,7 +81,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return mixed|\TYPO3\CMS\Lang\LanguageService
+     * @return mixed|LanguageService
      */
     private function getLanguageService()
     {
@@ -97,7 +97,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\ContactProviderOption[]
+     * @return ContactProviderOption[]
      */
     public function getOptions()
     {
@@ -105,7 +105,7 @@ abstract class ContactProvider
     }
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return Contact[]
      */
     abstract public function getContacts();
 
@@ -114,7 +114,7 @@ abstract class ContactProvider
      */
     public function applyConfiguration($optionsConfiguration)
     {
-        if (!$optionsConfiguration || !sizeof($optionsConfiguration)) {
+        if (!$optionsConfiguration || !count($optionsConfiguration)) {
             return;
         }
 
@@ -134,5 +134,4 @@ abstract class ContactProvider
     {
         $this->settings = $providerSettings;
     }
-
 }

@@ -4,7 +4,6 @@ namespace Blueways\BwEmail\Domain\Model;
 
 class Contact
 {
-
     public $name;
 
     public $prename;

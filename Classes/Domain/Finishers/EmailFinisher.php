@@ -10,25 +10,20 @@ use TYPO3\CMS\Form\ViewHelpers\RenderRenderableViewHelper;
 
 /**
  * Class EmailFinisher
- *
- * @package Blueways\BwEmail\Domain\Finishers
  */
 class EmailFinisher extends \TYPO3\CMS\Form\Domain\Finishers\EmailFinisher
 {
-
     const FORMAT_BWEMAIL = 'bwemail';
 
     /**
      * @param FormRuntime $formRuntime
      * @return StandaloneView
-     * @throws \TYPO3\CMS\Form\Domain\Finishers\Exception\FinisherException
+     * @throws FinisherException
      */
-    protected function initializeStandaloneView(FormRuntime $formRuntime): StandaloneView
+    protected function initializeStandaloneView(FormRuntime $formRuntime, string $format): StandaloneView
     {
-        $format = $this->parseOption('format');
-
         if ($format !== self::FORMAT_BWEMAIL) {
-            return parent::initializeStandaloneView($formRuntime);
+            return parent::initializeStandaloneView($formRuntime, $format);
         }
 
         $template = $this->parseOption('template');

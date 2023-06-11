@@ -1,6 +1,6 @@
 {
   "name": "blueways/bw-email",
-  "description": "TYPO3 extension for creating responsive email templates",
+  "description": "TYPO3 extension for sending responsive email templates",
   "type": "typo3-cms-extension",
   "require": {
     "tijsverkoyen/css-to-inline-styles": "^2.2",
@@ -8,13 +8,16 @@
     "ext-json": "*"
   },
   "require-dev": {
-    "typo3/cms-base-distribution": "9.5.*",
-    "bk2k/bootstrap-package": "9.1.*"
+    "roave/security-advisories": "dev-latest",
+    "typo3/cms-base-distribution": "^11.5",
+    "bk2k/bootstrap-package": "dev-master",
+    "ssch/typo3-rector": "^1.2",
+    "saschaegerer/phpstan-typo3": "^1.8",
+    "friendsofphp/php-cs-fixer": "^3.3"
   },
-  "license": "MIT",
+  "license": "GPL-2.0-or-later",
   "extra": {
     "typo3/cms": {
-      "cms-package-dir": "{$vendor-dir}/typo3/cms",
       "web-dir": "public",
       "extension-key": "bw_email"
     }
@@ -22,8 +25,7 @@
   "authors": [
     {
       "name": "Maik Schneider",
-      "email": "m.schneider@blueways.de",
-      "homepage": "http://blueways.de",
+      "email": "schneider.maik@me.com",
       "role": "Developer"
     }
   ],
@@ -36,5 +38,16 @@
     "psr-4": {
       "Blueways\\BwEmail\\": "Classes"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true,
+      "helhum/typo3-console-plugin": true
+    }
+  },
+  "scripts": {
+    "php:fixer": "./vendor/bin/php-cs-fixer --config=php-cs-fixer.php fix",
+    "php:stan": "./vendor/bin/phpstan --generate-baseline=phpstan-baseline.neon --allow-empty-baseline --memory-limit=2G"
   }
 }

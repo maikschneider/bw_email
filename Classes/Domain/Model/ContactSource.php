@@ -2,9 +2,10 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
-class ContactSource extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
-{
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
+class ContactSource extends AbstractEntity
+{
     /**
      * name of the data source
      *
@@ -13,7 +14,7 @@ class ContactSource extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $name;
 
     /**
-     * @return \Blueways\BwEmail\Domain\Model\Contact[]
+     * @return Contact[]
      */
     public function getContacts()
     {

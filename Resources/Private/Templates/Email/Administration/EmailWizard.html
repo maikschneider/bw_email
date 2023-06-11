@@ -1,26 +1,24 @@
 <div class="row">
     <div class="col-md-4">
-        <form action="{formActionUri}" method="POST">
+        <f:form name="wizardSettings" object="{wizardSettings}" id="wizardSettingsForm">
+
+            <f:form.hidden property="uid" />
+            <f:form.hidden property="tableName" />
+
             <h2 class="form-section-headline">Settings</h2>
-            <f:if condition="{templates}">
+
+            <f:if condition="{wizardSettings.templates}">
                 <fieldset class="form-section">
                     <div class="form-group">
                         <label for="template"> Email-Template </label>
                         <div class="form-control-wrap">
-                            <select class="form-control" id="template" name="template">
-                                <f:for each="{templates}" as="template">
-                                    <option value="{template.file}"
-                                            data-preview-uri="{template.previewUri}"
-                                            {f:if(condition:
-                                    '{defaults.template}=={template.file}', then:'selected')}>{template.name}</option>
-                                </f:for>
-                            </select>
+                            <f:form.select options="{wizardSettings.templates}" property="template"  class="form-control" id="template" />
                         </div>
                     </div>
                     <div class="form-group" id="showUid-form-group" style="display:none;">
                         <label for="showUid"> E-Mail show PID </label>
                         <div class="form-control-wrap">
-                            <input name="showUid" id="showUid" class="form-control" placeholder="{defaults.showUid}"/>
+                            <f:form.textfield property="showUid" id="showUid" class="form-control" />
                         </div>
                     </div>
                 </fieldset>
@@ -41,17 +39,16 @@
                             </h4>
                         </div>
                         <div id="collapseOne"
-                             class="panel-collapse collapse in"
+                             class="panel-collapse in"
                              role="tabpanel"
                              aria-labelledby="headingOne">
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label for="senderAddress"> Email subject </label>
                                     <div class="form-control-wrap">
-                                        <input name="subject"
+                                        <f:form.textfield property="subject"
                                                id="subject"
-                                               class="form-control"
-                                               placeholder="{defaults.subject}"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                                 <f:if condition="{providers}">
@@ -123,19 +120,17 @@
                                 <div class="form-group provider">
                                     <label for="senderAddress"> Recipient address</label>
                                     <div class="form-control-wrap">
-                                        <input name="recipientAddress"
+                                        <f:form.textfield property="recipientAddress"
                                                id="recipientAddress"
-                                               class="form-control"
-                                               value="{defaults.recipientAddress}"/>
+                                               class="form-control" />
                                     </div>
                                 </div>
                                 <div class="form-group provider">
                                     <label for="senderAddress"> Recipient name</label>
                                     <div class="form-control-wrap">
-                                        <input name="recipientName"
+                                        <f:form.textfield property="recipientName"
                                                id="recipientName"
-                                               class="form-control"
-                                               value="{defaults.recipientName}"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                             </div>
@@ -156,35 +151,32 @@
                             </h4>
                         </div>
                         <div id="collapseTwo"
-                             class="panel-collapse collapse"
+                             class="panel-collapse "
                              role="tabpanel"
                              aria-labelledby="headingTwo">
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label for="senderAddress"> Sender name </label>
                                     <div class="form-control-wrap">
-                                        <input name="senderName"
+                                        <f:form.textfield property="senderName"
                                                id="senderName"
-                                               class="form-control"
-                                               placeholder="{defaults.senderName}"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="senderAddress"> Sender address </label>
                                     <div class="form-control-wrap">
-                                        <input name="senderAddress"
+                                        <f:form.textfield property="senderAddress"
                                                id="senderAddress"
-                                               class="form-control"
-                                               placeholder="{defaults.senderAddress}"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="senderAddress"> Reply-To address </label>
                                     <div class="form-control-wrap">
-                                        <input name="replytoAddress"
+                                        <f:form.textfield property="replytoAddress"
                                                id="replytoAddress"
-                                               class="form-control"
-                                               placeholder="{defaults.replytoAddress}"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                             </div>
@@ -194,8 +186,8 @@
 
 
             </fieldset>
-            <fieldset class="form-section" id="markerOverrideFieldset" style="display:none;"></fieldset>
-        </form>
+            <fieldset class="form-section" id="markerOverrideFieldset"></fieldset>
+        </f:form>
     </div>
 
     <div class="col-md-6 col-md-push-1">
