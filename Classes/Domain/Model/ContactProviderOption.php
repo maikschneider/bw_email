@@ -4,7 +4,6 @@ namespace Blueways\BwEmail\Domain\Model;
 
 class ContactProviderOption
 {
-
     /**
      * @var string
      */
@@ -44,7 +43,7 @@ class ContactProviderOption
     /**
      * Index of the selected option
      *
-     * @var integer
+     * @var int
      */
     public $value = 0;
 
@@ -127,5 +126,4 @@ class ContactProviderOption
     {
         $this->options = $options;
     }
-
 }

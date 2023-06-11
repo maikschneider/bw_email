@@ -11,7 +11,6 @@ use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 
 class WizardSettings
 {
-
     public string $senderAddress = '';
 
     public string $senderName = '';
@@ -130,7 +129,7 @@ class WizardSettings
             'template',
             'showUid',
             'recipientAddress',
-            'recipientName'
+            'recipientName',
         ];
         $languageService = $this->getLanguageService();
 
@@ -172,7 +171,6 @@ class WizardSettings
         preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $property, $fieldStatements);
 
         if (count($fieldStatements[0])) {
-
             $record = BackendUtility::getRecord(
                 $table,
                 $uid
@@ -195,7 +193,7 @@ class WizardSettings
                     }
 
                     // check if foreign property should be accessed FIELD:calendar.name
-                    if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key]) && $fieldStatements[4][$key] !== "") {
+                    if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key]) && $fieldStatements[4][$key] !== '') {
                         $reflectionService = GeneralUtility::makeInstance(ReflectionService::class);
                         $schema = $reflectionService->getClassSchema($record['record_type']);
                         $foreignPropertyType = $schema->getProperty($propertyName)->getType();
@@ -244,5 +242,4 @@ class WizardSettings
 
         return $contacts;
     }
-
 }

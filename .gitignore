@@ -2,6 +2,7 @@
 vendor
 node_modules
 .php_cs.cache
+.php-cs-fixer.cache
 public
 !Resources/Public
 var

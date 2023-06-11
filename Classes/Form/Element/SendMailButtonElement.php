@@ -2,24 +2,15 @@
 
 namespace Blueways\BwEmail\Form\Element;
 
-use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
-use TYPO3\CMS\Backend\Form\NodeFactory;
-use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
-use Blueways\BwEmail\Domain\Model\WizardConf;
-use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class SendMailButtonElement
- *
- * @package Blueways\BwEmail\Form\Element
  */
 class SendMailButtonElement extends AbstractFormElement
 {
-
     protected ConfigurationManager $configurationManager;
 
     public function injectConfigurationManager(ConfigurationManager $configurationManager): void

@@ -5,18 +5,14 @@ namespace Blueways\BwEmail\Utility;
 use Blueways\BwEmail\Domain\Model\Contact;
 use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
 use Blueways\BwEmail\View\EmailView;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Mail\MailMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class SenderUtility
- *
- * @package Blueways\BwEmail\Utility
  */
 class SenderUtility
 {
-
     protected WizardSettings $settings;
 
     /**
@@ -62,7 +58,6 @@ class SenderUtility
 
         $contacts = $this->settings->getContacts();
         foreach ($contacts as $contact) {
-
             $html = $emailView->renderWithMarkerOverrides(null, $this->settings->markerOverrides, $contact);
             $success = $this->sendMail(
                 $this->getSenderArray(),
@@ -83,8 +78,8 @@ class SenderUtility
                 'status' => 'OK',
                 'message' => [
                     'headline' => 'Success',
-                    'text' => $mailsSend === 1 ? 'Mail successfully send.' : $mailsSend . ' mails have been successfully send.'
-                ]
+                    'text' => $mailsSend === 1 ? 'Mail successfully send.' : $mailsSend . ' mails have been successfully send.',
+                ],
             ];
         }
 
@@ -92,8 +87,8 @@ class SenderUtility
             'status' => 'ERROR',
             'message' => [
                 'headline' => 'Unknown error',
-                'text' => 'No mails have been send.'
-            ]
+                'text' => 'No mails have been send.',
+            ],
         ];
     }
 
@@ -137,7 +132,5 @@ class SenderUtility
 
     protected function validateSettings()
     {
-
     }
-
 }

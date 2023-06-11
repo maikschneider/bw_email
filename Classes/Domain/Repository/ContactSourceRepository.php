@@ -3,14 +3,12 @@
 namespace Blueways\BwEmail\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
+
 /**
  * Class ContactSourceRepository
- *
- * @package Blueways\BwEmail\Domain\Repository
  */
 class ContactSourceRepository extends Repository
 {
-
     /**
      * @return array
      */
@@ -20,5 +18,4 @@ class ContactSourceRepository extends Repository
         $query->getQuerySettings()->setRespectStoragePage(false);
         return $query->execute()->toArray();
     }
-
 }

@@ -10,12 +10,9 @@ use TYPO3\CMS\Form\ViewHelpers\RenderRenderableViewHelper;
 
 /**
  * Class EmailFinisher
- *
- * @package Blueways\BwEmail\Domain\Finishers
  */
 class EmailFinisher extends \TYPO3\CMS\Form\Domain\Finishers\EmailFinisher
 {
-
     const FORMAT_BWEMAIL = 'bwemail';
 
     /**

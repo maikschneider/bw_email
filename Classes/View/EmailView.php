@@ -2,21 +2,19 @@
 
 namespace Blueways\BwEmail\View;
 
+use Blueways\BwEmail\Domain\Model\Contact;
 use Hampe\Inky\Inky;
 use PHPHtmlParser\Exceptions\CircularException;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use Blueways\BwEmail\Domain\Model\Contact;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
 use TYPO3\CMS\Core\TimeTracker\TimeTracker;
-use TYPO3\CMS\Core\Domain\Repository\PageRepository;
-use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use Blueways\BwEmail\Utility\TemplateParserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class EmailView extends StandaloneView
 {
@@ -108,7 +106,7 @@ class EmailView extends StandaloneView
     public function inlineCss(): void
     {
         preg_match_all('/(?<=href=")[^."]+\.css/', $this->html, $cssFiles);
-        if ($cssFiles && sizeof($cssFiles)) {
+        if ($cssFiles && count($cssFiles)) {
             $cssFiles = $cssFiles[0];
         }
         $css = '';
@@ -139,12 +137,12 @@ class EmailView extends StandaloneView
         $mediaBlocks = [];
 
         $start = 0;
-        while (($start = strpos($css, "@media", $start)) !== false) {
+        while (($start = strpos($css, '@media', $start)) !== false) {
             // stack to manage brackets
             $stack = [];
 
             // get the first opening bracket
-            $firstOpen = strpos($css, "{", $start);
+            $firstOpen = strpos($css, '{', $start);
 
             // if $i is false, then there is probably a css syntax error
             if ($firstOpen !== false) {
@@ -156,9 +154,9 @@ class EmailView extends StandaloneView
 
                 while (!empty($stack)) {
                     // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
-                    if ($css[$firstOpen] === "{") {
-                        $stack[] = "{";
-                    } elseif ($css[$firstOpen] === "}") {
+                    if ($css[$firstOpen] === '{') {
+                        $stack[] = '{';
+                    } elseif ($css[$firstOpen] === '}') {
                         array_pop($stack);
                     }
 
@@ -218,7 +216,7 @@ class EmailView extends StandaloneView
             $this->marker[] = [
                 'name' => $m,
                 'content' => $result[2],
-                'override' => ''
+                'override' => '',
             ];
         }
     }
@@ -270,7 +268,7 @@ class EmailView extends StandaloneView
         preg_match_all($regex, $this->html, $links);
 
         // abort if no links were found
-        if (!sizeof($links)) {
+        if (!count($links)) {
             return [];
         }
 
@@ -300,7 +298,7 @@ class EmailView extends StandaloneView
 
         // check pid if FE Context can be created (not possible if sys_folder) or go page level upwards
         $rootline = BackendUtility::BEgetRootLine($pid);
-        for ($i = sizeof($rootline); $i > 0; $i--) {
+        for ($i = count($rootline); $i > 0; $i--) {
             $pid = $rootline[$i]['doktype'];
             if ($pid === 1) {
                 break;
@@ -369,5 +367,4 @@ class EmailView extends StandaloneView
             $this->html = preg_replace($regex, $contact->{$attr}, $this->html);
         }
     }
-
 }

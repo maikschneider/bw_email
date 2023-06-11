@@ -5,7 +5,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 defined('TYPO3') || die();
 
 call_user_func(function () {
-
     // @TODO remove before feature branch merge
     /**
      * Register new fields
@@ -16,9 +15,9 @@ call_user_func(function () {
             'label' => 'Send mail',
             'config' => [
                 'type' => 'passthrough',
-                'renderType' => 'sendMailButton'
+                'renderType' => 'sendMailButton',
             ],
-        ]
+        ],
     ];
 
     ExtensionManagementUtility::addTCAcolumns('tt_content', $tempColumns);

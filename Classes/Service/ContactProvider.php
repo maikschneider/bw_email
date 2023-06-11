@@ -2,19 +2,16 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Model\Contact;
 use Blueways\BwEmail\Domain\Model\ContactProviderOption;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use Blueways\BwEmail\Domain\Model\Contact;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Class ContactProvider
- *
- * @package Blueways\BwEmail\Service
  */
 abstract class ContactProvider
 {
-
     /**
      * @var string
      */
@@ -71,7 +68,7 @@ abstract class ContactProvider
             'name' => $this->getProviderName(),
             'description' => $this->getProviderDescription(),
             'options' => $this->getOptions(),
-            'contacts' => $this->getContacts()
+            'contacts' => $this->getContacts(),
         ];
     }
 
@@ -117,7 +114,7 @@ abstract class ContactProvider
      */
     public function applyConfiguration($optionsConfiguration)
     {
-        if (!$optionsConfiguration || !sizeof($optionsConfiguration)) {
+        if (!$optionsConfiguration || !count($optionsConfiguration)) {
             return;
         }
 
@@ -137,5 +134,4 @@ abstract class ContactProvider
     {
         $this->settings = $providerSettings;
     }
-
 }

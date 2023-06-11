@@ -2,14 +2,13 @@
 
 namespace Blueways\BwEmail\Domain\Model;
 
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
 use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 class FeUserContactSource extends ContactSource
 {
-
     const RECIPIENT_TYPE_FOLDER = 0;
     const RECIPIENT_TYPE_USERS = 1;
     const RECIPIENT_TYPE_GROUPS = 2;
@@ -27,12 +26,12 @@ class FeUserContactSource extends ContactSource
     /**
      * PID of the storage folder
      *
-     * @var integer
+     * @var int
      */
     protected $fePid;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $feRecipientType = self::RECIPIENT_TYPE_FOLDER;
 
@@ -45,7 +44,7 @@ class FeUserContactSource extends ContactSource
 
         $feUsers = $this->getSelectedFeUsers();
 
-        if (!$feUsers || !sizeof($feUsers)) {
+        if (!$feUsers || !count($feUsers)) {
             return $contacts;
         }
 
@@ -71,7 +70,6 @@ class FeUserContactSource extends ContactSource
      */
     public function getSelectedFeUsers()
     {
-
         if ($this->feRecipientType === self::RECIPIENT_TYPE_USERS) {
             return $this->feUsers->toArray();
         }
@@ -102,5 +100,4 @@ class FeUserContactSource extends ContactSource
             return $users;
         }
     }
-
 }

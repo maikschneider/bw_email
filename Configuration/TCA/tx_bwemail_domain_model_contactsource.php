@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource',
@@ -30,11 +31,11 @@ return [
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type.none',
-                        'Blueways\BwEmail\Domain\Model\ContactSource'
+                        'Blueways\BwEmail\Domain\Model\ContactSource',
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.record_type.feuser',
-                        'Blueways\BwEmail\Domain\Model\FeUserContactSource'
+                        'Blueways\BwEmail\Domain\Model\FeUserContactSource',
                     ],
                 ],
                 'default' => 'Blueways\BwEmail\Domain\Model\ContactSource',
@@ -91,17 +92,17 @@ return [
                 'items' => [
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.0',
-                        0
+                        0,
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.1',
-                        1
+                        1,
                     ],
                     [
                         'LLL:EXT:bw_email/Resources/Private/Language/locallang_db.xlf:tx_bwemail_domain_model_contactsource.fe_recipient_type.2',
-                        2
-                    ]
-                ]
+                        2,
+                    ],
+                ],
             ],
         ],
         'fe_users' => [
@@ -151,6 +152,5 @@ return [
                 ],
             ],
         ],
-    ]
+    ],
 ];
-

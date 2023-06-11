@@ -3,32 +3,29 @@
 namespace Blueways\BwEmail\Controller\Ajax;
 
 use Blueways\BwEmail\Domain\Model\Dto\WizardSettings;
-use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use Blueways\BwEmail\View\EmailView;
 use Blueways\BwEmail\Service\ContactProvider;
-use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
-use TYPO3\CMS\Extbase\Persistence\Repository;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use Blueways\BwEmail\Utility\SenderUtility;
+use Blueways\BwEmail\View\EmailView;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Error\Http\ServiceUnavailableException;
+use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class EmailWizardController extends ActionController
 {
-
     protected ?array $queryParams = null;
 
     protected array $typoscript = [];
@@ -141,10 +138,9 @@ class EmailWizardController extends ActionController
             ->fetch();
 
         // the record is just an array, we need to query the repository to access all properties with fluid
-        if (isset($record['record_type']) && $record['record_type'] !== "") {
-
+        if (isset($record['record_type']) && $record['record_type'] !== '') {
             // load record from repository (to make use of fluid getter/setter functions
-            $recordTypeParts = explode("\\", $record['record_type']);
+            $recordTypeParts = explode('\\', $record['record_type']);
             $recordTypeParts[3] = 'Repository';
             $recordTypeParts[4] .= 'Repository';
 
@@ -184,7 +180,7 @@ class EmailWizardController extends ActionController
      */
     public static function encodeURIComponent($str)
     {
-        $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
+        $revert = ['%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')'];
         return strtr(rawurlencode($str), $revert);
     }
 
@@ -222,7 +218,7 @@ class EmailWizardController extends ActionController
         }
 
         // check for provider settings and possible list of recipients
-        if (isset($params['provider']) && sizeof($params['provider']) && (int)$params['provider']['use'] === 1) {
+        if (isset($params['provider']) && count($params['provider']) && (int)$params['provider']['use'] === 1) {
             $providerSettings = $params['provider'];
             /** @var ContactProvider $provider */
             $provider = GeneralUtility::makeInstance($providerSettings['id']);

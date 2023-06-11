@@ -4,10 +4,9 @@ namespace Blueways\BwEmail\Service;
 
 use Blueways\BwEmail\Domain\Model\Contact;
 use Blueways\BwEmail\Domain\Model\ContactProviderOption;
+
 /**
  * Class ExampleContactProvider
- *
- * @package Blueways\BwEmail\Service
  */
 class ExampleContactProvider extends ContactProvider
 {

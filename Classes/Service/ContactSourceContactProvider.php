@@ -2,18 +2,16 @@
 
 namespace Blueways\BwEmail\Service;
 
+use Blueways\BwEmail\Domain\Model\Contact;
+use Blueways\BwEmail\Domain\Model\ContactProviderOption;
 use Blueways\BwEmail\Domain\Repository\ContactSourceRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Blueways\BwEmail\Domain\Model\ContactProviderOption;
-use Blueways\BwEmail\Domain\Model\Contact;
+
 /**
  * Class ContactSourceContactProvider
- *
- * @package Blueways\BwEmail\Service
  */
 class ContactSourceContactProvider extends ContactProvider
 {
-
     protected $name = 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:contactSourceProvider.name';
 
     protected $description = 'LLL:EXT:bw_email/Resources/Private/Language/locallang.xlf:contactSourceProvider.description';
@@ -58,7 +56,7 @@ class ContactSourceContactProvider extends ContactProvider
 
         $sourceLabels = [];
         foreach ($contactSourceRepository->findAllDataSources() as $source) {
-            $sourceLabels[] = $source->getName() . ' (' . sizeof($source->getContacts()) . ' contacts)';
+            $sourceLabels[] = $source->getName() . ' (' . count($source->getContacts()) . ' contacts)';
         }
         return $sourceLabels;
     }
@@ -73,7 +71,7 @@ class ContactSourceContactProvider extends ContactProvider
 
         $sources = $contactSourceRepository->findAllDataSources();
 
-        if (!sizeof($sources)) {
+        if (!count($sources)) {
             return [];
         }
 

@@ -3,9 +3,9 @@
 namespace Blueways\BwEmail\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
 class ContactSource extends AbstractEntity
 {
-
     /**
      * name of the data source
      *
