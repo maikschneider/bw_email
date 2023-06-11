@@ -7,6 +7,7 @@ use Blueways\BwEmail\Service\ContactProvider;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use TYPO3\CMS\Extbase\Reflection\ReflectionService;
 
 class WizardSettings
 {
@@ -162,7 +163,6 @@ class WizardSettings
         preg_match_all('/(FIELD:)(\w+)((?:\.)(\w+))?/', $property, $fieldStatements);
 
         if (count($fieldStatements[0])) {
-            $reflectionService = new \TYPO3\CMS\Extbase\Reflection\ReflectionService();
 
             $record = BackendUtility::getRecord(
                 $table,
@@ -187,9 +187,9 @@ class WizardSettings
 
                     // check if foreign property should be accessed FIELD:calendar.name
                     if ($replaceWith && isset($record['record_type']) && isset($fieldStatements[4]) && isset($fieldStatements[4][$key]) && $fieldStatements[4][$key] !== "") {
+                        $reflectionService = GeneralUtility::makeInstance(ReflectionService::class);
                         $schema = $reflectionService->getClassSchema($record['record_type']);
-                        $properties = $schema->getProperties();
-                        $foreignPropertyType = $properties[$propertyName]['type'];
+                        $foreignPropertyType = $schema->getProperty($propertyName)->getType();
 
                         $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
                         $tableName = $dataMapper->getDataMap($foreignPropertyType)->getTableName();
