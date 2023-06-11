@@ -74,7 +74,7 @@ class EmailWizard {
 		// adjust height of email preview
 		setTimeout(() => {
 			this.loaderTarget.css('height', this.currentModal.find('.modal-body').innerHeight() - 190);
-		}, 100)
+		}, 300)
 
 		// onload first template
 		this.loadEmailPreview();
@@ -131,37 +131,10 @@ class EmailWizard {
 				.post(formDataObject)
 				.then(async (response: AjaxResponse): Promise<void> => {
 					const data = await response.resolve();
-					this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data.iframeSrc + '"></iframe>');
+					this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: 100%" src="' + data.iframeSrc + '"></iframe>');
 					this.createMarkerFieldset(data);
 				});
 		});
-	}
-
-	private showEmailPreview(createMarkerFieldset, data) {
-		const $showUidInput = this.currentModal.find('#showUid-form-group');
-
-		this.loaderTarget.html('<iframe frameborder="0" style="width:100%; height: ' + this.loaderTarget.css('height') + '" src="' + data.src + '"></iframe>');
-
-		if (data.hasInternalLinks) {
-			$showUidInput.show();
-		} else {
-			$showUidInput.hide();
-		}
-
-		// update contact list
-		const contactSelection = this.currentModal.find('.provider--contacts:visible select');
-		$('option', contactSelection).remove();
-		for (let i = 0; i < data.contacts.length; i++) {
-			let contact = $('<option value="' + i + '">' + data.contacts[i].email + '</option>');
-			if (parseInt(data.selectedContact) === i) {
-				contact.attr('selected', 'selected');
-			}
-			contactSelection.append(contact);
-		}
-
-		if (createMarkerFieldset) {
-			this.createMarkerFieldset(data);
-		}
 	}
 
 	private createMarkerFieldset(data) {
